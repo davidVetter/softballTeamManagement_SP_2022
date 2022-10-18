@@ -52,7 +52,9 @@ function LandingPage() {
           </p>
         </div>
         <div className="grid-col grid-col_4">
-          <RegisterForm />
+          {/* I think this should be left off the landing page, have
+          user move to the actual registration form since a large number of inputs */}
+          {/* <RegisterForm /> */}
 
           <center>
             <h4>Already a Member?</h4>
