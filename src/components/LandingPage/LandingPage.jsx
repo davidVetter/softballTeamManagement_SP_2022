@@ -46,13 +46,18 @@ function LandingPage() {
             }}
           >
             <Typography variant="h6">Already a Member?</Typography>
-            <Button variant='outlined' className="btn btn_sizeSm" onClick={onLogin}>
+            <Button 
+              variant='outlined' 
+              className="btn btn_sizeSm" 
+              size='small'
+              onClick={onLogin}
+            >
               Login
             </Button>
           </Box>
         </Box>
 
-        <Paper elevation={8} className="grid">
+        <Paper elevation={8} className="grid" sx={{padding: 2}}>
           <Typography variant="body1" gutterBottom>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur
             id felis metus. Vestibulum et pulvinar tortor. Morbi pharetra lacus
