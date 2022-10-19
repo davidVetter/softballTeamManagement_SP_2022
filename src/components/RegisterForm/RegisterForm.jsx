@@ -61,8 +61,8 @@ function RegisterForm() {
   }; // end registerUser
 
   return (
-    <Box sx={{width:'80%', display: 'flex', alignItems:'center', justifyContent:'center'}}>
-    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '50%'}}>
+    <Box sx={{width:'100%', display: 'flex', alignItems:'center', justifyContent:'center'}}>
+    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerUser}>
       <Grid container alignItems='center' justify='center' direction='column'>
       <Typography variant='h4' gutterBottom>Register User</Typography>
