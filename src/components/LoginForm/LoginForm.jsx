@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {useSelector} from 'react-redux';
+import { Button, Grid, Typography, TextField, Box, Paper, FormLabel} from '@mui/material';
 
 function LoginForm() {
   const [username, setUsername] = useState('');
@@ -25,41 +26,53 @@ function LoginForm() {
   }; // end login
 
   return (
-    <form className="formPanel" onSubmit={login}>
-      <h2>Login</h2>
+      <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+      <Paper elevation={8} sx={{ width: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', mb: 1 }}>
+    <form onSubmit={login}>
+    <Grid container alignItems='center' justify='center' direction='column'>
+      <Typography variant='h4'>Login</Typography>
       {errors.loginMessage && (
-        <h3 className="alert" role="alert">
+        <Typography variant='h4' className="alert" role="alert">
           {errors.loginMessage}
-        </h3>
+        </Typography>
       )}
-      <div>
-        <label htmlFor="username">
-          Username:
-          <input
+      <Grid item sx={{mb: 1}}>
+        <FormLabel htmlFor="username">
+          <TextField
+            variant='outlined'
+            label='Email'
+            size='normal'
+            filled='true'
             type="text"
             name="username"
             required
             value={username}
             onChange={(event) => setUsername(event.target.value)}
           />
-        </label>
-      </div>
-      <div>
-        <label htmlFor="password">
-          Password:
-          <input
+        </FormLabel>
+      </Grid>
+      <Grid item sx={{mb: 1}}>
+        <FormLabel htmlFor="password">
+          <TextField
             type="password"
             name="password"
+            variant='outlined'
+            label='Password'
+            size='normal'
+            filled='true'
             required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
-        </label>
-      </div>
-      <div>
-        <input className="btn" type="submit" name="submit" value="Log In" />
-      </div>
+        </FormLabel>
+      </Grid>
+      <Grid item sx={{ mb: 1 }}>
+        <Button variant='contained' type="submit" name="submit" value="Log In">Log In</Button>
+      </Grid>
+      </Grid>
     </form>
+      </Paper>
+      </Box>
   );
 }
 
