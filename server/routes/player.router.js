@@ -46,6 +46,23 @@ router.get('/info/', rejectUnauthenticated, (req, res) => {
       .catch((err) => {
         console.log('Error in getting player games: ', err);
       })
+}); // End GET user info
+
+// GET teams a player is on by user id
+router.get('/team', rejectUnauthenticated, (req, res) => {
+  // GET route code here
+  const query = `SELECT "team".*, "user_team"."number"
+                 FROM "user_team"
+                 JOIN "team" ON "team"."id"="user_team"."team_id"
+                 JOIN "user" ON "user"."id"="user_team"."user_id"
+                 WHERE "user"."id"=$1;`;
+  pool.query(query, [req.user.id])
+      .then(result => {
+        res.send(result.rows);
+      })
+      .catch((err) => {
+        console.log('Error in getting player games: ', err);
+      })
 });
 
 /**
