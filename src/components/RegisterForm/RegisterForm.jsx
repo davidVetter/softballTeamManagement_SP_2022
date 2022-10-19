@@ -4,6 +4,7 @@ import { Typography, Grid, FormLabel, TextField, Button, Paper, Box, Select, For
 import stateLabelValues from '../../data/registerData/statesList';
 
 function RegisterForm() {
+  // Local state to hold the form information while being entered
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -21,19 +22,24 @@ function RegisterForm() {
   const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
 
+  // Sends the user entered data to sagas
   const registerUser = (event) => {
     event.preventDefault();
     let cleanNumber = 0;
+    // Removes common extra characters from the entered phone number
+    // if they exist
     if (phoneNumber.indexOf('-') >= 0) {
       cleanNumber = phoneNumber.replaceAll('-', '');
-      console.log('This is cleanNumber: ', cleanNumber);
     } else if (phoneNumber.indexOf('.') >= 0) {
       cleanNumber = phoneNumber.replaceAll('.', '');
-      console.log('This is cleanNumber: ', cleanNumber);
-    } else {
+    } else if (phoneNumber.indexOf('(') >= 0) {
+      cleanNumber = phoneNumber.replaceAll('(', '');
+    } else if (phoneNumber.indexOf(')') >= 0) {
+      cleanNumber = phoneNumber.replaceAll(')', '');
+    }  else {
       cleanNumber = phoneNumber;
     }
-
+    // Send data to saga for POST to server
     dispatch({
       type: 'REGISTER',
       payload: {
