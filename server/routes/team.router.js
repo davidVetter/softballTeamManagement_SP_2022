@@ -167,7 +167,8 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
     const query = `UPDATE "user_team" 
                    SET "is_manager"=NOT "is_manager" 
                    WHERE "user_id"=$1 AND "team_id"=$2 AND (
-                    SELECT "is_manager" FROM "user_team" WHERE "user_id"=$3 AND "team_id"=$4
+                    SELECT "is_manager" FROM "user_team" 
+                    WHERE "user_id"=$3 AND "team_id"=$4
                    );`;
     pool.query(query, [userId, teamId, req.user.id, teamId])
         .then(result => {
@@ -178,5 +179,25 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
             res.sendStatus(500);
         });
   }); // End PUT
+
+  // DELETE to remove a player from a team
+  // User doing delete must be a manager for that team
+  router.delete('/', rejectUnauthenticated, (req, res) => {
+    const userId = req.body.userId;
+    const teamId = req.body.teamId;
+    const query = `DELETE FROM "user_team" 
+                   WHERE "user_id"=$1 AND "team_id"=$2 AND (
+                        SELECT "is_manager" FROM "user_team" 
+                        WHERE "user_id"=$3 AND "team_id"=$4
+                    );`;
+    pool.query(query, [userId, teamId, req.user.id, teamId])
+        .then(result => {
+            res.sendStatus(200);
+        })
+        .catch(err => {
+            console.log('Error deleting a player');
+            res.sendStatus(500);
+        })
+  })
 
 module.exports = router;
