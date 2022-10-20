@@ -16,7 +16,16 @@ const teamPlayersPersonalInfoReducer = (state = [], action) => {
     }
 }
 
+const teamPlayersPending = (state = [], action) => {
+    if (action.type === 'SET_TEAM_PENDING_PLAYERS') {
+        return action.payload;
+    } else {
+        return state;
+    }
+}
+
 export default combineReducers({
     teamPlayersStatsReducer,
-    teamPlayersPersonalInfoReducer
+    teamPlayersPersonalInfoReducer,
+    teamPlayersPending
 });

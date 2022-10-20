@@ -29,6 +29,10 @@ function UserPage() {
       type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
       payload: 1
     });
+    dispatch({
+      type: 'GET_TEAM_PENDING_PLAYERS',
+      payload: 1
+    });
   }, []);
 
   return (

@@ -72,7 +72,7 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
                     is_manager FROM "user"
                    JOIN "user_team" ON "user_team"."user_id"="user"."id" 
                    JOIN "team" ON "team"."id"="user_team"."team_id" 
-                   WHERE "team"."id"=$1;`;
+                   WHERE "team"."id"=$1 AND "user_team"."approved"='true';`;
     pool.query(query, [team])
         .then(result => {
           res.send(result.rows);
