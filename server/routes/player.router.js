@@ -65,7 +65,7 @@ router.get('/team', rejectUnauthenticated, (req, res) => {
       })
 });
 
-// Edit a current user
+// PUT to edit the current user that is logged in
  router.put('/', rejectUnauthenticated, (req, res) => {
   console.log('this is req.body in PUT: ', req.body);
   const firstName = req.body.firstName;
