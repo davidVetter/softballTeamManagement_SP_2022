@@ -50,8 +50,10 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
           console.log('Error in getting team games: ', err);
           res.sendStatus(500);
         })
-  }); // End GET for players on team
+  }); // End GET for players on team with stats
 
+  // Get a list of all players on a specific team with no calcs stats
+  // Only players personal infomation
   router.get('/players/:teamid', rejectUnauthenticated, (req, res) => {
     // GET route code here
     const team = req.params.teamid;
@@ -79,7 +81,7 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
           console.log('Error in getting team games: ', err);
           res.sendStatus(500);
         })
-  });
+  }); // End GET for players on team without stats
 
   // This GET will get all players for a specific team that
   // have not been approved to be on the team
