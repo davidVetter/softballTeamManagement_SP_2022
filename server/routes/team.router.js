@@ -158,6 +158,28 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
             res.sendStatus(500);
         })
   }); // End POST
+
+  // PUT to toggle if a player is approved or not on
+  // user_team table
+  // Checks if player making change is a manager on that team
+  router.put('/approve', rejectUnauthenticated, (req, res) => {
+    const userId = req.body.userId;
+    const teamId = req.body.teamId;
+    const query = `UPDATE "user_team" 
+                   SET "approved"=NOT "approved" 
+                   WHERE "user_id"=$1 AND "team_id"=$2 AND (
+                    SELECT "is_manager" FROM "user_team" 
+                    WHERE "user_id"=$3 AND "team_id"=$4
+                   );`;
+    pool.query(query, [userId, teamId, req.user.id, teamId])
+        .then(result => {
+            res.sendStatus(200);
+        })
+        .catch(err => {
+            console.log('Error toggling player approved: ', err);
+            res.sendStatus(500);
+        });
+  }); // End approved PUT
   
   // PUT to toggle if a player is manager for a team
   // Checks to make sure the user logged is a manager for that team
@@ -197,7 +219,7 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
         .catch(err => {
             console.log('Error deleting a player');
             res.sendStatus(500);
-        })
-  })
+        });
+  });
 
 module.exports = router;
