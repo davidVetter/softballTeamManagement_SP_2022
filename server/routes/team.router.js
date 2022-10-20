@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/games', rejectUnauthenticated, (req, res) => {
     // GET route code here
     const query = `SELECT * FROM "game" 
-                   JOIN "team" ON "team"."id"="game"."team_id"
+                   RIGHT JOIN "team" ON "team"."id"="game"."team_id"
                    JOIN "user_team" ON "user_team"."team_id"="team"."id"
                    WHERE "user_team"."user_id"=$1;`;
     pool.query(query, [req.user.id])
@@ -100,8 +100,83 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
         })
   }); // End GET players waiting for approval team
 
-  router.post('/', (req, res) => {
+  // This POST will add a new team to the 'team' table
+  router.post('/', rejectUnauthenticated, (req, res) => {
+    console.log('This is req.body in POST: ', req.body);
+    const teamName = req.body.teamName;
+    const league = req.body.league;
+    const year = req.body.year;
     // POST route code here
-  });
+    const query = `INSERT INTO "team" ("name", "league", "year")
+                   VALUES ($1, $2, $3)
+                   RETURNING "id";`;
+    pool.query(query, [teamName, league, year])
+        .then(result => {
+            // This query adds the user that just created a team
+            // as player for that team with manager status and
+            // pre-approval to join team
+            console.log('this is the new team id: ', result.rows[0].id);
+            console.log('this is req.body in the second sql: ', req.body);
+            const number = req.body.number;
+            const teamId = result.rows[0].id;
+            const userQuery = `INSERT INTO "user_team" (
+                            "user_id", 
+                            "team_id", 
+                            "number", 
+                            "approved", 
+                            "is_manager"
+                            ) VALUES ($1, $2, $3, $4, $5);`;
+            pool.query(userQuery, [req.user.id, teamId, number, true, true])
+            .then(result => {
+                res.sendStatus(201);
+            })
+            .catch(err => {
+                console.log('error in adding user after team add: ', err);
+                res.sendStatus(500);
+            })
+        })
+        .catch((err) => {
+            console.log('Error in POST new team: ', err);
+            res.sendStatus(500);
+        })
+  }); // End POST
+
+  // POST a new user to user_team table - Needs to be approved to officially be
+  // part of the team (when user joins a team they did not create)
+  router.post('/player', rejectUnauthenticated, (req, res) => {
+    const teamId = req.body.teamId;
+    const userNumber = req.body.number;
+    // POST route code here
+    const query = `INSERT INTO "user_team" ("user_id", "team_id", "number")
+                   VALUES ($1, $2, $3);`;
+    pool.query(query, [req.user.id, teamId, userNumber])
+        .then(result => {
+            res.sendStatus(201);
+        })
+        .catch((err) => {
+            console.log('Error in POST new player: ', err);
+            res.sendStatus(500);
+        })
+  }); // End POST
+  
+  // PUT to toggle if a player is manager for a team
+  // Checks to make sure the user logged is a manager for that team
+  router.put('/manager', rejectUnauthenticated, (req, res) => {
+    const userId = req.body.userId;
+    const teamId = req.body.teamId;
+    const query = `UPDATE "user_team" 
+                   SET "is_manager"=NOT "is_manager" 
+                   WHERE "user_id"=$1 AND "team_id"=$2 AND (
+                    SELECT "is_manager" FROM "user_team" WHERE "user_id"=$3 AND "team_id"=$4
+                   );`;
+    pool.query(query, [userId, teamId, req.user.id, teamId])
+        .then(result => {
+            res.sendStatus(200);
+        })
+        .catch(err => {
+            console.log('Error toggling manager: ', err);
+            res.sendStatus(500);
+        });
+  }); // End PUT
 
 module.exports = router;
