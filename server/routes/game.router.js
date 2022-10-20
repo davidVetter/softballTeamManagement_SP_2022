@@ -15,7 +15,7 @@ router.post('/', rejectUnauthenticated, (req, res) => {
     const scoreAwayTeam = req.body.scoreAwayTeam;
     const innings = req.body.innings;
     const isHomeTeam = req.body.isHomeTeam;
-    // POST route code here
+    // SQL query for adding a game to 'game' table
     const query = `INSERT INTO "game" 
                     (
                     "team_id", 
@@ -59,6 +59,7 @@ router.post('/', rejectUnauthenticated, (req, res) => {
             const double = player.double;
             const triple = player.triple;
             const hr = player.hr;
+            // SQl query for adding individual user stats for the game
             const userQuery = `INSERT INTO "user_game" 
                             (
                             "user_id", 
