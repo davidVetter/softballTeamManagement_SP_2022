@@ -13,6 +13,9 @@ function UserPage() {
     dispatch({
       type: 'SET_PLAYER_GAMES'
     });
+    dispatch({
+      type: 'GET_PLAYER_TEAMS'
+    });
   }, []);
 
   return (
@@ -20,6 +23,7 @@ function UserPage() {
       <Typography variant='h4' gutterBottom>Welcome, {user.username}!</Typography>
       <Typography variant='body2'gutterBottom>Your ID is: {user.id}</Typography>
       {console.log('This is playerGames: ', playerGames)}
+      {console.log('This is user info: ', user)}
       <Button
       variant='contained'
       onClick={() => dispatch({ type: 'LOGOUT' })}

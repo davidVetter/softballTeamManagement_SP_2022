@@ -49,8 +49,9 @@ router.get('/info/', rejectUnauthenticated, (req, res) => {
 }); // End GET user info
 
 // GET teams a player is on by user id
-router.get('/team', rejectUnauthenticated, (req, res) => {
+router.get('/team/', rejectUnauthenticated, (req, res) => {
   // GET route code here
+  console.log('In player teams with: ', req.body);
   const query = `SELECT "team".*, "user_team"."number"
                  FROM "user_team"
                  JOIN "team" ON "team"."id"="user_team"."team_id"
@@ -58,6 +59,7 @@ router.get('/team', rejectUnauthenticated, (req, res) => {
                  WHERE "user"."id"=$1;`;
   pool.query(query, [req.user.id])
       .then(result => {
+        console.log('this is results.rows in team get: ', result.rows);
         res.send(result.rows);
       })
       .catch((err) => {
