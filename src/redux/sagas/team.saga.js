@@ -106,6 +106,20 @@ function* promoteManager(action) {
     }
 }
 
+// DELETE to remove a player from a team
+function* removeUserTeam(action) {
+    try {
+        console.log('In remove user from team: ', action.payload);
+        // browser was stripping the body so making object with 'data' property
+        // allows the body to make it to the end point
+        yield axios.delete(`api/team/`, {data: action.payload});
+        yield put({ type: "GET_TEAM_PLAYERS_PERSONAL_INFO", payload: action.payload.teamId });
+        yield put({ type: "GET_TEAM_PLAYERS", payload: action.payload.teamId });
+    } catch (err) {
+        console.log('Error approving player: ', err);
+    }
+}
+
 function* teamSaga() {
     yield takeLatest("GET_TEAMS", getTeams);
     yield takeLatest("GET_TEAM_PLAYERS", getTeamPlayersStats);
@@ -115,6 +129,7 @@ function* teamSaga() {
     yield takeLatest("ADD_USER_TEAM", addUserTeam);
     yield takeLatest("APPROVE_USER", approvePlayer);
     yield takeLatest("PROMOTE_MANAGER", promoteManager);
+    yield takeLatest("REMOVE_USER_TEAM", removeUserTeam);
 }
 
 export default teamSaga;

@@ -222,6 +222,7 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
   // DELETE to remove a player from a team
   // User doing delete must be a manager for that team
   router.delete('/', rejectUnauthenticated, (req, res) => {
+    console.log('In user_team delete with: ', req.body);
     const userId = req.body.userId;
     const teamId = req.body.teamId;
     const query = `DELETE FROM "user_team" 

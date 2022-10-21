@@ -20,6 +20,8 @@ function UserPage() {
   const [teamIdApprove, setTeamIdApprove] = useState('');
   const [userIdManager, setUserIdManager] = useState('');
   const [teamIdManager, setTeamIdManager] = useState('');
+  const [userIdRemove, setUserIdRemove] = useState('');
+  const [teamIdRemove, setTeamIdRemove] = useState('');
 
   const registerTeam = (event) => {
     event.preventDefault();
@@ -55,6 +57,18 @@ function UserPage() {
       payload: {
         userId: userIdManager,
         teamId: teamIdManager
+      }
+    });
+  }; // end registerTeam
+
+  const removeUserTeam = (event) => {
+    event.preventDefault();
+    // Send data to saga for POST to server
+    dispatch({
+      type: 'REMOVE_USER_TEAM',
+      payload: {
+        userId: userIdRemove,
+        teamId: teamIdRemove
       }
     });
   }; // end registerTeam
@@ -111,8 +125,8 @@ function UserPage() {
       onClick={() => dispatch({ type: 'LOGOUT' })}
     >
       Log Out
-    </Button>
-    <Box sx={{width:'100%', display: 'flex', alignItems:'center', justifyContent:'center'}}>
+    </Button><br />
+    <Box sx={{width:'100%', display: 'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
     <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerTeam}>
       <Grid container alignItems='center' justify='center' direction='column'>
@@ -144,7 +158,7 @@ function UserPage() {
             label='Password'
             size='normal'
             filled='true'
-            type="password"
+            type="text"
             name="password"
             value={password}
             required
@@ -188,7 +202,6 @@ function UserPage() {
       </Grid>
     </form>
     </Paper>
-    </Box>
     <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerUser}>
       <Grid container alignItems='center' justify='center' direction='column'>
@@ -220,7 +233,7 @@ function UserPage() {
             label='Player Number'
             size='normal'
             filled='true'
-            type="password"
+            type="text"
             name="password"
             value={number}
             required
@@ -265,7 +278,7 @@ function UserPage() {
             label='user id'
             size='normal'
             filled='true'
-            type="password"
+            type="text"
             name="password"
             value={userIdApprove}
             required
@@ -310,7 +323,7 @@ function UserPage() {
             label='user id'
             size='normal'
             filled='true'
-            type="password"
+            type="text"
             name="password"
             value={userIdManager}
             required
@@ -324,6 +337,52 @@ function UserPage() {
       </Grid>
     </form>
     </Paper>
+    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
+    <form onSubmit={removeUserTeam}>
+      <Grid container alignItems='center' justify='center' direction='column'>
+      <Typography variant='h4' gutterBottom>Remove a User From Team</Typography>
+      {errors.registrationMessage && (
+        <Typography variant='h6' className="alert" role="alert">
+          {errors.registrationMessage}
+        </Typography>
+      )}
+      <Grid item sx={{mb: 1}}>
+        <FormLabel htmlFor="username">
+          <TextField
+            variant='outlined'
+            label='teamId'
+            size='normal'
+            type="text"
+            name="username"
+            filled='true'
+            value={teamIdRemove}
+            required
+            onChange={(event) => setTeamIdRemove(event.target.value)}
+          />
+        </FormLabel>
+      </Grid>
+      <Grid item sx={{mb: 1}}>
+        <FormLabel htmlFor="password">
+          <TextField
+            variant='outlined'
+            label='user id'
+            size='normal'
+            filled='true'
+            type="text"
+            name="password"
+            value={userIdRemove}
+            required
+            onChange={(event) => setUserIdRemove(event.target.value)}
+          />
+        </FormLabel>
+      </Grid>
+      <Grid item sx={{mb: 2}}>
+        <Button variant='contained' type="submit" name="submit" value="Register">Promote</Button>
+      </Grid>
+      </Grid>
+    </form>
+    </Paper>
+    </Box>
     </Box>
   );
 }
