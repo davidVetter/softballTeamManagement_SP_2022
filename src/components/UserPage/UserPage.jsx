@@ -18,6 +18,8 @@ function UserPage() {
   const [number, setNumber] = useState('');
   const [userIdApprove, setUserIdApprove] = useState('');
   const [teamIdApprove, setTeamIdApprove] = useState('');
+  const [userIdManager, setUserIdManager] = useState('');
+  const [teamIdManager, setTeamIdManager] = useState('');
 
   const registerTeam = (event) => {
     event.preventDefault();
@@ -41,6 +43,18 @@ function UserPage() {
       payload: {
         teamId,
         number
+      }
+    });
+  }; // end registerTeam
+
+  const promoteManager = (event) => {
+    event.preventDefault();
+    // Send data to saga for POST to server
+    dispatch({
+      type: 'PROMOTE_MANAGER',
+      payload: {
+        userId: userIdManager,
+        teamId: teamIdManager
       }
     });
   }; // end registerTeam
@@ -261,6 +275,51 @@ function UserPage() {
       </Grid>
       <Grid item sx={{mb: 2}}>
         <Button variant='contained' type="submit" name="submit" value="Register">Approve</Button>
+      </Grid>
+      </Grid>
+    </form>
+    </Paper>
+    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
+    <form onSubmit={promoteManager}>
+      <Grid container alignItems='center' justify='center' direction='column'>
+      <Typography variant='h4' gutterBottom>Promote Manager</Typography>
+      {errors.registrationMessage && (
+        <Typography variant='h6' className="alert" role="alert">
+          {errors.registrationMessage}
+        </Typography>
+      )}
+      <Grid item sx={{mb: 1}}>
+        <FormLabel htmlFor="username">
+          <TextField
+            variant='outlined'
+            label='teamId'
+            size='normal'
+            type="text"
+            name="username"
+            filled='true'
+            value={teamIdManager}
+            required
+            onChange={(event) => setTeamIdManager(event.target.value)}
+          />
+        </FormLabel>
+      </Grid>
+      <Grid item sx={{mb: 1}}>
+        <FormLabel htmlFor="password">
+          <TextField
+            variant='outlined'
+            label='user id'
+            size='normal'
+            filled='true'
+            type="password"
+            name="password"
+            value={userIdManager}
+            required
+            onChange={(event) => setUserIdManager(event.target.value)}
+          />
+        </FormLabel>
+      </Grid>
+      <Grid item sx={{mb: 2}}>
+        <Button variant='contained' type="submit" name="submit" value="Register">Promote</Button>
       </Grid>
       </Grid>
     </form>

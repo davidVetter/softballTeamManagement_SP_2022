@@ -93,6 +93,19 @@ function* approvePlayer(action) {
     }
 }
 
+// PUT to toggle if a user is a manager for a certain team
+// USER doing the promoting must already be a manager for the team they are trying
+// to promote the user on or no effect occurs
+function* promoteManager(action) {
+    try {
+        console.log('In approve player with: ', action.payload);
+        yield axios.put(`api/team/manager`, action.payload);
+        yield put({ type: "GET_TEAM_PLAYERS_PERSONAL_INFO", payload: action.payload.teamId });
+    } catch (err) {
+        console.log('Error approving player: ', err);
+    }
+}
+
 function* teamSaga() {
     yield takeLatest("GET_TEAMS", getTeams);
     yield takeLatest("GET_TEAM_PLAYERS", getTeamPlayersStats);
@@ -101,6 +114,7 @@ function* teamSaga() {
     yield takeLatest("ADD_TEAM", addTeam);
     yield takeLatest("ADD_USER_TEAM", addUserTeam);
     yield takeLatest("APPROVE_USER", approvePlayer);
+    yield takeLatest("PROMOTE_MANAGER", promoteManager);
 }
 
 export default teamSaga;
