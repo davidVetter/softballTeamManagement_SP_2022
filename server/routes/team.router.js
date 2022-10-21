@@ -71,7 +71,8 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
   router.get('/players/:teamid', rejectUnauthenticated, (req, res) => {
     // GET route code here
     const team = req.params.teamid;
-    const query = `SELECT username AS email, 
+    const query = `SELECT "user"."id" AS "userID", 
+                    username AS email, 
                     first_name, 
                     last_name, 
                     phone_number, 
@@ -83,7 +84,9 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
                     hat_size, 
                     bats, 
                     throws, 
-                    is_manager FROM "user"
+                    is_manager,
+                    "team"."name" AS "teamName",
+                    "team"."id" AS "teamID" FROM "user"
                    JOIN "user_team" ON "user_team"."user_id"="user"."id" 
                    JOIN "team" ON "team"."id"="user_team"."team_id" 
                    WHERE "team"."id"=$1 AND "user_team"."approved"='true';`;

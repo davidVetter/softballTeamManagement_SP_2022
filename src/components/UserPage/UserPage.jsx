@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import { Button, Box, Typography, Paper, TextField, Grid, FormLabel} from '@mui/material';
+import EditUserForm from '../EditUserForm/EditUserForm'
 
 function UserPage() {
   // this component doesn't do much to start, just renders some user reducer info to the DOM
@@ -22,6 +23,7 @@ function UserPage() {
   const [teamIdManager, setTeamIdManager] = useState('');
   const [userIdRemove, setUserIdRemove] = useState('');
   const [teamIdRemove, setTeamIdRemove] = useState('');
+  const [editMode, setEditMode] = useState(false);
 
   const registerTeam = (event) => {
     event.preventDefault();
@@ -101,11 +103,11 @@ function UserPage() {
     });
     dispatch({
       type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
-      payload: 1
+      payload: 2
     });
     dispatch({
       type: 'GET_TEAM_PENDING_PLAYERS',
-      payload: 7
+      payload: 2
     });
     dispatch({
       type: 'GET_TEAMS'
@@ -136,6 +138,9 @@ function UserPage() {
           {errors.registrationMessage}
         </Typography>
       )}
+      {teamPlayers.allTeams.length > 0 && teamPlayers.allTeams.map((team, index) => {
+        return <p key={index}>{team.name} ID #{team.id}</p>
+      })}
       <Grid item sx={{mb: 1}}>
         <FormLabel htmlFor="username">
           <TextField
@@ -205,12 +210,15 @@ function UserPage() {
     <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerUser}>
       <Grid container alignItems='center' justify='center' direction='column'>
-      <Typography variant='h4' gutterBottom>Add Yourself to Team</Typography>
+      <Typography variant='h4' gutterBottom>Add Yourself to Team - Pending</Typography>
       {errors.registrationMessage && (
         <Typography variant='h6' className="alert" role="alert">
           {errors.registrationMessage}
         </Typography>
       )}
+      {teamPlayers.teamPlayersPending.length > 0 && teamPlayers.teamPlayersPending.map((player, index) => {
+        return <p key={index}>{player.first_name}</p>
+      })}
       <Grid item sx={{mb: 1}}>
         <FormLabel htmlFor="username">
           <TextField
@@ -256,6 +264,9 @@ function UserPage() {
           {errors.registrationMessage}
         </Typography>
       )}
+      {teamPlayers.teamPlayersPending.length > 0 && teamPlayers.teamPlayersPending.map((player, index) => {
+        return <p key={index}>{player.first_name} - ID #{player.user_id} Team ID #{player.team_id}</p>
+      })}
       <Grid item sx={{mb: 1}}>
         <FormLabel htmlFor="username">
           <TextField
@@ -301,6 +312,9 @@ function UserPage() {
           {errors.registrationMessage}
         </Typography>
       )}
+      {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 && teamPlayers.teamPlayersPersonalInfoReducer.map((player, index) => {
+        return <p key={index}>{player.first_name} - ID #{player.userID} Manager? {player.is_manager ? 'Yes': 'No'} Team Name {player.teamName} TeamID #{player.teamID}</p>
+      })}
       <Grid item sx={{mb: 1}}>
         <FormLabel htmlFor="username">
           <TextField
@@ -346,6 +360,9 @@ function UserPage() {
           {errors.registrationMessage}
         </Typography>
       )}
+      {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 && teamPlayers.teamPlayersPersonalInfoReducer.map((player, index) => {
+        return <p key={index}>{player.first_name} - ID #{player.userID} Team Name {player.teamName} TeamID #{player.teamID}</p>
+      })}
       <Grid item sx={{mb: 1}}>
         <FormLabel htmlFor="username">
           <TextField
@@ -377,12 +394,15 @@ function UserPage() {
         </FormLabel>
       </Grid>
       <Grid item sx={{mb: 2}}>
-        <Button variant='contained' type="submit" name="submit" value="Register">Promote</Button>
+        <Button variant='contained' type="submit" name="submit" value="Register">Remove</Button>
       </Grid>
       </Grid>
     </form>
     </Paper>
     </Box>
+    <Button variant='outlined' type="button" onClick={() => setEditMode(true)}>Edit</Button>
+    {/* <Button variant='outlined' type="button" onClick={() => setEditMode(false)}>Cancel</Button> */}
+    {editMode && <EditUserForm setEditMode={setEditMode}/>}
     </Box>
   );
 }
