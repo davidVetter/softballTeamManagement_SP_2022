@@ -79,6 +79,20 @@ function* addUserTeam(action) {
     }
 }
 
+// PUT to toggle if 'pending' player is approved or not for a team
+// Refresh each team list where user have could have been added or removed from
+function* approvePlayer(action) {
+    try {
+        console.log('In approve player with: ', action.payload);
+        yield axios.put(`api/team/approve`, action.payload);
+        yield put({ type: "GET_TEAM_PLAYERS", payload: action.payload.teamId });
+        yield put({ type: "GET_TEAM_PLAYERS_PERSONAL_INFO", payload: action.payload.teamId });
+        yield put({ type: "GET_TEAM_PENDING_PLAYERS", payload: action.payload.teamId });
+    } catch (err) {
+        console.log('Error approving player: ', err);
+    }
+}
+
 function* teamSaga() {
     yield takeLatest("GET_TEAMS", getTeams);
     yield takeLatest("GET_TEAM_PLAYERS", getTeamPlayersStats);
@@ -86,6 +100,7 @@ function* teamSaga() {
     yield takeLatest("GET_TEAM_PENDING_PLAYERS", getTeamPendingPlayers);
     yield takeLatest("ADD_TEAM", addTeam);
     yield takeLatest("ADD_USER_TEAM", addUserTeam);
+    yield takeLatest("APPROVE_USER", approvePlayer);
 }
 
 export default teamSaga;

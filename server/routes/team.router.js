@@ -179,6 +179,7 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
   // user_team table
   // Checks if player making change is a manager on that team
   router.put('/approve', rejectUnauthenticated, (req, res) => {
+    console.log('In approve player router: ', req.body);
     const userId = req.body.userId;
     const teamId = req.body.teamId;
     const query = `UPDATE "user_team" 

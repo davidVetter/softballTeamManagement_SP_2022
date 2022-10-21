@@ -16,6 +16,8 @@ function UserPage() {
   const [lastName, setLastName] = useState('');
   const [teamId, setTeamId] = useState('');
   const [number, setNumber] = useState('');
+  const [userIdApprove, setUserIdApprove] = useState('');
+  const [teamIdApprove, setTeamIdApprove] = useState('');
 
   const registerTeam = (event) => {
     event.preventDefault();
@@ -43,6 +45,18 @@ function UserPage() {
     });
   }; // end registerTeam
 
+  const approveUser = (event) => {
+    event.preventDefault();
+    // Send data to saga for POST to server
+    dispatch({
+      type: 'APPROVE_USER',
+      payload: {
+        userId: userIdApprove,
+        teamId: teamIdApprove
+      }
+    });
+  }; // end registerTeam
+
   useEffect(() => {
     dispatch({
       type: 'GET_PLAYER_GAMES'
@@ -63,7 +77,7 @@ function UserPage() {
     });
     dispatch({
       type: 'GET_TEAM_PENDING_PLAYERS',
-      payload: 1
+      payload: 7
     });
     dispatch({
       type: 'GET_TEAMS'
@@ -202,6 +216,51 @@ function UserPage() {
       </Grid>
       <Grid item sx={{mb: 2}}>
         <Button variant='contained' type="submit" name="submit" value="Register">Register</Button>
+      </Grid>
+      </Grid>
+    </form>
+    </Paper>
+    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
+    <form onSubmit={approveUser}>
+      <Grid container alignItems='center' justify='center' direction='column'>
+      <Typography variant='h4' gutterBottom>Approve Player</Typography>
+      {errors.registrationMessage && (
+        <Typography variant='h6' className="alert" role="alert">
+          {errors.registrationMessage}
+        </Typography>
+      )}
+      <Grid item sx={{mb: 1}}>
+        <FormLabel htmlFor="username">
+          <TextField
+            variant='outlined'
+            label='teamId'
+            size='normal'
+            type="text"
+            name="username"
+            filled='true'
+            value={teamIdApprove}
+            required
+            onChange={(event) => setTeamIdApprove(event.target.value)}
+          />
+        </FormLabel>
+      </Grid>
+      <Grid item sx={{mb: 1}}>
+        <FormLabel htmlFor="password">
+          <TextField
+            variant='outlined'
+            label='user id'
+            size='normal'
+            filled='true'
+            type="password"
+            name="password"
+            value={userIdApprove}
+            required
+            onChange={(event) => setUserIdApprove(event.target.value)}
+          />
+        </FormLabel>
+      </Grid>
+      <Grid item sx={{mb: 2}}>
+        <Button variant='contained' type="submit" name="submit" value="Register">Approve</Button>
       </Grid>
       </Grid>
     </form>
