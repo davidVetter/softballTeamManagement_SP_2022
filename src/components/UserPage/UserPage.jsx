@@ -409,7 +409,7 @@ function UserPage() {
     </form>
     </Paper>
     </Box>
-    <Button variant='outlined' type="button" onClick={() => setEditMode(true)}>Edit My Info</Button>
+    <Button variant='outlined' type="button" onClick={() => setEditMode(!editMode)}>Edit My Info</Button>
     {/* <Button variant='outlined' type="button" onClick={() => setEditMode(false)}>Cancel</Button> */}
     {editMode && <EditUserForm setEditMode={setEditMode}/>}
     <LiveGamePage />

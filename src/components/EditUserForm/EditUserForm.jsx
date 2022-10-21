@@ -89,6 +89,7 @@ function EditUserForm(props) {
         },
       });
       clearLocalState();
+      props.setEditMode(false);
     }; // end registerUser
   
     return (
