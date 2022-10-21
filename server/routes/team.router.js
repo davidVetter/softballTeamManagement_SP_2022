@@ -102,7 +102,7 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
   router.get('/pending/:teamid', rejectUnauthenticated, (req, res) => {
     // GET route code here
     const team = req.params.teamid;
-    const query = `SELECT "user"."id", "user"."first_name", "user"."last_name" FROM "user_team" 
+    const query = `SELECT "user"."id" AS "user_id", "user"."first_name", "user"."last_name", "team"."id" AS "team_id", "team"."name" FROM "user_team" 
                    JOIN "team" ON "team"."id"="user_team"."team_id"
                    JOIN "user" ON "user"."id"="user_team"."user_id"
                    WHERE "team"."id"=$1 AND "user_team"."approved"='false';`;

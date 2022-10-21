@@ -67,12 +67,25 @@ function* addTeam(action) {
     }
 }
 
+// POST new user to a team (as unapproved member)
+function* addUserTeam(action) {
+    try{
+        console.log('In addUserTeam');
+        console.log('This is action.payload in POST new user TEAM: ', action.payload);
+        yield axios.post(`api/team/player`, action.payload);
+        yield put({ type: "GET_TEAM_PENDING_PLAYERS", payload: action.payload.teamId});
+    } catch {
+        console.log('Error in adding player');
+    }
+}
+
 function* teamSaga() {
     yield takeLatest("GET_TEAMS", getTeams);
     yield takeLatest("GET_TEAM_PLAYERS", getTeamPlayersStats);
     yield takeLatest("GET_TEAM_PLAYERS_PERSONAL_INFO", getTeamPlayersPersonalInfo);
     yield takeLatest("GET_TEAM_PENDING_PLAYERS", getTeamPendingPlayers);
     yield takeLatest("ADD_TEAM", addTeam);
+    yield takeLatest("ADD_USER_TEAM", addUserTeam);
 }
 
 export default teamSaga;

@@ -14,8 +14,10 @@ function UserPage() {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [teamId, setTeamId] = useState('');
+  const [number, setNumber] = useState('');
 
-  const registerUser = (event) => {
+  const registerTeam = (event) => {
     event.preventDefault();
     // Send data to saga for POST to server
     dispatch({
@@ -27,11 +29,23 @@ function UserPage() {
         number: lastName
       }
     });
-  }; // end registerUser
+  }; // end registerTeam
+
+  const registerUser = (event) => {
+    event.preventDefault();
+    // Send data to saga for POST to server
+    dispatch({
+      type: 'ADD_USER_TEAM',
+      payload: {
+        teamId,
+        number
+      }
+    });
+  }; // end registerTeam
 
   useEffect(() => {
     dispatch({
-      type: 'SET_PLAYER_GAMES'
+      type: 'GET_PLAYER_GAMES'
     });
     dispatch({
       type: 'GET_PLAYER_TEAMS'
@@ -72,9 +86,9 @@ function UserPage() {
     </Button>
     <Box sx={{width:'100%', display: 'flex', alignItems:'center', justifyContent:'center'}}>
     <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
-    <form onSubmit={registerUser}>
+    <form onSubmit={registerTeam}>
       <Grid container alignItems='center' justify='center' direction='column'>
-      <Typography variant='h4' gutterBottom>Register User</Typography>
+      <Typography variant='h4' gutterBottom>Add Team</Typography>
       {errors.registrationMessage && (
         <Typography variant='h6' className="alert" role="alert">
           {errors.registrationMessage}
@@ -147,6 +161,51 @@ function UserPage() {
     </form>
     </Paper>
     </Box>
+    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
+    <form onSubmit={registerUser}>
+      <Grid container alignItems='center' justify='center' direction='column'>
+      <Typography variant='h4' gutterBottom>Add Yourself to Team</Typography>
+      {errors.registrationMessage && (
+        <Typography variant='h6' className="alert" role="alert">
+          {errors.registrationMessage}
+        </Typography>
+      )}
+      <Grid item sx={{mb: 1}}>
+        <FormLabel htmlFor="username">
+          <TextField
+            variant='outlined'
+            label='teamId'
+            size='normal'
+            type="text"
+            name="username"
+            filled='true'
+            value={teamId}
+            required
+            onChange={(event) => setTeamId(event.target.value)}
+          />
+        </FormLabel>
+      </Grid>
+      <Grid item sx={{mb: 1}}>
+        <FormLabel htmlFor="password">
+          <TextField
+            variant='outlined'
+            label='Player Number'
+            size='normal'
+            filled='true'
+            type="password"
+            name="password"
+            value={number}
+            required
+            onChange={(event) => setNumber(event.target.value)}
+          />
+        </FormLabel>
+      </Grid>
+      <Grid item sx={{mb: 2}}>
+        <Button variant='contained' type="submit" name="submit" value="Register">Register</Button>
+      </Grid>
+      </Grid>
+    </form>
+    </Paper>
     </Box>
   );
 }
