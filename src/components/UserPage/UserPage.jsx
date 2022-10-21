@@ -135,7 +135,7 @@ function UserPage() {
         My Teams
       </Typography>
       {playerGames.playerTeamReducer.length > 0 && playerGames.playerTeamReducer.map((team, index) => {
-          return <p>{team.name} League: {team.league} Season: {team.year}</p>
+          return <p key={index}>{team.name} League: {team.league} Season: {team.year}</p>
         })}
     </Paper>
     <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
@@ -147,7 +147,6 @@ function UserPage() {
           {errors.registrationMessage}
         </Typography>
       )}
-      {playerGames.playerTeamReducer[0].name}
       {teamPlayers.allTeams.length > 0 && teamPlayers.allTeams.map((team, index) => {
         return <p key={index}>{team.name} ID #{team.id}</p>
       })}
@@ -155,7 +154,7 @@ function UserPage() {
         <FormLabel htmlFor="username">
           <TextField
             variant='outlined'
-            label='Email'
+            label='Team Name'
             size='normal'
             type="text"
             name="username"
@@ -170,7 +169,7 @@ function UserPage() {
         <FormLabel htmlFor="password">
           <TextField
             variant='outlined'
-            label='Password'
+            label='League'
             size='normal'
             filled='true'
             type="text"
@@ -185,7 +184,7 @@ function UserPage() {
         <FormLabel htmlFor="first-name">
           <TextField
             variant='outlined'
-            label='First Name'
+            label='Season (year)'
             size='normal'
             filled='true'
             type="text"
@@ -200,7 +199,7 @@ function UserPage() {
         <FormLabel htmlFor="last-name">
           <TextField
             variant='outlined'
-            label='Last Name'
+            label='Your Player Number'
             size='normal'
             filled='true'
             type="text"
@@ -226,9 +225,9 @@ function UserPage() {
           {errors.registrationMessage}
         </Typography>
       )}
-      {teamPlayers.teamPlayersPending.length > 0 && teamPlayers.teamPlayersPending.map((player, index) => {
+      {/* {teamPlayers.teamPlayersPending.length > 0 && teamPlayers.teamPlayersPending.map((player, index) => {
         return <p key={index}>{player.first_name}</p>
-      })}
+      })} */}
       <Grid item sx={{mb: 1}}>
         <FormLabel htmlFor="username">
           <TextField
@@ -410,7 +409,7 @@ function UserPage() {
     </form>
     </Paper>
     </Box>
-    <Button variant='outlined' type="button" onClick={() => setEditMode(true)}>Edit</Button>
+    <Button variant='outlined' type="button" onClick={() => setEditMode(true)}>Edit My Info</Button>
     {/* <Button variant='outlined' type="button" onClick={() => setEditMode(false)}>Cancel</Button> */}
     {editMode && <EditUserForm setEditMode={setEditMode}/>}
     <LiveGamePage />
