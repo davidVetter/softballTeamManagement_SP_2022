@@ -22,6 +22,20 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
         })
   }); // End GET team games
 
+  // This GET will get all teams
+  router.get('/all', rejectUnauthenticated, (req, res) => {
+    // GET route code here
+    const query = `SELECT * FROM "team"`;
+    pool.query(query)
+        .then(result => {
+          res.send(result.rows);
+        })
+        .catch((err) => {
+          console.log('Error in getting all teams: ', err);
+          res.sendStatus(500);
+        })
+  });
+
   // This GET will get all players for a team
   // Each player will have their name(first and last),
   // Number of games played in, total wins, total hits, total at bats

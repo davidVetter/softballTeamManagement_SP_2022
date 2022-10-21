@@ -2,7 +2,7 @@ import axios from 'axios';
 import { put, takeLatest } from 'redux-saga/effects';
 
 // Requests all the games a player has played in a 
-function* setPlayerGames(action) {
+function* getPlayerGames(action) {
     try {
         console.log('In player games saga');
         const playerGames = yield axios.get('api/player/games');
@@ -30,7 +30,7 @@ function* getPlayerTeams(action) {
 }
 
 function* playerSaga() {
-    yield takeLatest("SET_PLAYER_GAMES", setPlayerGames);
+    yield takeLatest("GET_PLAYER_GAMES", getPlayerGames);
     yield takeLatest("GET_PLAYER_TEAMS", getPlayerTeams);
 }
 

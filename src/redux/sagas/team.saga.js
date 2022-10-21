@@ -1,6 +1,19 @@
 import axios from 'axios';
 import { put, takeLatest } from 'redux-saga/effects';
 
+// Get all teams
+function* getTeams(action) {
+    try {
+    console.log('In getTeams');
+    const allTeams = yield axios.get(`api/team/all`);
+    yield put({
+        type: "SET_TEAMS",
+        payload: allTeams.data
+    });
+    } catch (err) {
+        console.log('Error gets teams', err);
+    }
+}
 // Get all players on a team with a calculated batting average, total hits for a team, 
 // total at bats
 function* getTeamPlayersStats(action) {
@@ -42,10 +55,24 @@ function* getTeamPendingPlayers(action) {
     }
 }
 
+// POST a new team to the database
+function* addTeam(action) {
+    try{
+        console.log('In add team');
+        yield axios.post(`api/team/`, action.payload);
+        yield put({ type: 'GET_TEAMS'});
+        yield put({ type: 'GET_PLAYER_TEAMS'})
+    } catch (err) {
+        console.log('Error adding team: ', err);
+    }
+}
+
 function* teamSaga() {
+    yield takeLatest("GET_TEAMS", getTeams);
     yield takeLatest("GET_TEAM_PLAYERS", getTeamPlayersStats);
     yield takeLatest("GET_TEAM_PLAYERS_PERSONAL_INFO", getTeamPlayersPersonalInfo);
     yield takeLatest("GET_TEAM_PENDING_PLAYERS", getTeamPendingPlayers);
+    yield takeLatest("ADD_TEAM", addTeam);
 }
 
 export default teamSaga;
