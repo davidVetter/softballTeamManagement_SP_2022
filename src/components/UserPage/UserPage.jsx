@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import { Button, Box, Typography, Paper, TextField, Grid, FormLabel} from '@mui/material';
 import EditUserForm from '../EditUserForm/EditUserForm'
+import LiveGamePage from '../LiveGamePage/LiveGamePage';
 
 function UserPage() {
   // this component doesn't do much to start, just renders some user reducer info to the DOM
@@ -127,8 +128,16 @@ function UserPage() {
       onClick={() => dispatch({ type: 'LOGOUT' })}
     >
       Log Out
-    </Button><br />
+    </Button>
     <Box sx={{width:'100%', display: 'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
+    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
+      <Typography variant='h4'>
+        My Teams
+      </Typography>
+      {playerGames.playerTeamReducer.length > 0 && playerGames.playerTeamReducer.map((team, index) => {
+          return <p>{team.name} League: {team.league} Season: {team.year}</p>
+        })}
+    </Paper>
     <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerTeam}>
       <Grid container alignItems='center' justify='center' direction='column'>
@@ -138,6 +147,7 @@ function UserPage() {
           {errors.registrationMessage}
         </Typography>
       )}
+      {playerGames.playerTeamReducer[0].name}
       {teamPlayers.allTeams.length > 0 && teamPlayers.allTeams.map((team, index) => {
         return <p key={index}>{team.name} ID #{team.id}</p>
       })}
@@ -403,6 +413,7 @@ function UserPage() {
     <Button variant='outlined' type="button" onClick={() => setEditMode(true)}>Edit</Button>
     {/* <Button variant='outlined' type="button" onClick={() => setEditMode(false)}>Cancel</Button> */}
     {editMode && <EditUserForm setEditMode={setEditMode}/>}
+    <LiveGamePage />
     </Box>
   );
 }
