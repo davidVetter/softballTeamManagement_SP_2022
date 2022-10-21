@@ -2,7 +2,7 @@ import axios from 'axios';
 import { put, takeLatest } from 'redux-saga/effects';
 
 // Requests all the games a player has played in a 
-function* setPlayerGames(action) {
+function* getPlayerGames(action) {
     try {
         console.log('In player games saga');
         const playerGames = yield axios.get('api/player/games');
@@ -29,9 +29,23 @@ function* getPlayerTeams(action) {
     }
 }
 
+// Edit a users personal information (password excluded)
+function* editUser(action) {
+    try {
+        console.log('In edit user');
+        yield axios.put(`api/player/`, action.payload);
+        yield put({
+            type: "FETCH_USER"
+        })
+    } catch (err) {
+        console.log('Error updating player information');
+    }
+}
+
 function* playerSaga() {
-    yield takeLatest("SET_PLAYER_GAMES", setPlayerGames);
+    yield takeLatest("GET_PLAYER_GAMES", getPlayerGames);
     yield takeLatest("GET_PLAYER_TEAMS", getPlayerTeams);
+    yield takeLatest("EDIT_USER", editUser);
 }
 
 export default playerSaga;

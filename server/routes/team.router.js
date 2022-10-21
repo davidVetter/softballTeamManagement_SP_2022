@@ -22,6 +22,20 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
         })
   }); // End GET team games
 
+  // This GET will get all teams
+  router.get('/all', rejectUnauthenticated, (req, res) => {
+    // GET route code here
+    const query = `SELECT * FROM "team"`;
+    pool.query(query)
+        .then(result => {
+          res.send(result.rows);
+        })
+        .catch((err) => {
+          console.log('Error in getting all teams: ', err);
+          res.sendStatus(500);
+        })
+  });
+
   // This GET will get all players for a team
   // Each player will have their name(first and last),
   // Number of games played in, total wins, total hits, total at bats
@@ -50,12 +64,15 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
           console.log('Error in getting team games: ', err);
           res.sendStatus(500);
         })
-  }); // End GET for players on team
+  }); // End GET for players on team with stats
 
+  // Get a list of all players on a specific team with no calcs stats
+  // Only players personal infomation
   router.get('/players/:teamid', rejectUnauthenticated, (req, res) => {
     // GET route code here
     const team = req.params.teamid;
-    const query = `SELECT username AS email, 
+    const query = `SELECT "user"."id" AS "userID", 
+                    username AS email, 
                     first_name, 
                     last_name, 
                     phone_number, 
@@ -67,10 +84,12 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
                     hat_size, 
                     bats, 
                     throws, 
-                    is_manager FROM "user"
+                    is_manager,
+                    "team"."name" AS "teamName",
+                    "team"."id" AS "teamID" FROM "user"
                    JOIN "user_team" ON "user_team"."user_id"="user"."id" 
                    JOIN "team" ON "team"."id"="user_team"."team_id" 
-                   WHERE "team"."id"=$1;`;
+                   WHERE "team"."id"=$1 AND "user_team"."approved"='true';`;
     pool.query(query, [team])
         .then(result => {
           res.send(result.rows);
@@ -79,14 +98,14 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
           console.log('Error in getting team games: ', err);
           res.sendStatus(500);
         })
-  });
+  }); // End GET for players on team without stats
 
   // This GET will get all players for a specific team that
   // have not been approved to be on the team
   router.get('/pending/:teamid', rejectUnauthenticated, (req, res) => {
     // GET route code here
     const team = req.params.teamid;
-    const query = `SELECT "user"."id", "user"."first_name", "user"."last_name" FROM "user_team" 
+    const query = `SELECT "user"."id" AS "user_id", "user"."first_name", "user"."last_name", "team"."id" AS "team_id", "team"."name" FROM "user_team" 
                    JOIN "team" ON "team"."id"="user_team"."team_id"
                    JOIN "user" ON "user"."id"="user_team"."user_id"
                    WHERE "team"."id"=$1 AND "user_team"."approved"='false';`;
@@ -163,6 +182,7 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
   // user_team table
   // Checks if player making change is a manager on that team
   router.put('/approve', rejectUnauthenticated, (req, res) => {
+    console.log('In approve player router: ', req.body);
     const userId = req.body.userId;
     const teamId = req.body.teamId;
     const query = `UPDATE "user_team" 
@@ -205,6 +225,7 @@ router.get('/games', rejectUnauthenticated, (req, res) => {
   // DELETE to remove a player from a team
   // User doing delete must be a manager for that team
   router.delete('/', rejectUnauthenticated, (req, res) => {
+    console.log('In user_team delete with: ', req.body);
     const userId = req.body.userId;
     const teamId = req.body.teamId;
     const query = `DELETE FROM "user_team" 
