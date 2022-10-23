@@ -22,9 +22,10 @@ function InfoPage() {
   const [teamClick, setTeamClick] = useState(true);
   const [team, setTeam] = useState('');
   const [firstClick, setFirstClick] = useState(true);
-  const [wins, setWins] = useState(0);
+  const [toggle, setToggle] = useState(false);
 
-  // Get all of users games and team they are currently on
+  // Get all games for the teams the user is currently on
+  // Resets manager status
   useEffect(() => {
     dispatch({
       type: 'GET_PLAYER_GAMES'
@@ -32,8 +33,11 @@ function InfoPage() {
     dispatch({
       type: 'GET_PLAYER_TEAMS'
     });
+    dispatch({
+      type: 'RESET_MANAGER'
+    });
   }, []);
-
+  // sets default team to the first team in players team array
   useEffect(() => {
     if(userTeamGames.playerTeamReducer.length > 0) {
     setTeam(userTeamGames.playerTeamReducer[0].id);
@@ -41,7 +45,7 @@ function InfoPage() {
   }, [userTeamGames]);
 
   // gets the games for the currently selected team
-  // triggers when team changes
+  // triggers when team changes or 'toggle' local state
   useEffect(() => {
     console.log('get team useEffect triggered with: ', team);
     if (team) {
@@ -57,14 +61,22 @@ function InfoPage() {
       type: 'GET_TEAM_PLAYERS',
       payload: team 
     });
+    dispatch({
+      type: 'RESET_MANAGER',
+      payload: team
+    });
+    dispatch({
+      type: 'MANAGER_CHECK',
+      payload: team
+    });
   }
-  }, [team]);
+  }, [team, toggle]);
 
   // Sets team local state to determine which team's info to display
   const selectTeam = (e) => {
     setTeamClick(!teamClick);
     setTeam(e.target.value);
-    setWins(countWins());
+    // setWins(countWins());
   }
   // converts the selected teams id to team's name for display
   const teamName = (e) => {
@@ -110,14 +122,7 @@ function InfoPage() {
       type: "PROMOTE_MANAGER",
       payload: { userId: id, teamId: team },
     });
-    dispatch({
-      type: 'GET_TEAM_PLAYERS',
-      payload: team 
-    });
-    dispatch({
-      type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
-      payload: team
-    });
+    setToggle(!toggle);
   }
   // Removes a player from the currently selected team
   // accepts user_id as argument
@@ -126,6 +131,20 @@ function InfoPage() {
       type: "REMOVE_USER_TEAM",
       payload: {userId: id, teamId: team}
     })
+  }
+  // cleans up the date to only display mm/dd/yyyy
+  function formatDate(dateDirty) {
+    let niceDate = new Date(dateDirty);
+    return niceDate.toLocaleDateString();
+  }
+  // function that toggles approved status for 
+  // user id passed as argument
+  const approvePlayer = (id) => {
+    console.log('In approvePlayer with : ', id);
+    dispatch({
+      type: 'APPROVE_USER',
+      payload: { userId: id, teamId: team }
+    });
   }
 
   return (
@@ -153,22 +172,32 @@ function InfoPage() {
           </>
         ) : (
           userTeamGames.playerTeamReducer.length > 0 && (
-            <Typography variant="h4" onClick={teamNameClick}>
-              {teamName()}
-            </Typography>
+            <>
+              <Typography variant="h6" gutterBottom>
+                Team
+              </Typography>
+              <Typography variant="h4" onClick={teamNameClick}>
+                {teamName()}
+              </Typography>
+            </>
           )
         )}
-        <Typography variant="body1">
+        <Typography variant="body1" gutterBottom>
           Record: {countWins()}-{teamGames.teamGamesReducer.length}
         </Typography>
       </Paper>
       {/* TEAM ROSTER */}
+      <Typography variant="h6">Roster</Typography>
       <TableContainer
         component={Paper}
         sx={{ maxHeight: 400, mb: 2 }}
         elevation={8}
       >
-        <Table stickyHeader={true} size='small' sx={{ minWidth: 400, mb: 2, maxWidth: 600 }}>
+        <Table
+          stickyHeader={true}
+          size="small"
+          sx={{ minWidth: 400, mb: 2, maxWidth: 600 }}
+        >
           <TableHead>
             <TableRow>
               <TableCell align="center">NAME</TableCell>
@@ -185,8 +214,10 @@ function InfoPage() {
               <TableCell align="center">BATS</TableCell>
               <TableCell align="center">THROWS</TableCell>
               <TableCell align="center">WINS</TableCell>
-              <TableCell align="center">MANAGER?</TableCell>
               <TableCell align="center">AVG LINEUP #</TableCell>
+              {teamPlayers.isManager && (
+                <TableCell align="center">MANAGER?</TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -216,34 +247,55 @@ function InfoPage() {
                     {player.throws.toUpperCase()}
                   </TableCell>
                   <TableCell align="center">{player.wins}</TableCell>
-                  <TableCell
-                    align="center"
-                    className={player.is_manager? "manager":"notManager"}
-                  >
-                    {player.is_manager ? "Yes" : "No"}
-                    <Button
-                      onClick={() => toggleManager(player.u_id)}
-                    >
-                      {player.is_manager ? 'Demote':'Promote'}
-                    </Button>
-                  </TableCell>
                   <TableCell align="center">
                     {Number(player.avg_lineup).toFixed(1)}
                   </TableCell>
-                  <TableCell align='center'>
-                    <Button onClick={()=>removePlayer(player.u_id)}>
-                      Remove
-                    </Button>
-                  </TableCell>
+                  {teamPlayers.isManager && (
+                    <>
+                      <TableCell
+                        align="center"
+                        className={player.is_manager ? "manager" : "notManager"}
+                      >
+                        {player.is_manager ? "Yes" : "No"}
+                        <Button onClick={() => toggleManager(player.u_id)}>
+                          {player.is_manager ? "Demote" : "Promote"}
+                        </Button>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button onClick={() => removePlayer(player.u_id)}>
+                          Remove
+                        </Button>
+                      </TableCell>
+                    </>
+                  )}
                 </TableRow>
               ))
             ) : (
-              <Typography variant="body2">NO PLAYERS</Typography>
+              <Typography variant="body2">NO ACTIVE PLAYERS</Typography>
             )}
           </TableBody>
         </Table>
       </TableContainer>
+      {/* Pending players (if any) */}
+      {teamPlayers.isManager &&
+        teamPlayers.teamPlayersPending.length > 0 &&
+        teamPlayers.teamPlayersPending.map((player, index) => {
+          return (
+            <Box key={index}>
+              <Paper>
+                <Typography variant="heading6">Needs approval:</Typography>
+                <Typography variant="body2">
+                  {player.first_name}&nbsp;{player.last_name}
+                  <Button onClick={() => approvePlayer(player.user_id)}>
+                    Approve
+                  </Button>
+                </Typography>
+              </Paper>
+            </Box>
+          );
+        })}
       {/* TEAM GAMES TABLE */}
+      <Typography variant="h6">Games</Typography>
       <TableContainer component={Paper} elevation={8}>
         <Table sx={{ minWidth: 400, maxWidth: 600 }}>
           <TableHead>
@@ -263,16 +315,32 @@ function InfoPage() {
                   key={index}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell>
-                    {game.is_home ? `${game.team_name}` : `${game.opponent}`}
+                  <TableCell
+                    className={game.is_home_team ? "yourTeam" : "opponentTeam"}
+                  >
+                    {game.is_home_team
+                      ? `${game.team_name}`
+                      : `${game.opponent}`}
                   </TableCell>
-                  <TableCell>{game.score_home_team}</TableCell>
-                  <TableCell>
-                    {game.is_home ? `${game.opponent}` : `${game.team_name}`}
+                  <TableCell
+                    className={game.is_home_team ? "yourTeam" : "opponentTeam"}
+                  >
+                    {game.score_home_team}
                   </TableCell>
-                  <TableCell>{game.score_away_team}</TableCell>
+                  <TableCell
+                    className={game.is_home_team ? "opponentTeam" : "yourTeam"}
+                  >
+                    {game.is_home_team
+                      ? `${game.opponent}`
+                      : `${game.team_name}`}
+                  </TableCell>
+                  <TableCell
+                    className={game.is_home_team ? "opponentTeam" : "yourTeam"}
+                  >
+                    {game.score_away_team}
+                  </TableCell>
                   <TableCell>{game.is_winner ? "Won" : "Lost"}</TableCell>
-                  <TableCell>{game.date}</TableCell>
+                  <TableCell>{formatDate(game.date)}</TableCell>
                 </TableRow>
               ))
             ) : (

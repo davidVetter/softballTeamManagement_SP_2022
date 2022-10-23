@@ -3,6 +3,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import { Button, Box, Typography, Paper, TextField, Grid, FormLabel} from '@mui/material';
 import EditUserForm from '../EditUserForm/EditUserForm'
 import LiveGamePage from '../LiveGamePage/LiveGamePage';
+import CreateTeam from '../CreateTeam/CreateTeam';
 
 function UserPage() {
   // this component doesn't do much to start, just renders some user reducer info to the DOM
@@ -12,10 +13,10 @@ function UserPage() {
   const teamGames = useSelector((store) => store.game);
   const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [teamName, setTeamName] = useState('');
+  const [league, setLeague] = useState('');
+  const [season, setSeason] = useState('');
+  const [yourPlayerNumber, setYourPlayerNumber] = useState('');
   const [teamId, setTeamId] = useState('');
   const [number, setNumber] = useState('');
   const [userIdApprove, setUserIdApprove] = useState('');
@@ -32,10 +33,10 @@ function UserPage() {
     dispatch({
       type: 'ADD_TEAM',
       payload: {
-        teamName: username,
-        league: password,
-        year: firstName,
-        number: lastName
+        teamName,
+        league,
+        year: season,
+        number: yourPlayerNumber
       }
     });
   }; // end registerTeam
@@ -118,7 +119,7 @@ function UserPage() {
 
   return (
     <Box className="container">
-      <Typography variant='h4' gutterBottom>Welcome, {user.username}!</Typography>
+      <Typography variant='h4' gutterBottom>Welcome, {user.first_name}!</Typography>
       <Typography variant='body2'gutterBottom>Your ID is: {user.id}</Typography>
       {console.log('This is playerGames: ', playerGames)}
       {console.log('This is user info: ', user)}
@@ -139,7 +140,20 @@ function UserPage() {
           return <p key={index}>{team.name} League: {team.league} Season: {team.year}</p>
         })}
     </Paper>
-    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
+    {/* Create a Team Form */}
+    <CreateTeam 
+      teamPlayers={teamPlayers} 
+      registerTeam={registerTeam} 
+      errors={errors} 
+      league={league} 
+      season={season} 
+      yourPlayerNumber={yourPlayerNumber} 
+      teamName={teamName} 
+      setTeamName={setTeamName} 
+      setSeason={setSeason} 
+      setYourPlayerNumber={setYourPlayerNumber} 
+      setLeague={setLeague}/>
+    {/* <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerTeam}>
       <Grid container alignItems='center' justify='center' direction='column'>
       <Typography variant='h4' gutterBottom>Add Team</Typography>
@@ -216,7 +230,8 @@ function UserPage() {
       </Grid>
       </Grid>
     </form>
-    </Paper>
+    </Paper> */}
+    {/* Request to join a team */}
     <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerUser}>
       <Grid container alignItems='center' justify='center' direction='column'>

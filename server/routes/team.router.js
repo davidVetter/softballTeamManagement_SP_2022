@@ -3,6 +3,7 @@ const pool = require('../modules/pool');
 const {
   rejectUnauthenticated,
 } = require('../modules/authentication-middleware');
+const { route } = require('./user.router');
 const router = express.Router();
 
 // This GET will get all games for a team
@@ -150,6 +151,22 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
           res.sendStatus(500);
         })
   }); // End GET players waiting for approval team
+
+  // This GET will check if the current user manger of the current team
+  router.get('/manager/:teamid', rejectUnauthenticated, (req, res) => {
+    console.log('In manager check with : req.params: ', req.params);
+    const team = req.params.teamid;
+    const query = `SELECT "is_manager" from "user_team" 
+                   WHERE "user_id"=$1 AND "team_id"=$2 AND "is_manager"='true';`;
+    pool.query(query, [req.user.id, team])
+    .then(result => {
+        console.log('Result of manager Check: ', result.rows);
+        res.send(result.rows);
+    }).catch((err) => {
+        console.log('Error in manager check: ', err);
+        sendStatus(500);
+    })
+  });
 
   // This POST will add a new team to the 'team' table
   router.post('/', rejectUnauthenticated, (req, res) => {

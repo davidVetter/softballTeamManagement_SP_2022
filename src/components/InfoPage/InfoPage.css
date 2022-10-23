@@ -5,3 +5,11 @@
 .notManager {
     background-color: lightcoral;
 }
+
+.yourTeam {
+    background-color: lightgreen;
+}
+
+.opponentTeam {
+    background-color: lightpink;
+}
