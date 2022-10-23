@@ -60,17 +60,25 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
     const team = req.params.teamid;
     const query = `SELECT 
                     "user"."first_name",
-                    "user"."last_name", 
+                    "user"."last_name",
+                    "user"."bats",
+                    "user"."throws",
+                    "user_team"."is_manager", 
                     count("game"."id") AS "games_played", 
                     count(case when "game"."is_winner"='true' then 1 else null end) AS "wins", 
-                    sum("user_game"."hits") AS "total_hits", sum("user_game"."at_bats") AS "total_at_bats", 
+                    sum("user_game"."hits") AS "total_hits", sum("user_game"."at_bats") AS "total_at_bats",
+                    sum("user_game"."walks") AS "walks", sum("user_game"."strikeouts") AS "K", 
+                    sum("user_game"."rbi") AS rbi, sum("user_game"."single") AS "singles",
+                    sum("user_game"."double") AS "doubles", sum("user_game"."triple") AS "triples",
+                    sum("user_game"."hr") AS "hr", avg("user_game"."lineup_number") AS "avg_lineup",
                     (cast(sum("user_game"."hits") / sum("user_game"."at_bats") AS DECIMAL(3,3))) AS "avg" 
                   FROM "user" 
                   JOIN "user_game" ON "user_game"."user_id"="user"."id" 
                   JOIN "game" ON "game"."id"="user_game"."game_id" 
                   JOIN "team" ON "team"."id"="game"."team_id"
-                  WHERE "team"."id"=$1
-                  GROUP BY "user"."first_name", "user"."last_name";`;
+                  JOIN "user_team" on "user_team"."team_id"="team"."id"
+                  WHERE "team"."id"=$1 AND "user_team"."approved"='true'
+                  GROUP BY "user"."first_name", "user"."last_name", "user"."bats", "user"."throws", "user_team"."is_manager";`;
     pool.query(query, [team])
         .then(result => {
           res.send(result.rows);
@@ -100,6 +108,7 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
                     bats, 
                     throws, 
                     is_manager,
+                    "user_team"."number",
                     "team"."name" AS "teamName",
                     "team"."id" AS "teamID" FROM "user"
                    JOIN "user_team" ON "user_team"."user_id"="user"."id" 

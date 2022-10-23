@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, InputLabel, Select, MenuItem, TableRow, TableHead, TableContainer, TableCell, TableBody, Table} from '@mui/material';
+import './InfoPage.css';
 
 // This is one of our simplest components
 // It doesn't have local state
@@ -46,6 +47,18 @@ function InfoPage() {
     dispatch({
       type: 'GET_TEAM_GAMES',
       payload: team
+    });
+    dispatch({
+      type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
+      payload: team
+    });
+    dispatch({
+      type: 'GET_TEAM_PENDING_PLAYERS',
+      payload: team
+    });
+    dispatch({
+      type: 'GET_TEAM_PLAYERS',
+      payload: team // this will need to be updated to a dynamic team selection(select element?)
     });
   }, [team]);
 
@@ -123,20 +136,63 @@ function InfoPage() {
                   Record: {countWins()}-{teamGames.teamGamesReducer.length}
                 </Typography>
       </Paper>
-      {/* <Paper>
-            {teamGames.teamGamesReducer.length > 0 ? teamGames.teamGamesReducer.map((playerGame, index) => {
-              return (
-                <Typography variant='body1' key={index}>
-                  {playerGame.date} {playerGame.opponent}{" "}
-                  {playerGame.is_winner ? "Won" : "Lost"} Home:{' '}
-                  {playerGame.score_home_team} Away:{' '}{playerGame.score_away_team}
-                </Typography>
-              );
-            }):
-            <Typography variant='h5'>NO GAMES</Typography>}
-      </Paper> */}
+      {/* TEAM ROSTER */}
+      <Paper sx={{overflow: 'hidden'}} elevation={8}>
+      <TableContainer component={Paper} sx={{maxHeight: 400}}>
+        <Table stickyHeader={true} sx={{ minWidth: 400, mb: 2, maxWidth: 600, textAlign: 'center'}}>
+          <TableHead>
+            <TableRow>
+              <TableCell align='center'>NAME</TableCell>
+              <TableCell align='center'>HITS</TableCell>
+              <TableCell align='center'>AT BATS</TableCell>
+              <TableCell align='center'>AVG</TableCell>
+              <TableCell align='center'>BB</TableCell>
+              <TableCell align='center'>K</TableCell>
+              <TableCell align='center'>RBI</TableCell>
+              <TableCell align='center'>1B</TableCell>
+              <TableCell align='center'>2B</TableCell>
+              <TableCell align='center'>3B</TableCell>
+              <TableCell align='center'>HR</TableCell>
+              <TableCell align='center'>BATS</TableCell>
+              <TableCell align='center'>THROWS</TableCell>
+              <TableCell align='center'>WINS</TableCell>
+              <TableCell align='center'>MANAGER?</TableCell>
+              <TableCell align='center'>AVG LINEUP #</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {teamPlayers.teamPlayersStatsReducer.length > 0 ? teamPlayers.teamPlayersStatsReducer.map((player, index) => (
+              <TableRow key={index}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell align='center'>{player.first_name}&nbsp;{player.last_name}</TableCell>
+                <TableCell align='center' >{player.total_hits}</TableCell>
+                <TableCell align='center' >{player.total_at_bats}</TableCell>
+                <TableCell align='center' >{player.avg}</TableCell>
+                <TableCell align='center' >{player.walks}</TableCell>
+                <TableCell align='center' >{player.K}</TableCell>
+                <TableCell align='center' >{player.rbi}</TableCell>
+                <TableCell align='center' >{player.singles}</TableCell>
+                <TableCell align='center' >{player.doubles}</TableCell>
+                <TableCell align='center' >{player.triples}</TableCell>
+                <TableCell align='center' >{player.hr}</TableCell>
+                <TableCell align='center' >{player.bats.toUpperCase()}</TableCell>
+                <TableCell align='center' >{player.throws.toUpperCase()}</TableCell>
+                <TableCell align='center' >{player.wins}</TableCell>
+                <TableCell align='center' className={player.is_manager&&'manager'}>{player.is_manager?'Yes':'No'}</TableCell>
+                <TableCell align='center' >{Number(player.avg_lineup).toFixed(1)}</TableCell>
+              </TableRow>
+            )
+            )
+            :
+            <Typography variant='body2'>NO PLAYERS</Typography>}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      </Paper>
+      {/* TEAM GAMES TABLE */}
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 400}}>
+        <Table sx={{ minWidth: 400, maxWidth: 600}}>
           <TableHead>
             <TableRow>
               <TableCell>Home Team</TableCell>
@@ -162,7 +218,7 @@ function InfoPage() {
             )
             )
             :
-            <Typography variant='h5'>NO GAMES</Typography>}
+            <Typography variant='body2'>NO GAMES</Typography>}
           </TableBody>
         </Table>
       </TableContainer>
