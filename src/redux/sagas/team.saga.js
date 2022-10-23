@@ -31,8 +31,10 @@ function* getTeamPlayersStats(action) {
 // Get all players on a team with players personal information
 function* getTeamPlayersPersonalInfo(action) {
     try {
-        console.log('In team players saga');
+        console.log('In team players saga (personal info)');
+        console.log('This is action.payload in personal info: ', action.payload);
         const teamPlayers = yield axios.get(`api/team/players/${action.payload}`);
+        // const teamPlayers = yield axios.get(`api/team/players/`, {data:action.payload});
         yield put({
             type: "SET_TEAM_PLAYERS_PERSONAL_INFO",
             payload: teamPlayers.data
@@ -120,6 +122,22 @@ function* removeUserTeam(action) {
     }
 }
 
+// GET to check if current user is a manager
+function* managerCheck(action) {
+    try {
+        console.log('In manager check');
+        const manager = yield axios.get(`api/team/manager/${action.payload}`);
+        console.log('This is managerCheck: ', manager);
+        if (manager.data.length === 0) {
+            yield put({ type: 'RESET_MANAGER' })
+        } else {
+        yield put({ type: 'SET_MANAGER' });
+        }
+    } catch (err) {
+        console.log('Error checking for manager status', err);
+    }
+}
+
 function* teamSaga() {
     yield takeLatest("GET_TEAMS", getTeams);
     yield takeLatest("GET_TEAM_PLAYERS", getTeamPlayersStats);
@@ -130,6 +148,7 @@ function* teamSaga() {
     yield takeLatest("APPROVE_USER", approvePlayer);
     yield takeLatest("PROMOTE_MANAGER", promoteManager);
     yield takeLatest("REMOVE_USER_TEAM", removeUserTeam);
+    yield takeLatest('MANAGER_CHECK', managerCheck);
 }
 
 export default teamSaga;

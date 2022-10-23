@@ -5,7 +5,8 @@ import axios from 'axios';
 function* getTeamGames(action) {
     try {
         console.log('In team games saga');
-        const teamGames = yield axios.get(`api/team/games`);
+        console.log('this is action.payload: ', action.payload);
+        const teamGames = yield axios.get(`api/team/games/${action.payload}`);
         yield put({
             type: "SET_TEAM_GAMES",
             payload: teamGames.data

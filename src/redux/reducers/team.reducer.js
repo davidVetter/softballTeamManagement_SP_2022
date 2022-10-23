@@ -32,9 +32,20 @@ const teamPlayersPending = (state = [], action) => {
     }
 }
 
+const isManager = (state = false, action) => {
+    if (action.type === 'SET_MANAGER') {
+        return true;
+    } if (action.type === 'RESET_MANAGER') {
+        return false;
+    } else {
+        return state;
+    }
+}
+
 export default combineReducers({
     teamPlayersStatsReducer,
     teamPlayersPersonalInfoReducer,
     teamPlayersPending,
-    allTeams
+    allTeams,
+    isManager
 });

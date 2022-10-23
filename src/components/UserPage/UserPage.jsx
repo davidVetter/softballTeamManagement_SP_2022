@@ -3,6 +3,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import { Button, Box, Typography, Paper, TextField, Grid, FormLabel} from '@mui/material';
 import EditUserForm from '../EditUserForm/EditUserForm'
 import LiveGamePage from '../LiveGamePage/LiveGamePage';
+import CreateTeam from '../CreateTeam/CreateTeam';
 
 function UserPage() {
   // this component doesn't do much to start, just renders some user reducer info to the DOM
@@ -12,10 +13,10 @@ function UserPage() {
   const teamGames = useSelector((store) => store.game);
   const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [teamName, setTeamName] = useState('');
+  const [league, setLeague] = useState('');
+  const [season, setSeason] = useState('');
+  const [yourPlayerNumber, setYourPlayerNumber] = useState('');
   const [teamId, setTeamId] = useState('');
   const [number, setNumber] = useState('');
   const [userIdApprove, setUserIdApprove] = useState('');
@@ -32,10 +33,10 @@ function UserPage() {
     dispatch({
       type: 'ADD_TEAM',
       payload: {
-        teamName: username,
-        league: password,
-        year: firstName,
-        number: lastName
+        teamName,
+        league,
+        year: season,
+        number: yourPlayerNumber
       }
     });
   }; // end registerTeam
@@ -100,7 +101,8 @@ function UserPage() {
       payload: 1 // this will need to be updated to a dynamic team selection(select element?)
     });
     dispatch({
-      type: 'GET_TEAM_GAMES'
+      type: 'GET_TEAM_GAMES',
+      payload: 1
     });
     dispatch({
       type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
@@ -117,7 +119,7 @@ function UserPage() {
 
   return (
     <Box className="container">
-      <Typography variant='h4' gutterBottom>Welcome, {user.username}!</Typography>
+      <Typography variant='h4' gutterBottom>Welcome, {user.first_name}!</Typography>
       <Typography variant='body2'gutterBottom>Your ID is: {user.id}</Typography>
       {console.log('This is playerGames: ', playerGames)}
       {console.log('This is user info: ', user)}
@@ -135,10 +137,23 @@ function UserPage() {
         My Teams
       </Typography>
       {playerGames.playerTeamReducer.length > 0 && playerGames.playerTeamReducer.map((team, index) => {
-          return <p>{team.name} League: {team.league} Season: {team.year}</p>
+          return <p key={index}>{team.name} League: {team.league} Season: {team.year}</p>
         })}
     </Paper>
-    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
+    {/* Create a Team Form */}
+    <CreateTeam 
+      teamPlayers={teamPlayers} 
+      registerTeam={registerTeam} 
+      errors={errors} 
+      league={league} 
+      season={season} 
+      yourPlayerNumber={yourPlayerNumber} 
+      teamName={teamName} 
+      setTeamName={setTeamName} 
+      setSeason={setSeason} 
+      setYourPlayerNumber={setYourPlayerNumber} 
+      setLeague={setLeague}/>
+    {/* <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerTeam}>
       <Grid container alignItems='center' justify='center' direction='column'>
       <Typography variant='h4' gutterBottom>Add Team</Typography>
@@ -147,7 +162,6 @@ function UserPage() {
           {errors.registrationMessage}
         </Typography>
       )}
-      {playerGames.playerTeamReducer[0].name}
       {teamPlayers.allTeams.length > 0 && teamPlayers.allTeams.map((team, index) => {
         return <p key={index}>{team.name} ID #{team.id}</p>
       })}
@@ -155,7 +169,7 @@ function UserPage() {
         <FormLabel htmlFor="username">
           <TextField
             variant='outlined'
-            label='Email'
+            label='Team Name'
             size='normal'
             type="text"
             name="username"
@@ -170,7 +184,7 @@ function UserPage() {
         <FormLabel htmlFor="password">
           <TextField
             variant='outlined'
-            label='Password'
+            label='League'
             size='normal'
             filled='true'
             type="text"
@@ -185,7 +199,7 @@ function UserPage() {
         <FormLabel htmlFor="first-name">
           <TextField
             variant='outlined'
-            label='First Name'
+            label='Season (year)'
             size='normal'
             filled='true'
             type="text"
@@ -200,7 +214,7 @@ function UserPage() {
         <FormLabel htmlFor="last-name">
           <TextField
             variant='outlined'
-            label='Last Name'
+            label='Your Player Number'
             size='normal'
             filled='true'
             type="text"
@@ -216,7 +230,8 @@ function UserPage() {
       </Grid>
       </Grid>
     </form>
-    </Paper>
+    </Paper> */}
+    {/* Request to join a team */}
     <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerUser}>
       <Grid container alignItems='center' justify='center' direction='column'>
@@ -226,9 +241,9 @@ function UserPage() {
           {errors.registrationMessage}
         </Typography>
       )}
-      {teamPlayers.teamPlayersPending.length > 0 && teamPlayers.teamPlayersPending.map((player, index) => {
+      {/* {teamPlayers.teamPlayersPending.length > 0 && teamPlayers.teamPlayersPending.map((player, index) => {
         return <p key={index}>{player.first_name}</p>
-      })}
+      })} */}
       <Grid item sx={{mb: 1}}>
         <FormLabel htmlFor="username">
           <TextField
@@ -410,7 +425,7 @@ function UserPage() {
     </form>
     </Paper>
     </Box>
-    <Button variant='outlined' type="button" onClick={() => setEditMode(true)}>Edit</Button>
+    <Button variant='outlined' type="button" onClick={() => setEditMode(!editMode)}>Edit My Info</Button>
     {/* <Button variant='outlined' type="button" onClick={() => setEditMode(false)}>Cancel</Button> */}
     {editMode && <EditUserForm setEditMode={setEditMode}/>}
     <LiveGamePage />

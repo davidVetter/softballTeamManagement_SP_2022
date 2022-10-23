@@ -89,13 +89,14 @@ function EditUserForm(props) {
         },
       });
       clearLocalState();
+      props.setEditMode(false);
     }; // end registerUser
   
     return (
       <Box sx={{width:'100%', display: 'flex', alignItems:'center', justifyContent:'center'}}>
-      <Button variant='outlined' type="button" onClick={() => {
+      {/* <Button variant='outlined' type="button" onClick={() => {
         clearLocalState();
-        props.setEditMode(false)}}>Cancel</Button>
+        props.setEditMode(false)}}>Cancel</Button> */}
       <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
       <form onSubmit={updateUser}>
         <Grid container alignItems='center' justify='center' direction='column'>
@@ -301,6 +302,9 @@ function EditUserForm(props) {
         </Grid>
         <Grid item sx={{mb: 2}}>
           <Button variant='contained' type="submit" name="submit" value="Register">Update</Button>
+          <Button variant='outlined' type="button" onClick={() => {
+        clearLocalState();
+        props.setEditMode(false)}}>Cancel</Button>
         </Grid>
         </Grid>
       </form>
