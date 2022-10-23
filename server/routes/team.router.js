@@ -6,14 +6,29 @@ const {
 const router = express.Router();
 
 // This GET will get all games for a team
-router.get('/games', rejectUnauthenticated, (req, res) => {
+router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
     // GET route code here
-    const query = `SELECT * FROM "game" 
-                   RIGHT JOIN "team" ON "team"."id"="game"."team_id"
-                   JOIN "user_team" ON "user_team"."team_id"="team"."id"
-                   WHERE "user_team"."user_id"=$1;`;
-    pool.query(query, [req.user.id])
+    console.log('This is req.params.teamid in /games: ', req.params.teamid);
+    const teamId = req.params.teamid;
+    const query = `SELECT 
+                    "game"."id" AS "game_id",
+                    "game"."team_id",
+                    "game"."date",
+                    "game"."opponent",
+                    "game"."is_winner",
+                    "game"."score_home_team",
+                    "game"."score_away_team",
+                    "game"."innings",
+                    "game"."is_home_team",
+                    "team"."name" AS "team_name",
+                    "team"."league",
+                    "team"."year"
+                   FROM "game" 
+                   JOIN "team" ON "team"."id"="game"."team_id"
+                   WHERE "team"."id"=$1;`;
+    pool.query(query, [teamId])
         .then(result => {
+            console.log('This is results of team games: ', result.rows);
           res.send(result.rows);
         })
         .catch((err) => {

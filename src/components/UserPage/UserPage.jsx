@@ -100,7 +100,8 @@ function UserPage() {
       payload: 1 // this will need to be updated to a dynamic team selection(select element?)
     });
     dispatch({
-      type: 'GET_TEAM_GAMES'
+      type: 'GET_TEAM_GAMES',
+      payload: 1
     });
     dispatch({
       type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
