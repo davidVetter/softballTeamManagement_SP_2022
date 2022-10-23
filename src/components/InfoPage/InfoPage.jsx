@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, InputLabel, Select, MenuItem} from '@mui/material';
+import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, InputLabel, Select, MenuItem, TableRow, TableHead, TableContainer, TableCell, TableBody, Table} from '@mui/material';
 
 // This is one of our simplest components
 // It doesn't have local state
@@ -23,6 +23,7 @@ function InfoPage() {
   const [firstClick, setFirstClick] = useState(true);
   const [wins, setWins] = useState(0);
 
+  // Get all of users games and team they are currently on
   useEffect(() => {
     dispatch({
       type: 'GET_PLAYER_GAMES'
@@ -38,6 +39,8 @@ function InfoPage() {
     }
   }, [userTeamGames]);
 
+  // gets the games for the currently selected team
+  // triggers when team changes
   useEffect(() => {
     console.log('get team useEffect triggered with: ', team);
     dispatch({
@@ -74,6 +77,7 @@ function InfoPage() {
     }
   }
 
+  // counts the number of wins for the currently selected team
   const countWins = () => {
     let count = 0;
     for (let game of teamGames.teamGamesReducer) {
@@ -83,7 +87,7 @@ function InfoPage() {
     }
     return count;
   }
-
+  // allows the user to be able to click anywhere off the select element to close it
   const closeSelect = () => {
     if (teamClick === true) {
       setTeamClick(false);
@@ -119,7 +123,7 @@ function InfoPage() {
                   Record: {countWins()}-{teamGames.teamGamesReducer.length}
                 </Typography>
       </Paper>
-      <Paper>
+      {/* <Paper>
             {teamGames.teamGamesReducer.length > 0 ? teamGames.teamGamesReducer.map((playerGame, index) => {
               return (
                 <Typography variant='body1' key={index}>
@@ -130,7 +134,38 @@ function InfoPage() {
               );
             }):
             <Typography variant='h5'>NO GAMES</Typography>}
-      </Paper>
+      </Paper> */}
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 400}}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Home Team</TableCell>
+              <TableCell>Home Score</TableCell>
+              <TableCell>Away Team</TableCell>
+              <TableCell>Away Score</TableCell>
+              <TableCell>W/L</TableCell>
+              <TableCell>Date</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {teamGames.teamGamesReducer.length > 0 ? teamGames.teamGamesReducer.map((game, index) => (
+              <TableRow key={index}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell>{game.is_home?`${game.team_name}`:`${game.opponent}`}</TableCell>
+                <TableCell>{game.score_home_team}</TableCell>
+                <TableCell>{game.is_home?`${game.opponent}`:`${game.team_name}`}</TableCell>
+                <TableCell>{game.score_away_team}</TableCell>
+                <TableCell>{game.is_winner?'Won':'Lost'}</TableCell>
+                <TableCell>{game.date}</TableCell>
+              </TableRow>
+            )
+            )
+            :
+            <Typography variant='h5'>NO GAMES</Typography>}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 }
