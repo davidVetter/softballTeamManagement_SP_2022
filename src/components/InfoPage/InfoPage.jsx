@@ -44,12 +44,9 @@ function InfoPage() {
   // triggers when team changes
   useEffect(() => {
     console.log('get team useEffect triggered with: ', team);
+    if (team) {
     dispatch({
       type: 'GET_TEAM_GAMES',
-      payload: team
-    });
-    dispatch({
-      type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
       payload: team
     });
     dispatch({
@@ -58,8 +55,9 @@ function InfoPage() {
     });
     dispatch({
       type: 'GET_TEAM_PLAYERS',
-      payload: team // this will need to be updated to a dynamic team selection(select element?)
+      payload: team 
     });
+  }
   }, [team]);
 
   // Sets team local state to determine which team's info to display
@@ -76,7 +74,6 @@ function InfoPage() {
           return teamLoop.name;
         }
       }
-      console.log('userTeamGames.Pl');
       return userTeamGames.playerTeamReducer[0].name;
     }
   }
@@ -106,93 +103,149 @@ function InfoPage() {
       setTeamClick(false);
     }
   }
+  // toggles if a user is a manager or not for the currently selected team
+  // accepts user_id as argument
+  const toggleManager = (id) => {
+    dispatch({
+      type: "PROMOTE_MANAGER",
+      payload: { userId: id, teamId: team },
+    });
+    dispatch({
+      type: 'GET_TEAM_PLAYERS',
+      payload: team 
+    });
+    dispatch({
+      type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
+      payload: team
+    });
+  }
+  // Removes a player from the currently selected team
+  // accepts user_id as argument
+  const removePlayer = (id) => {
+    dispatch({
+      type: "REMOVE_USER_TEAM",
+      payload: {userId: id, teamId: team}
+    })
+  }
 
   return (
     <Box onClick={closeSelect}>
       <Paper>
-        {userTeamGames.playerTeamReducer.length > 0 &&
-          teamClick?
+        {userTeamGames.playerTeamReducer.length > 0 && teamClick ? (
           <>
-          <InputLabel htmlFor="team">Team</InputLabel>
-          <Select
-            value={team}
-            label='Team'
-            required
-            size='normal'
-            defaultOpen={firstClick?false:true}
-            onChange={selectTeam}
-          >
-            {userTeamGames.playerTeamReducer.map((team, index) => {
-             return <MenuItem key={index} value={team.id}>{team.name} | {team.league} | Season: {team.year}</MenuItem>
-            })}
-          </Select>
+            <InputLabel htmlFor="team">Team</InputLabel>
+            <Select
+              value={team}
+              label="Team"
+              required
+              size="normal"
+              defaultOpen={firstClick ? false : true}
+              onChange={selectTeam}
+            >
+              {userTeamGames.playerTeamReducer.map((team, index) => {
+                return (
+                  <MenuItem key={index} value={team.id}>
+                    {team.name} | {team.league} | Season: {team.year}
+                  </MenuItem>
+                );
+              })}
+            </Select>
           </>
-              :
-              userTeamGames.playerTeamReducer.length > 0 && 
-                <Typography variant='h4' onClick={teamNameClick}>
-                  {teamName()}
-                </Typography>}
-                <Typography variant='body1'>
-                  Record: {countWins()}-{teamGames.teamGamesReducer.length}
-                </Typography>
+        ) : (
+          userTeamGames.playerTeamReducer.length > 0 && (
+            <Typography variant="h4" onClick={teamNameClick}>
+              {teamName()}
+            </Typography>
+          )
+        )}
+        <Typography variant="body1">
+          Record: {countWins()}-{teamGames.teamGamesReducer.length}
+        </Typography>
       </Paper>
       {/* TEAM ROSTER */}
-      <Paper sx={{overflow: 'hidden'}} elevation={8}>
-      <TableContainer component={Paper} sx={{maxHeight: 400}}>
-        <Table stickyHeader={true} sx={{ minWidth: 400, mb: 2, maxWidth: 600, textAlign: 'center'}}>
+      <TableContainer
+        component={Paper}
+        sx={{ maxHeight: 400, mb: 2 }}
+        elevation={8}
+      >
+        <Table stickyHeader={true} size='small' sx={{ minWidth: 400, mb: 2, maxWidth: 600 }}>
           <TableHead>
             <TableRow>
-              <TableCell align='center'>NAME</TableCell>
-              <TableCell align='center'>HITS</TableCell>
-              <TableCell align='center'>AT BATS</TableCell>
-              <TableCell align='center'>AVG</TableCell>
-              <TableCell align='center'>BB</TableCell>
-              <TableCell align='center'>K</TableCell>
-              <TableCell align='center'>RBI</TableCell>
-              <TableCell align='center'>1B</TableCell>
-              <TableCell align='center'>2B</TableCell>
-              <TableCell align='center'>3B</TableCell>
-              <TableCell align='center'>HR</TableCell>
-              <TableCell align='center'>BATS</TableCell>
-              <TableCell align='center'>THROWS</TableCell>
-              <TableCell align='center'>WINS</TableCell>
-              <TableCell align='center'>MANAGER?</TableCell>
-              <TableCell align='center'>AVG LINEUP #</TableCell>
+              <TableCell align="center">NAME</TableCell>
+              <TableCell align="center">HITS</TableCell>
+              <TableCell align="center">AT BATS</TableCell>
+              <TableCell align="center">AVG</TableCell>
+              <TableCell align="center">BB</TableCell>
+              <TableCell align="center">K</TableCell>
+              <TableCell align="center">RBI</TableCell>
+              <TableCell align="center">1B</TableCell>
+              <TableCell align="center">2B</TableCell>
+              <TableCell align="center">3B</TableCell>
+              <TableCell align="center">HR</TableCell>
+              <TableCell align="center">BATS</TableCell>
+              <TableCell align="center">THROWS</TableCell>
+              <TableCell align="center">WINS</TableCell>
+              <TableCell align="center">MANAGER?</TableCell>
+              <TableCell align="center">AVG LINEUP #</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {teamPlayers.teamPlayersStatsReducer.length > 0 ? teamPlayers.teamPlayersStatsReducer.map((player, index) => (
-              <TableRow key={index}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell align='center'>{player.first_name}&nbsp;{player.last_name}</TableCell>
-                <TableCell align='center' >{player.total_hits}</TableCell>
-                <TableCell align='center' >{player.total_at_bats}</TableCell>
-                <TableCell align='center' >{player.avg}</TableCell>
-                <TableCell align='center' >{player.walks}</TableCell>
-                <TableCell align='center' >{player.K}</TableCell>
-                <TableCell align='center' >{player.rbi}</TableCell>
-                <TableCell align='center' >{player.singles}</TableCell>
-                <TableCell align='center' >{player.doubles}</TableCell>
-                <TableCell align='center' >{player.triples}</TableCell>
-                <TableCell align='center' >{player.hr}</TableCell>
-                <TableCell align='center' >{player.bats.toUpperCase()}</TableCell>
-                <TableCell align='center' >{player.throws.toUpperCase()}</TableCell>
-                <TableCell align='center' >{player.wins}</TableCell>
-                <TableCell align='center' className={player.is_manager&&'manager'}>{player.is_manager?'Yes':'No'}</TableCell>
-                <TableCell align='center' >{Number(player.avg_lineup).toFixed(1)}</TableCell>
-              </TableRow>
-            )
-            )
-            :
-            <Typography variant='body2'>NO PLAYERS</Typography>}
+            {teamPlayers.teamPlayersStatsReducer.length > 0 ? (
+              teamPlayers.teamPlayersStatsReducer.map((player, index) => (
+                <TableRow
+                  key={index}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell align="center">
+                    {player.first_name}&nbsp;{player.last_name}
+                  </TableCell>
+                  <TableCell align="center">{player.total_hits}</TableCell>
+                  <TableCell align="center">{player.total_at_bats}</TableCell>
+                  <TableCell align="center">{player.avg}</TableCell>
+                  <TableCell align="center">{player.walks}</TableCell>
+                  <TableCell align="center">{player.K}</TableCell>
+                  <TableCell align="center">{player.rbi}</TableCell>
+                  <TableCell align="center">{player.singles}</TableCell>
+                  <TableCell align="center">{player.doubles}</TableCell>
+                  <TableCell align="center">{player.triples}</TableCell>
+                  <TableCell align="center">{player.hr}</TableCell>
+                  <TableCell align="center">
+                    {player.bats.toUpperCase()}
+                  </TableCell>
+                  <TableCell align="center">
+                    {player.throws.toUpperCase()}
+                  </TableCell>
+                  <TableCell align="center">{player.wins}</TableCell>
+                  <TableCell
+                    align="center"
+                    className={player.is_manager? "manager":"notManager"}
+                  >
+                    {player.is_manager ? "Yes" : "No"}
+                    <Button
+                      onClick={() => toggleManager(player.u_id)}
+                    >
+                      {player.is_manager ? 'Demote':'Promote'}
+                    </Button>
+                  </TableCell>
+                  <TableCell align="center">
+                    {Number(player.avg_lineup).toFixed(1)}
+                  </TableCell>
+                  <TableCell align='center'>
+                    <Button onClick={()=>removePlayer(player.u_id)}>
+                      Remove
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <Typography variant="body2">NO PLAYERS</Typography>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
-      </Paper>
       {/* TEAM GAMES TABLE */}
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 400, maxWidth: 600}}>
+      <TableContainer component={Paper} elevation={8}>
+        <Table sx={{ minWidth: 400, maxWidth: 600 }}>
           <TableHead>
             <TableRow>
               <TableCell>Home Team</TableCell>
@@ -204,21 +257,27 @@ function InfoPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {teamGames.teamGamesReducer.length > 0 ? teamGames.teamGamesReducer.map((game, index) => (
-              <TableRow key={index}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell>{game.is_home?`${game.team_name}`:`${game.opponent}`}</TableCell>
-                <TableCell>{game.score_home_team}</TableCell>
-                <TableCell>{game.is_home?`${game.opponent}`:`${game.team_name}`}</TableCell>
-                <TableCell>{game.score_away_team}</TableCell>
-                <TableCell>{game.is_winner?'Won':'Lost'}</TableCell>
-                <TableCell>{game.date}</TableCell>
-              </TableRow>
-            )
-            )
-            :
-            <Typography variant='body2'>NO GAMES</Typography>}
+            {teamGames.teamGamesReducer.length > 0 ? (
+              teamGames.teamGamesReducer.map((game, index) => (
+                <TableRow
+                  key={index}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell>
+                    {game.is_home ? `${game.team_name}` : `${game.opponent}`}
+                  </TableCell>
+                  <TableCell>{game.score_home_team}</TableCell>
+                  <TableCell>
+                    {game.is_home ? `${game.opponent}` : `${game.team_name}`}
+                  </TableCell>
+                  <TableCell>{game.score_away_team}</TableCell>
+                  <TableCell>{game.is_winner ? "Won" : "Lost"}</TableCell>
+                  <TableCell>{game.date}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <Typography variant="body2">NO GAMES</Typography>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

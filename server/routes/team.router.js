@@ -32,7 +32,7 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
           res.send(result.rows);
         })
         .catch((err) => {
-          console.log('Error in getting team games: ', err);
+          console.log('Error in getting team games (all games): ', err);
           res.sendStatus(500);
         })
   }); // End GET team games
@@ -57,8 +57,10 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
   // and a calculated avg
   router.get('/players/stats/:teamid', rejectUnauthenticated, (req, res) => {
     // GET route code here
+    console.log('this is params in get STATS: ', req.params);
     const team = req.params.teamid;
-    const query = `SELECT 
+    const query = `SELECT DISTINCT
+                    "user"."id" AS "u_id",
                     "user"."first_name",
                     "user"."last_name",
                     "user"."bats",
@@ -73,18 +75,18 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
                     sum("user_game"."hr") AS "hr", avg("user_game"."lineup_number") AS "avg_lineup",
                     (cast(sum("user_game"."hits") / sum("user_game"."at_bats") AS DECIMAL(3,3))) AS "avg" 
                   FROM "user" 
-                  JOIN "user_game" ON "user_game"."user_id"="user"."id" 
+                  JOIN "user_team" on "user_team"."user_id"="user"."id"
+                  JOIN "user_game" ON "user_game"."user_id"="user_team"."user_id" 
                   JOIN "game" ON "game"."id"="user_game"."game_id" 
                   JOIN "team" ON "team"."id"="game"."team_id"
-                  JOIN "user_team" on "user_team"."team_id"="team"."id"
-                  WHERE "team"."id"=$1 AND "user_team"."approved"='true'
-                  GROUP BY "user"."first_name", "user"."last_name", "user"."bats", "user"."throws", "user_team"."is_manager";`;
-    pool.query(query, [team])
+                  WHERE "team"."id"=$1 AND "user_team"."approved"='true' AND "user_team"."team_id"=$2
+                  GROUP BY "user"."id", "user"."first_name", "user"."last_name", "user"."bats", "user"."throws", "user_team"."is_manager";`;
+    pool.query(query, [team, team])
         .then(result => {
           res.send(result.rows);
         })
         .catch((err) => {
-          console.log('Error in getting team games: ', err);
+          console.log('Error in getting team games stats: ', err);
           res.sendStatus(500);
         })
   }); // End GET for players on team with stats
@@ -93,8 +95,13 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
   // Only players personal infomation
   router.get('/players/:teamid', rejectUnauthenticated, (req, res) => {
     // GET route code here
+    console.log('This is params in no stats: ', req.params);
     const team = req.params.teamid;
-    const query = `SELECT "user"."id" AS "userID", 
+    // if (team === 'stats') {
+    //     return;
+    // }
+    const query = `SELECT 
+                    "user"."id" AS "userID", 
                     username AS email, 
                     first_name, 
                     last_name, 
@@ -113,13 +120,14 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
                     "team"."id" AS "teamID" FROM "user"
                    JOIN "user_team" ON "user_team"."user_id"="user"."id" 
                    JOIN "team" ON "team"."id"="user_team"."team_id" 
-                   WHERE "team"."id"=$1 AND "user_team"."approved"='true';`;
-    pool.query(query, [team])
+                   WHERE "team"."id"=$1 AND "user_team"."approved"='true' AND "user"."id"=$2;`;
+    pool.query(query, [team, req.user.id])
         .then(result => {
+            
           res.send(result.rows);
         })
         .catch((err) => {
-          console.log('Error in getting team games: ', err);
+          console.log('Error in getting team games(no stats): ', err);
           res.sendStatus(500);
         })
   }); // End GET for players on team without stats
@@ -228,16 +236,20 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
   // PUT to toggle if a player is manager for a team
   // Checks to make sure the user logged is a manager for that team
   router.put('/manager', rejectUnauthenticated, (req, res) => {
+    console.log('In manager with req.body: ', req.body);
     const userId = req.body.userId;
     const teamId = req.body.teamId;
+    console.log('this is userId: ', userId);
+    console.log('This is teamId: ', teamId);
     const query = `UPDATE "user_team" 
                    SET "is_manager"=NOT "is_manager" 
                    WHERE "user_id"=$1 AND "team_id"=$2 AND (
                     SELECT "is_manager" FROM "user_team" 
-                    WHERE "user_id"=$3 AND "team_id"=$4
+                    WHERE "user_id"=$3 AND "team_id"=$4 AND "is_manager"='true'
                    );`;
     pool.query(query, [userId, teamId, req.user.id, teamId])
         .then(result => {
+            console.log('this is result.rows: ', result.rows);
             res.sendStatus(200);
         })
         .catch(err => {

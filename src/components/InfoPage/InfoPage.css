@@ -1,3 +1,7 @@
 .manager {
     background-color: lightgreen;
 }
+
+.notManager {
+    background-color: lightcoral;
+}

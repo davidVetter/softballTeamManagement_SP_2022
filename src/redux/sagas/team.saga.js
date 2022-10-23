@@ -31,8 +31,10 @@ function* getTeamPlayersStats(action) {
 // Get all players on a team with players personal information
 function* getTeamPlayersPersonalInfo(action) {
     try {
-        console.log('In team players saga');
+        console.log('In team players saga (personal info)');
+        console.log('This is action.payload in personal info: ', action.payload);
         const teamPlayers = yield axios.get(`api/team/players/${action.payload}`);
+        // const teamPlayers = yield axios.get(`api/team/players/`, {data:action.payload});
         yield put({
             type: "SET_TEAM_PLAYERS_PERSONAL_INFO",
             payload: teamPlayers.data
