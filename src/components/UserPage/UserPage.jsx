@@ -13,10 +13,6 @@ function UserPage() {
   const teamGames = useSelector((store) => store.game);
   const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
-  const [teamName, setTeamName] = useState('');
-  const [league, setLeague] = useState('');
-  const [season, setSeason] = useState('');
-  const [yourPlayerNumber, setYourPlayerNumber] = useState('');
   const [teamId, setTeamId] = useState('');
   const [number, setNumber] = useState('');
   const [userIdApprove, setUserIdApprove] = useState('');
@@ -26,20 +22,6 @@ function UserPage() {
   const [userIdRemove, setUserIdRemove] = useState('');
   const [teamIdRemove, setTeamIdRemove] = useState('');
   const [editMode, setEditMode] = useState(false);
-
-  const registerTeam = (event) => {
-    event.preventDefault();
-    // Send data to saga for POST to server
-    dispatch({
-      type: 'ADD_TEAM',
-      payload: {
-        teamName,
-        league,
-        year: season,
-        number: yourPlayerNumber
-      }
-    });
-  }; // end registerTeam
 
   const registerUser = (event) => {
     event.preventDefault();
@@ -141,96 +123,7 @@ function UserPage() {
         })}
     </Paper>
     {/* Create a Team Form */}
-    <CreateTeam 
-      teamPlayers={teamPlayers} 
-      registerTeam={registerTeam} 
-      errors={errors} 
-      league={league} 
-      season={season} 
-      yourPlayerNumber={yourPlayerNumber} 
-      teamName={teamName} 
-      setTeamName={setTeamName} 
-      setSeason={setSeason} 
-      setYourPlayerNumber={setYourPlayerNumber} 
-      setLeague={setLeague}/>
-    {/* <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
-    <form onSubmit={registerTeam}>
-      <Grid container alignItems='center' justify='center' direction='column'>
-      <Typography variant='h4' gutterBottom>Add Team</Typography>
-      {errors.registrationMessage && (
-        <Typography variant='h6' className="alert" role="alert">
-          {errors.registrationMessage}
-        </Typography>
-      )}
-      {teamPlayers.allTeams.length > 0 && teamPlayers.allTeams.map((team, index) => {
-        return <p key={index}>{team.name} ID #{team.id}</p>
-      })}
-      <Grid item sx={{mb: 1}}>
-        <FormLabel htmlFor="username">
-          <TextField
-            variant='outlined'
-            label='Team Name'
-            size='normal'
-            type="text"
-            name="username"
-            filled='true'
-            value={username}
-            required
-            onChange={(event) => setUsername(event.target.value)}
-          />
-        </FormLabel>
-      </Grid>
-      <Grid item sx={{mb: 1}}>
-        <FormLabel htmlFor="password">
-          <TextField
-            variant='outlined'
-            label='League'
-            size='normal'
-            filled='true'
-            type="text"
-            name="password"
-            value={password}
-            required
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </FormLabel>
-      </Grid>
-      <Grid item sx={{mb: 1}}>
-        <FormLabel htmlFor="first-name">
-          <TextField
-            variant='outlined'
-            label='Season (year)'
-            size='normal'
-            filled='true'
-            type="text"
-            name="firstName"
-            value={firstName}
-            required
-            onChange={(event) => setFirstName(event.target.value)}
-          />
-        </FormLabel>
-      </Grid>
-      <Grid item sx={{mb: 1}}>
-        <FormLabel htmlFor="last-name">
-          <TextField
-            variant='outlined'
-            label='Your Player Number'
-            size='normal'
-            filled='true'
-            type="text"
-            name="lastName"
-            value={lastName}
-            required
-            onChange={(event) => setLastName(event.target.value)}
-          />
-        </FormLabel>
-      </Grid>
-      <Grid item sx={{mb: 2}}>
-        <Button variant='contained' type="submit" name="submit" value="Register">Register</Button>
-      </Grid>
-      </Grid>
-    </form>
-    </Paper> */}
+    <CreateTeam errors={errors} />
     {/* Request to join a team */}
     <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerUser}>
