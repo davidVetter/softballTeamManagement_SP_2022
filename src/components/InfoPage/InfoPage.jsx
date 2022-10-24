@@ -164,7 +164,7 @@ function InfoPage() {
               {userTeamGames.playerTeamReducer.map((team, index) => {
                 return (
                   <MenuItem key={index} value={team.id}>
-                    {team.name} | {team.league} | Season: {team.year}
+                    {team.name} | Season: {team.year} | {team.league.toUpperCase()}
                   </MenuItem>
                 );
               })}
