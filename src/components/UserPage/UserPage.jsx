@@ -29,47 +29,88 @@ function UserPage() {
       type: 'GET_TEAMS'
     });
   }, []);
+  // Convert 10 digit phone number string to (XXX) XXX-XXXX format
+  const formatPhone = (phoneNumberString) => {
+    const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return '(' + match[1] + ') ' + match[2] + '-' + match[3];
+    }
+    return null;
+  }
 
   return (
     <Box className="container">
-      <Typography variant='h4' gutterBottom>Welcome, {user.first_name}!</Typography>
-      <Typography variant='body2'gutterBottom>Your ID is: {user.id}</Typography>
-      {console.log('This is playerGames: ', playerGames)}
-      {console.log('This is user info: ', user)}
-      {console.log('This is team players: ', teamPlayers)}
-      {console.log('This is team games: ', teamGames)}
-      <Button
-      variant='contained'
-      onClick={() => dispatch({ type: 'LOGOUT' })}
-    >
-      Log Out
-    </Button>
-    <Button variant='outlined' type="button" onClick={() => setEditMode(!editMode)}>Edit My Info</Button>
-      {/* Create a Team Form */}
-      {createTeamToggle ? <CreateTeam errors={errors} setCreateTeamToggle={setCreateTeamToggle}/>:<Button variant='outlined' onClick={()=>setCreateTeamToggle(true)}>Create A Team</Button>}
-      {/* Request to join a team */}
-      {joinTeamToggle ? <JoinTeamForm errors={errors} setJoinTeamToggle={setJoinTeamToggle}/>:<Button variant='outlined' onClick={()=>setJoinTeamToggle(true)}>Join A Team</Button>}
-    <Box sx={{width:'100%', display: 'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
-    {editMode && <EditUserForm setEditMode={setEditMode}/>}
-    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
-      <Typography variant='h4'>
-        My Teams
+      <Typography variant="h4">
+        {user.first_name}&nbsp;{user.last_name}
       </Typography>
-        <List>
-      {playerGames.playerTeamReducer.length > 0 && playerGames.playerTeamReducer.map((team, index) => {
-        
-        return (<ListItem key={index} disablePadding alignItems='flex-start'>
-          <ListItemButton>
-           <ListItemIcon>
-           <ListItemText primary={`${team.name}`} secondary={<Typography variant='body2'> League: {team.league.toUpperCase()} Season: {team.year}</Typography>} />
-         </ListItemIcon>
-         </ListItemButton>
-              </ListItem>)
-      })}
-      </List>
-    </Paper>
-    </Box>
-    <LiveGamePage />
+      <Box sx={{width: 'fit-content'}}>
+      <Typography variant="body1">
+        Email: {user.username}<br/>Phone: {formatPhone(user.phone_number)}
+      </Typography>
+      <Divider />
+      </Box>
+      <Typography variant='body2'>Bats: {user.bats.toUpperCase()} | Throws: {user.throws.toUpperCase()}</Typography>
+      <Button
+        variant="outlined"
+        type="button"
+        onClick={() => setEditMode(!editMode)}
+      >
+        Edit My Info
+      </Button>
+      {/* Create a Team Form */}
+      {createTeamToggle ? (
+        <CreateTeam errors={errors} setCreateTeamToggle={setCreateTeamToggle} />
+      ) : (
+        <Button variant="outlined" onClick={() => setCreateTeamToggle(true)}>
+          Create A Team
+        </Button>
+      )}
+      {/* Request to join a team */}
+      {joinTeamToggle ? (
+        <JoinTeamForm errors={errors} setJoinTeamToggle={setJoinTeamToggle} />
+      ) : (
+        <Button variant="outlined" onClick={() => setJoinTeamToggle(true)}>
+          Join A Team
+        </Button>
+      )}
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        {editMode && <EditUserForm setEditMode={setEditMode} />}
+        <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", width: "80%" }}>
+          <Typography variant="h4">My Teams</Typography>
+          <List>
+            {playerGames.playerTeamReducer.length > 0 &&
+              playerGames.playerTeamReducer.map((team, index) => {
+                return (
+                  <ListItem key={index} disablePadding alignItems="flex-start">
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <ListItemText
+                          primary={`${team.name}`}
+                          secondary={
+                            <Typography variant="body2">
+                              {" "}
+                              League: {team.league.toUpperCase()} Season:{" "}
+                              {team.year}
+                            </Typography>
+                          }
+                        />
+                      </ListItemIcon>
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+          </List>
+        </Paper>
+      </Box>
     </Box>
   );
 }

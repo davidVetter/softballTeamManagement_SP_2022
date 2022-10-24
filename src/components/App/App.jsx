@@ -21,6 +21,7 @@ import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
 
 import './App.css';
+import LiveGamePage from '../LiveGamePage/LiveGamePage';
 
 function App() {
   const dispatch = useDispatch();
@@ -66,6 +67,14 @@ function App() {
             path="/team"
           >
             <InfoPage />
+          </ProtectedRoute>
+
+          <ProtectedRoute
+            // logged in shows LiveGamePage else shows LoginPage
+            exact
+            path="/live"
+          >
+            <LiveGamePage />
           </ProtectedRoute>
 
           <Route

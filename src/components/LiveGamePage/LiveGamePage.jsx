@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Typography, Grid, FormLabel, TextField, Button, Paper, Box, Select, FormControl, MenuItem, InputLabel } from '@mui/material';
 
 function LiveGamePage() {
+    // FORMAT THE END GAME OBJECT NEEDS TO BE IN
     const defaultGame = {
         teamId: "1",
         opponent: "The Losers",
@@ -44,7 +45,7 @@ function LiveGamePage() {
         ]
     }
     const dispatch = useDispatch();
-
+    // Send complete game object to db
     const completeGame = () => {
        dispatch({
         type: 'ADD_GAME',
