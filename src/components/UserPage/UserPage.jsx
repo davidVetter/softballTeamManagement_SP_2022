@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import { Button, Box, Typography, Paper, TextField, Grid, FormLabel} from '@mui/material';
+import { useHistory } from 'react-router-dom';
+import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
 import EditUserForm from '../EditUserForm/EditUserForm'
 import LiveGamePage from '../LiveGamePage/LiveGamePage';
 import CreateTeam from '../CreateTeam/CreateTeam';
@@ -13,49 +14,52 @@ function UserPage() {
   const teamGames = useSelector((store) => store.game);
   const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
-  const [userIdApprove, setUserIdApprove] = useState('');
-  const [teamIdApprove, setTeamIdApprove] = useState('');
-  const [userIdManager, setUserIdManager] = useState('');
-  const [teamIdManager, setTeamIdManager] = useState('');
-  const [userIdRemove, setUserIdRemove] = useState('');
-  const [teamIdRemove, setTeamIdRemove] = useState('');
+  // const history = useHistory();
+  // const [userIdApprove, setUserIdApprove] = useState('');
+  // const [teamIdApprove, setTeamIdApprove] = useState('');
+  // const [userIdManager, setUserIdManager] = useState('');
+  // const [teamIdManager, setTeamIdManager] = useState('');
+  // const [userIdRemove, setUserIdRemove] = useState('');
+  // const [teamIdRemove, setTeamIdRemove] = useState('');
   const [editMode, setEditMode] = useState(false);
+  const [createTeamToggle, setCreateTeamToggle] = useState(false);
+  const [joinTeamToggle, setJoinTeamToggle] = useState(false);
 
-  const promoteManager = (event) => {
-    event.preventDefault();
-    // Send data to saga for POST to server
-    dispatch({
-      type: 'PROMOTE_MANAGER',
-      payload: {
-        userId: userIdManager,
-        teamId: teamIdManager
-      }
-    });
-  }; // end registerTeam
+  // const promoteManager = (event) => {
+  //   event.preventDefault();
+  //   // Send data to saga for POST to server
+  //   dispatch({
+  //     type: 'PROMOTE_MANAGER',
+  //     payload: {
+  //       userId: userIdManager,
+  //       teamId: teamIdManager
+  //     }
+  //   });
+  // }; // end registerTeam
 
-  const removeUserTeam = (event) => {
-    event.preventDefault();
-    // Send data to saga for POST to server
-    dispatch({
-      type: 'REMOVE_USER_TEAM',
-      payload: {
-        userId: userIdRemove,
-        teamId: teamIdRemove
-      }
-    });
-  }; // end registerTeam
+  // const removeUserTeam = (event) => {
+  //   event.preventDefault();
+  //   // Send data to saga for POST to server
+  //   dispatch({
+  //     type: 'REMOVE_USER_TEAM',
+  //     payload: {
+  //       userId: userIdRemove,
+  //       teamId: teamIdRemove
+  //     }
+  //   });
+  // }; // end registerTeam
 
-  const approveUser = (event) => {
-    event.preventDefault();
-    // Send data to saga for POST to server
-    dispatch({
-      type: 'APPROVE_USER',
-      payload: {
-        userId: userIdApprove,
-        teamId: teamIdApprove
-      }
-    });
-  }; // end registerTeam
+  // const approveUser = (event) => {
+  //   event.preventDefault();
+  //   // Send data to saga for POST to server
+  //   dispatch({
+  //     type: 'APPROVE_USER',
+  //     payload: {
+  //       userId: userIdApprove,
+  //       teamId: teamIdApprove
+  //     }
+  //   });
+  // }; // end registerTeam
 
   useEffect(() => {
     dispatch({
@@ -99,21 +103,32 @@ function UserPage() {
     >
       Log Out
     </Button>
+    <Button variant='outlined' type="button" onClick={() => setEditMode(!editMode)}>Edit My Info</Button>
+      {/* Create a Team Form */}
+      {createTeamToggle ? <CreateTeam errors={errors} setCreateTeamToggle={setCreateTeamToggle}/>:<Button variant='outlined' onClick={()=>setCreateTeamToggle(true)}>Create A Team</Button>}
+      {/* Request to join a team */}
+      {joinTeamToggle ? <JoinTeamForm errors={errors} setJoinTeamToggle={setJoinTeamToggle}/>:<Button variant='outlined' onClick={()=>setJoinTeamToggle(true)}>Join A Team</Button>}
     <Box sx={{width:'100%', display: 'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
+    {editMode && <EditUserForm setEditMode={setEditMode}/>}
     <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
       <Typography variant='h4'>
         My Teams
       </Typography>
+        <List>
       {playerGames.playerTeamReducer.length > 0 && playerGames.playerTeamReducer.map((team, index) => {
-          return <p key={index}>{team.name} League: {team.league} Season: {team.year}</p>
-        })}
+        
+        return (<ListItem key={index} disablePadding alignItems='flex-start'>
+          <ListItemButton>
+           <ListItemIcon>
+           <ListItemText primary={`${team.name}`} secondary={<Typography variant='body2'> League: {team.league.toUpperCase()} Season: {team.year}</Typography>} />
+         </ListItemIcon>
+         </ListItemButton>
+              </ListItem>)
+      })}
+      </List>
     </Paper>
-    {/* Create a Team Form */}
-    <CreateTeam errors={errors} />
-    {/* Request to join a team */}
-    <JoinTeamForm errors={errors}/>
     {/* approve user form */}
-    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
+    {/* <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={approveUser}>
       <Grid container alignItems='center' justify='center' direction='column'>
       <Typography variant='h4' gutterBottom>Approve Player</Typography>
@@ -256,11 +271,10 @@ function UserPage() {
       </Grid>
       </Grid>
     </form>
-    </Paper>
-    </Box>
-    <Button variant='outlined' type="button" onClick={() => setEditMode(!editMode)}>Edit My Info</Button>
+    </Paper> */}
+    
     {/* <Button variant='outlined' type="button" onClick={() => setEditMode(false)}>Cancel</Button> */}
-    {editMode && <EditUserForm setEditMode={setEditMode}/>}
+    </Box>
     <LiveGamePage />
     </Box>
   );

@@ -6,7 +6,7 @@ function CreateTeam(props) {
     const dispatch = useDispatch();
     const [teamName, setTeamName] = useState('');
     const [league, setLeague] = useState('');
-    const [season, setSeason] = useState('');
+    const currentYear = new Date().getFullYear();
     const [yourPlayerNumber, setYourPlayerNumber] = useState('');
     
     const registerTeam = (event) => {
@@ -17,7 +17,7 @@ function CreateTeam(props) {
           payload: {
             teamName,
             league,
-            year: season,
+            year: currentYear,
             number: yourPlayerNumber
           }
         });
@@ -28,7 +28,6 @@ function CreateTeam(props) {
     const clearCreateTeam = () => {
     setTeamName('');
     setLeague('');
-    setSeason('');
     setYourPlayerNumber('');
   }
 
@@ -76,14 +75,13 @@ function CreateTeam(props) {
             <FormLabel htmlFor="season">
               <TextField
                 variant='outlined'
-                label='Season (year)'
+                label='Year'
                 size='normal'
                 filled='true'
                 type="text"
                 name="season"
-                value={season}
-                required
-                onChange={(event) => setSeason(event.target.value)}
+                value={currentYear}
+                disabled={true}
               />
             </FormLabel>
           </Grid>
@@ -103,7 +101,8 @@ function CreateTeam(props) {
             </FormLabel>
           </Grid>
           <Grid item sx={{mb: 2}}>
-            <Button variant='contained' type="submit" name="submit" value="Register">Register</Button>
+            <Button variant='contained' type="submit" name="submit" value="Register">Create</Button>
+            <Button variant='outlined' type="button" name="cancel" onClick={()=>props.setCreateTeamToggle(false)}>Cancel</Button>
           </Grid>
           </Grid>
         </form>

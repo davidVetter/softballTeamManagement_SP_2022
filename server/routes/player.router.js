@@ -56,7 +56,8 @@ router.get('/team/', rejectUnauthenticated, (req, res) => {
                  FROM "user_team"
                  JOIN "team" ON "team"."id"="user_team"."team_id"
                  JOIN "user" ON "user"."id"="user_team"."user_id"
-                 WHERE "user"."id"=$1;`;
+                 WHERE "user"."id"=$1
+                 ORDER BY "team"."year" DESC, "team"."league", "team"."id";`;
   pool.query(query, [req.user.id])
       .then(result => {
         console.log('this is results.rows in team get: ', result.rows);
