@@ -164,7 +164,7 @@ function InfoPage() {
               {userTeamGames.playerTeamReducer.map((team, index) => {
                 return (
                   <MenuItem key={index} value={team.id}>
-                    {team.name} | {team.league} | Season: {team.year}
+                    {team.name} | Season: {team.year} | {team.league.toUpperCase()}
                   </MenuItem>
                 );
               })}
@@ -271,7 +271,11 @@ function InfoPage() {
                 </TableRow>
               ))
             ) : (
-              <Typography variant="body2">NO ACTIVE PLAYERS</Typography>
+              <TableRow>
+                <TableCell>
+                  <Typography variant="body2">NO ACTIVE PLAYERS</Typography>
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>
@@ -344,7 +348,11 @@ function InfoPage() {
                 </TableRow>
               ))
             ) : (
-              <Typography variant="body2">NO GAMES</Typography>
+              <TableRow>
+              <TableCell>
+                <Typography variant="body2">NO GAMES</Typography>
+              </TableCell>
+            </TableRow>
             )}
           </TableBody>
         </Table>

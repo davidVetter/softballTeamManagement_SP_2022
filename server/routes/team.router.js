@@ -41,9 +41,10 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
   // This GET will get all teams
   router.get('/all', rejectUnauthenticated, (req, res) => {
     // GET route code here
-    const query = `SELECT * FROM "team"`;
+    const query = `SELECT * FROM "team" ORDER BY "year", "league", "id"`;
     pool.query(query)
         .then(result => {
+            console.log('This is ALL TEAMS: ', result.rows);
           res.send(result.rows);
         })
         .catch((err) => {
