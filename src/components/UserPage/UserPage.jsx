@@ -4,17 +4,15 @@ import { Button, Box, Typography, Paper, TextField, Grid, FormLabel} from '@mui/
 import EditUserForm from '../EditUserForm/EditUserForm'
 import LiveGamePage from '../LiveGamePage/LiveGamePage';
 import CreateTeam from '../CreateTeam/CreateTeam';
+import JoinTeamForm from '../JoinTeamForm/JoinTeamForm';
 
 function UserPage() {
-  // this component doesn't do much to start, just renders some user reducer info to the DOM
   const user = useSelector((store) => store.user);
   const playerGames = useSelector((store) => store.player);
   const teamPlayers = useSelector((store) => store.team);
   const teamGames = useSelector((store) => store.game);
   const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
-  const [teamId, setTeamId] = useState('');
-  const [number, setNumber] = useState('');
   const [userIdApprove, setUserIdApprove] = useState('');
   const [teamIdApprove, setTeamIdApprove] = useState('');
   const [userIdManager, setUserIdManager] = useState('');
@@ -22,18 +20,6 @@ function UserPage() {
   const [userIdRemove, setUserIdRemove] = useState('');
   const [teamIdRemove, setTeamIdRemove] = useState('');
   const [editMode, setEditMode] = useState(false);
-
-  const registerUser = (event) => {
-    event.preventDefault();
-    // Send data to saga for POST to server
-    dispatch({
-      type: 'ADD_USER_TEAM',
-      payload: {
-        teamId,
-        number
-      }
-    });
-  }; // end registerTeam
 
   const promoteManager = (event) => {
     event.preventDefault();
@@ -125,54 +111,8 @@ function UserPage() {
     {/* Create a Team Form */}
     <CreateTeam errors={errors} />
     {/* Request to join a team */}
-    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
-    <form onSubmit={registerUser}>
-      <Grid container alignItems='center' justify='center' direction='column'>
-      <Typography variant='h4' gutterBottom>Add Yourself to Team - Pending</Typography>
-      {errors.registrationMessage && (
-        <Typography variant='h6' className="alert" role="alert">
-          {errors.registrationMessage}
-        </Typography>
-      )}
-      {/* {teamPlayers.teamPlayersPending.length > 0 && teamPlayers.teamPlayersPending.map((player, index) => {
-        return <p key={index}>{player.first_name}</p>
-      })} */}
-      <Grid item sx={{mb: 1}}>
-        <FormLabel htmlFor="username">
-          <TextField
-            variant='outlined'
-            label='teamId'
-            size='normal'
-            type="text"
-            name="username"
-            filled='true'
-            value={teamId}
-            required
-            onChange={(event) => setTeamId(event.target.value)}
-          />
-        </FormLabel>
-      </Grid>
-      <Grid item sx={{mb: 1}}>
-        <FormLabel htmlFor="password">
-          <TextField
-            variant='outlined'
-            label='Player Number'
-            size='normal'
-            filled='true'
-            type="text"
-            name="password"
-            value={number}
-            required
-            onChange={(event) => setNumber(event.target.value)}
-          />
-        </FormLabel>
-      </Grid>
-      <Grid item sx={{mb: 2}}>
-        <Button variant='contained' type="submit" name="submit" value="Register">Register</Button>
-      </Grid>
-      </Grid>
-    </form>
-    </Paper>
+    <JoinTeamForm errors={errors}/>
+    {/* approve user form */}
     <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={approveUser}>
       <Grid container alignItems='center' justify='center' direction='column'>
