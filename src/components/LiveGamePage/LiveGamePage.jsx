@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, MenuItem, InputLabel, Select, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
+import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, FormControl, MenuItem, InputLabel, Select, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
 
 function LiveGamePage() {
     const teamPlayers = useSelector((store) => store.team);
     const dispatch = useDispatch(); // allows dispatchs to be performed
     let location = useLocation(); // allows reading of the current url
     const [teamRoster, setTeamRoster] = useState([]);
-    const [lineupComplete, setLineupComplete] = useState(localStorage.getItem('gameInProgess')||false);
-    const [gameInProgess, setGameInProgress] = useState(localStorage.getItem('gameInProgess'));
-    const [position, setPosition] = useState('');
+    // const [lineupComplete, setLineupComplete] = useState(localStorage.getItem('gameInProgess')||false);
+    // const [gameInProgess, setGameInProgress] = useState(localStorage.getItem('gameInProgess'));
+    // const [position, setPosition] = useState('');
     const [toggle, setToggle] = useState(false);
 
     // will get the current players for the team id in url
@@ -175,8 +175,9 @@ function LiveGamePage() {
           index ++;
         }
         localStorage.setItem('playerObjectArr', JSON.stringify(playerObjectArr));
-        setLineupComplete(true);
-        setGameInProgress(true);
+        // setLineupComplete(true);
+        // setGameInProgress(true);
+        setToggle(!toggle);
 
     }
 
@@ -195,15 +196,17 @@ function LiveGamePage() {
                                     <Button onClick={()=>movePlayerUp(index, player.id)}>UP</Button>
                                     <Button onClick={()=>movePlayerDown(index, player.id)}>DOWN</Button>
                                     <Button onClick={()=>removePlayer(index, player.id)}>REMOVE</Button>
+                                    <FormControl >
                                     <InputLabel htmlFor="team">Position</InputLabel>
                                         <Select
                                         value={player.position||''}
                                         label="Position"
+                                        sx={{width: '100px'}}
                                         required
                                         size="small"
                                         onChange={(event) => {
                                             changePosition(event, player.user_id);
-                                            setPosition(event.target.value)
+                                            // setPosition(event.target.value)
                                         }}
                                         >
                                             <MenuItem key='P' value='P'>P</MenuItem>
@@ -218,6 +221,7 @@ function LiveGamePage() {
                                             <MenuItem key='RF' value='RF'>RF</MenuItem>
                                             <MenuItem key='EH' value='EH'>EH</MenuItem>
                                         </Select>
+                                        </FormControl>
                                 </ListItemIcon>
                             </ListItemButton>
                         </ListItem>
