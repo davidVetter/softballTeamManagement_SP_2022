@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, InputLabel, Select, MenuItem, TableRow, TableHead, TableContainer, TableCell, TableBody, Table} from '@mui/material';
 import './InfoPage.css';
 
@@ -21,8 +21,11 @@ function InfoPage() {
   const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
   const history = useHistory();
+  let location = useLocation(); // allows reading of the current url
+  let teamId = location.pathname.match(/\d+/g);
+  console.log('this is teamId on load: ', teamId);
   const [teamClick, setTeamClick] = useState(true);
-  const [team, setTeam] = useState('');
+  const [team, setTeam] = useState(teamId===null?'':Number(teamId[0]));
   const [firstClick, setFirstClick] = useState(true);
   const [toggle, setToggle] = useState(false);
 
@@ -38,10 +41,20 @@ function InfoPage() {
     dispatch({
       type: 'RESET_MANAGER'
     });
+    if(location.pathname.match(/\d+/g)===null && userTeamGames.playerTeamReducer.length > 0) {
+      setTeam(userTeamGames.playerTeamReducer[0].id);
+    }
+    if (location.pathname.match(/\d+/g) > 0){
+      let teamId = location.pathname.match(/\d+/g);
+      console.log('teamid: ', teamId);
+      setTeamClick(!teamClick);
+      setTeam(Number(teamId[0]));
+      console.log('This is team in useEffect: ', team);
+    }
   }, []);
   // sets default team to the first team in players team array
   useEffect(() => {
-    if(userTeamGames.playerTeamReducer.length > 0) {
+    if(userTeamGames.playerTeamReducer.length < 0) {
     setTeam(userTeamGames.playerTeamReducer[0].id);
     }
   }, [userTeamGames]);
@@ -72,13 +85,12 @@ function InfoPage() {
       payload: team
     });
   }
-  }, [team, toggle]);
+  }, [team, toggle, teamClick]);
 
   // Sets team local state to determine which team's info to display
   const selectTeam = (e) => {
     setTeamClick(!teamClick);
     setTeam(e.target.value);
-    // setWins(countWins());
   }
   // converts the selected teams id to team's name for display
   const teamName = (e) => {

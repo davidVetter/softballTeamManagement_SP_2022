@@ -14,6 +14,7 @@ function UserPage() {
   const teamGames = useSelector((store) => store.game);
   const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [editMode, setEditMode] = useState(false);
   const [createTeamToggle, setCreateTeamToggle] = useState(false);
   const [joinTeamToggle, setJoinTeamToggle] = useState(false);
@@ -91,7 +92,17 @@ function UserPage() {
               playerGames.playerTeamReducer.map((team, index) => {
                 return (
                   <ListItem key={index} disablePadding alignItems="flex-start">
-                    <ListItemButton>
+                    <ListItemButton onClick={()=>{
+                      dispatch({
+                        type: 'GET_TEAM_GAMES',
+                        payload: team.id
+                      });
+                      dispatch({
+                        type: 'GET_TEAM_PLAYERS',
+                        payload: team.id
+                      });
+                      history.push(`/team/${team.id}`)
+                      }}>
                       <ListItemIcon>
                         <ListItemText
                           primary={`${team.name}`}
