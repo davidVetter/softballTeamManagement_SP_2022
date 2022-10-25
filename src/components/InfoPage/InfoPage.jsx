@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, InputLabel, Select, MenuItem, TableRow, TableHead, TableContainer, TableCell, TableBody, Table} from '@mui/material';
 import './InfoPage.css';
 
@@ -19,6 +20,7 @@ function InfoPage() {
   const teamGames = useSelector((store) => store.game);
   const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [teamClick, setTeamClick] = useState(true);
   const [team, setTeam] = useState('');
   const [firstClick, setFirstClick] = useState(true);
@@ -147,6 +149,16 @@ function InfoPage() {
     });
   }
 
+  // function will start a new game for the selected team
+  const startGame = () => {
+    dispatch({
+      type: 'GET_TEAM_PLAYERS',
+      payload: team
+    })
+    history.push(`/live/${team}`);
+
+  }
+
   return (
     <Box onClick={closeSelect}>
       <Paper>
@@ -179,6 +191,7 @@ function InfoPage() {
               <Typography variant="h4" onClick={teamNameClick}>
                 {teamName()}
               </Typography>
+              <Button variant='contained' onClick={startGame}>PLAY BALL!</Button>
             </>
           )
         )}

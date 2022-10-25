@@ -71,7 +71,7 @@ function App() {
 
           <ProtectedRoute
             // logged in shows LiveGamePage else shows LoginPage
-            exact
+            // exact
             path="/live"
           >
             <LiveGamePage />
