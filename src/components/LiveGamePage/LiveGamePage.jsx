@@ -6,18 +6,23 @@ import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, FormControl
 function LiveGamePage() {
     const teamPlayers = useSelector((store) => store.team);
     const dispatch = useDispatch(); // allows dispatchs to be performed
+    const history = useHistory();
     let location = useLocation(); // allows reading of the current url
     const [teamRoster, setTeamRoster] = useState([]);
-    // const [lineupComplete, setLineupComplete] = useState(localStorage.getItem('gameInProgess')||false);
-    // const [gameInProgess, setGameInProgress] = useState(localStorage.getItem('gameInProgess'));
-    // const [position, setPosition] = useState('');
+    // toggle used to trigger rerenders
     const [toggle, setToggle] = useState(false);
+    // object that holds the current inning number and inning 'half' (home/away or top/bottom)
+    const [currentInning, setCurrentInning] = useState({});
+    // holds outs for current innning
+    const [currentOuts, setCurrentOuts] = useState('');
+    // index of the current batter
+    const [currentBatter, setCurrentBatter] = useState(0);
 
     // will get the current players for the team id in url
     useEffect(() => {
-        // if (!localStorage.getItem('gameInProgess')) {
         let id = location.pathname.match(/\d+/g);
         console.log('This is id in useEffect: ', id);
+        checkTeam(id);
         dispatch({
           type: 'GET_TEAM_PLAYERS',
           payload: id
@@ -27,9 +32,11 @@ function LiveGamePage() {
             payload: id
           }); 
           console.log('in useeffect');
-        // }
       }, []);
-      // update current roster
+
+      // set roster to player array of objects in localStorage if it
+      // exists otherwise set roster to full team roster based on selected
+      // team when game was started from "teamDisplay"
       useEffect(() => {
         if(!localStorage.getItem('playerObjectArr')){
         setTeamRoster(teamPlayers.teamPlayersPersonalInfoReducer);
@@ -85,10 +92,22 @@ function LiveGamePage() {
     //     type: 'ADD_GAME',
     //     payload: defaultGame
     //    }) 
-    localStorage.removeItem('gameInProgess');
+    localStorage.removeItem('gameInProgress');
     localStorage.removeItem('playerObjectArr');
+    localStorage.removeItem('currentInning');
+    localStorage.removeItem('currentBatter');
     setToggle(!toggle);
     }
+    // This function accepts checks a team id exists in the url
+    // if no team id(number) the user is returned home
+    const checkTeam = (id) => {
+        if (!id && !localStorage.getItem('gameInProgress')){
+            alert('No team selected! Returning to home page...');
+            history.push('/');
+        }
+    }
+    // Move a player up in the lineup before setting
+    // player at #1 moves to bottom on up
     const movePlayerUp = (index, id) => {
         let newRoster = [...teamRoster];
         let temp = newRoster[index-1];
@@ -103,8 +122,9 @@ function LiveGamePage() {
         console.log('This is new newRoster(movePlayerUP): ', newRoster);
         }
         setTeamRoster(newRoster);
-        // setLineup();
     }
+    // Move a player down in the lineup before setting
+    // player at last position moves to top of lineup
     const movePlayerDown = (index, id) => {
         let newRoster = [...teamRoster];
         let temp = newRoster[index+1];
@@ -120,14 +140,13 @@ function LiveGamePage() {
         console.log('This is new newRoster(movePlayerDOWN): ', newRoster);
         }
         setTeamRoster(newRoster);
-        // setLineup();
     }
+    // Remove a player from the lineup (does not remove player from team only this view)
     const removePlayer = (index) => {
         let newRoster = [...teamRoster];
         console.log('this is newRoster: ', newRoster);
         newRoster.splice(index, 1);
         setTeamRoster(newRoster);
-        // setLineup();
     }
     // this function accepts a the character abbr for a position as string
     // and an user_id
@@ -145,9 +164,10 @@ function LiveGamePage() {
         }
         setTeamRoster(newRoster);
     }
+    // this function sets an object into localStorage that contains
+    // the user set batting lineup
     const setLineup = () => {
-        localStorage.setItem('lineup', JSON.stringify(teamRoster));
-        localStorage.setItem('gameInProgess', true);
+        localStorage.setItem('gameInProgress', true);
         localStorage.setItem('currentBatter', 0);
         localStorage.setItem('currentInning', JSON.stringify({innning: 1, half: 'away'}));
         const playerObjectArr = [];
@@ -175,15 +195,12 @@ function LiveGamePage() {
           index ++;
         }
         localStorage.setItem('playerObjectArr', JSON.stringify(playerObjectArr));
-        // setLineupComplete(true);
-        // setGameInProgress(true);
         setToggle(!toggle);
-
     }
 
     return (
         <Box>
-            {!localStorage.getItem('gameInProgess') &&
+            {!localStorage.getItem('gameInProgress') &&
             <>
             <List>
             {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 && teamRoster.map((player, index) =>{
@@ -206,7 +223,6 @@ function LiveGamePage() {
                                         size="small"
                                         onChange={(event) => {
                                             changePosition(event, player.user_id);
-                                            // setPosition(event.target.value)
                                         }}
                                         >
                                             <MenuItem key='P' value='P'>P</MenuItem>
