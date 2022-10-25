@@ -103,7 +103,7 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
     //     return;
     // }
     const query = `SELECT 
-                    "user"."id" AS "userID", 
+                    "user"."id" AS "user_id", 
                     username AS email, 
                     first_name, 
                     last_name, 
@@ -122,7 +122,8 @@ router.get('/games/:teamid', rejectUnauthenticated, (req, res) => {
                     "team"."id" AS "teamID" FROM "user"
                    JOIN "user_team" ON "user_team"."user_id"="user"."id" 
                    JOIN "team" ON "team"."id"="user_team"."team_id" 
-                   WHERE "team"."id"=$1 AND "user_team"."approved"='true';`;
+                   WHERE "team"."id"=$1 AND "user_team"."approved"='true'
+                   ORDER BY "user"."id";`;
     pool.query(query, [team])
         .then(result => {
             

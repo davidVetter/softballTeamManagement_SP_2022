@@ -8,13 +8,14 @@ function LiveGamePage() {
     const dispatch = useDispatch(); // allows dispatchs to be performed
     let location = useLocation(); // allows reading of the current url
     const [teamRoster, setTeamRoster] = useState([]);
-    const [lineupComplete, setLineupComplete] = useState(localStorage.getItem('gameInProgess')?true:false);
+    const [lineupComplete, setLineupComplete] = useState(localStorage.getItem('gameInProgess')||false);
     const [gameInProgess, setGameInProgress] = useState(localStorage.getItem('gameInProgess'));
     const [position, setPosition] = useState('');
+    const [toggle, setToggle] = useState(false);
 
     // will get the current players for the team id in url
     useEffect(() => {
-        if (localStorage.getItem('gameInProgess')) {
+        // if (!localStorage.getItem('gameInProgess')) {
         let id = location.pathname.match(/\d+/g);
         console.log('This is id in useEffect: ', id);
         dispatch({
@@ -26,12 +27,16 @@ function LiveGamePage() {
             payload: id
           }); 
           console.log('in useeffect');
-        }
+        // }
       }, []);
       // update current roster
       useEffect(() => {
+        if(!localStorage.getItem('playerObjectArr')){
         setTeamRoster(teamPlayers.teamPlayersPersonalInfoReducer);
-      }, [teamPlayers.teamPlayersPersonalInfoReducer]);
+        } else {
+            setTeamRoster(JSON.parse(localStorage.getItem('playerObjectArr')));
+        }   
+      }, [teamPlayers.teamPlayersPersonalInfoReducer, toggle]);
 
     // FORMAT THE END GAME OBJECT NEEDS TO BE IN
     const defaultGame = {
@@ -76,10 +81,13 @@ function LiveGamePage() {
     }
     // Send complete game object to db
     const completeGame = () => {
-       dispatch({
-        type: 'ADD_GAME',
-        payload: defaultGame
-       }) 
+    //    dispatch({
+    //     type: 'ADD_GAME',
+    //     payload: defaultGame
+    //    }) 
+    localStorage.removeItem('gameInProgess');
+    localStorage.removeItem('playerObjectArr');
+    setToggle(!toggle);
     }
     const movePlayerUp = (index, id) => {
         let newRoster = [...teamRoster];
@@ -95,7 +103,7 @@ function LiveGamePage() {
         console.log('This is new newRoster(movePlayerUP): ', newRoster);
         }
         setTeamRoster(newRoster);
-        setLineup();
+        // setLineup();
     }
     const movePlayerDown = (index, id) => {
         let newRoster = [...teamRoster];
@@ -112,24 +120,26 @@ function LiveGamePage() {
         console.log('This is new newRoster(movePlayerDOWN): ', newRoster);
         }
         setTeamRoster(newRoster);
-        setLineup();
+        // setLineup();
     }
     const removePlayer = (index) => {
         let newRoster = [...teamRoster];
         console.log('this is newRoster: ', newRoster);
         newRoster.splice(index, 1);
         setTeamRoster(newRoster);
-        setLineup();
+        // setLineup();
     }
     // this function accepts a the character abbr for a position as string
     // and an user_id
     // The position for the user supplied will be the set based on user_id
-    const changePosition = (e, id) => {
+    const changePosition = (e, id, userID) => {
         console.log('In changes position with e.value: ', e.target.value);
         console.log('In changes position with id: ', id);
+        console.log('In changes position with userID: ', userID);
         let newRoster = [...teamRoster];
+        console.log('This is new roster: ', newRoster);
         for (let i=0; i<teamRoster.length; i++) {
-            if (newRoster[i].userID===id) {
+            if (newRoster[i].user_id===id) {
                 newRoster[i].position = e.target.value;
             }
         }
@@ -145,7 +155,8 @@ function LiveGamePage() {
         // to an array that will be stored in a cookie to hold game data until the game in completed and sent to db
         let index = 0;
         for (let player of teamRoster) {
-          playerObjectArr.push({
+          console.log('This is player in setLineup: ', player);
+            playerObjectArr.push({
             user_id: player.userID,
             hits: 0,
             at_bats: 0,
@@ -171,7 +182,7 @@ function LiveGamePage() {
 
     return (
         <Box>
-            {localStorage.getItem('gameInProgess') &&
+            {!localStorage.getItem('gameInProgess') &&
             <>
             <List>
             {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 && teamRoster.map((player, index) =>{
@@ -184,14 +195,14 @@ function LiveGamePage() {
                                     <Button onClick={()=>movePlayerUp(index, player.id)}>UP</Button>
                                     <Button onClick={()=>movePlayerDown(index, player.id)}>DOWN</Button>
                                     <Button onClick={()=>removePlayer(index, player.id)}>REMOVE</Button>
-                                    <InputLabel htmlFor="team">Team</InputLabel>
+                                    <InputLabel htmlFor="team">Position</InputLabel>
                                         <Select
                                         value={player.position||''}
                                         label="Position"
                                         required
                                         size="small"
                                         onChange={(event) => {
-                                            changePosition(event, player.userID);
+                                            changePosition(event, player.user_id);
                                             setPosition(event.target.value)
                                         }}
                                         >
@@ -215,7 +226,16 @@ function LiveGamePage() {
                 </List>
                 <Button onClick={setLineup}>Set Lineup</Button>
                 </>}
-            {teamRoster && <p>{JSON.stringify(teamRoster)}</p>}
+                <Typography variant='h4'>Lineup</Typography>
+                {teamRoster && teamRoster.map((player, index)=>{ 
+                    return (
+                    <Typography key={index} variant='body1'>
+                        {index+1}&nbsp;
+                        {player.first_name}&nbsp;
+                        {player.last_name}&nbsp;
+                        {player.position}
+                    </Typography>
+                    )})}
             <Button variant='outlined' onClick={completeGame}>Complete Game</Button>
         </Box>
     )
