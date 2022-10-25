@@ -14,7 +14,7 @@ function LiveGamePage() {
     // object that holds the current inning number and inning 'half' (home/away or top/bottom)
     const [currentInning, setCurrentInning] = useState(localStorage.getItem('currentInning')?JSON.parse(localStorage.getItem('currentInning')):{inning: 1, half: 'away'});
     // holds outs for current innning
-    const [currentOuts, setCurrentOuts] = useState('');
+    const [currentOuts, setCurrentOuts] = useState(localStorage.getItem('currentOuts')||0);
     // index of the current batter
     const [currentBatter, setCurrentBatter] = useState(localStorage.getItem('currentBatter')||0);
     // current lineup for game
@@ -45,6 +45,7 @@ function LiveGamePage() {
         } else {
             setTeamRoster(JSON.parse(localStorage.getItem('playerObjectArr')));
             setCurrentInning(JSON.parse(localStorage.getItem('currentInning')));
+            setCurrentOuts(localStorage.getItem('currentOuts'));
         }   
       }, [teamPlayers.teamPlayersPersonalInfoReducer, toggle]);
 
@@ -99,6 +100,7 @@ function LiveGamePage() {
     localStorage.removeItem('playerObjectArr');
     localStorage.removeItem('currentInning');
     localStorage.removeItem('currentBatter');
+    localStorage.removeItem('currentOuts');
     setToggle(!toggle);
     setCurrentInning({});
     }
@@ -173,6 +175,7 @@ function LiveGamePage() {
     const setLineup = () => {
         localStorage.setItem('gameInProgress', true);
         localStorage.setItem('currentBatter', 0);
+        localStorage.setItem('currentOuts', 0);
         localStorage.setItem('currentInning', JSON.stringify({innning: 1, half: 'away'}));
         const playerObjectArr = [];
         // loop through the sorted batting order and push an object with default game start and each user id, position and place in lineup
@@ -271,7 +274,11 @@ function LiveGamePage() {
                         {player.position}
                     </Typography>
                     )})}
-                {localStorage.getItem('currentBatter') && <Typography variant='h6'>Inning: {currentInning.half==='away'?'Top':'Bottom'}&nbsp;{currentInning.innning}</Typography>}
+                {localStorage.getItem('currentBatter') && 
+                <Box>
+                    <Typography variant='h6'>Inning: {currentInning.half==='away'?'Top':'Bottom'}&nbsp;{currentInning.innning}</Typography>
+                    <Typography variant='h6'>Outs: {currentOuts}</Typography>
+                </Box>}
                 {localStorage.getItem('gameInProgress') && 
                     <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                         <Paper elevation={8} sx={{mb: 2, width: '80%', padding: 2}}>
