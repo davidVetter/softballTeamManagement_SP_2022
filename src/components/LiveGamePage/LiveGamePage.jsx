@@ -12,11 +12,13 @@ function LiveGamePage() {
     // toggle used to trigger rerenders
     const [toggle, setToggle] = useState(false);
     // object that holds the current inning number and inning 'half' (home/away or top/bottom)
-    const [currentInning, setCurrentInning] = useState({});
+    const [currentInning, setCurrentInning] = useState(localStorage.getItem('currentInning')?JSON.parse(localStorage.getItem('currentInning')):{inning: 1, half: 'away'});
     // holds outs for current innning
     const [currentOuts, setCurrentOuts] = useState('');
     // index of the current batter
-    const [currentBatter, setCurrentBatter] = useState(0);
+    const [currentBatter, setCurrentBatter] = useState(localStorage.getItem('currentBatter')||0);
+    // current lineup for game
+    const [currentLineup, setCurrentLineup] = useState(localStorage.getItem('playerObjectArr')?JSON.parse(localStorage.getItem('playerObjectArr')):{});
 
     // will get the current players for the team id in url
     useEffect(() => {
@@ -42,6 +44,7 @@ function LiveGamePage() {
         setTeamRoster(teamPlayers.teamPlayersPersonalInfoReducer);
         } else {
             setTeamRoster(JSON.parse(localStorage.getItem('playerObjectArr')));
+            setCurrentInning(JSON.parse(localStorage.getItem('currentInning')));
         }   
       }, [teamPlayers.teamPlayersPersonalInfoReducer, toggle]);
 
@@ -97,6 +100,7 @@ function LiveGamePage() {
     localStorage.removeItem('currentInning');
     localStorage.removeItem('currentBatter');
     setToggle(!toggle);
+    setCurrentInning({});
     }
     // This function accepts checks a team id exists in the url
     // if no team id(number) the user is returned home
@@ -190,13 +194,24 @@ function LiveGamePage() {
             triple: 0,
             hr: 0,
             first_name: player.first_name,
-            last_name: player.last_name
+            last_name: player.last_name,
+            number: player.number
           });
           index ++;
         }
         localStorage.setItem('playerObjectArr', JSON.stringify(playerObjectArr));
         setToggle(!toggle);
+        setCurrentLineup(playerObjectArr);
     }
+    // This will determine the batter who is up next
+    // next batter in list unless the end of the list, then first batter
+    const onDeck = () => {
+        if (Number(currentBatter) === currentLineup.length-1) {
+          return 0;
+        } else {
+          return Number(currentBatter)+1;
+        }
+      }
 
     return (
         <Box>
@@ -256,6 +271,22 @@ function LiveGamePage() {
                         {player.position}
                     </Typography>
                     )})}
+                {localStorage.getItem('currentBatter') && <Typography variant='h6'>Inning: {currentInning.half==='away'?'Top':'Bottom'}&nbsp;{currentInning.innning}</Typography>}
+                {localStorage.getItem('gameInProgress') && 
+                    <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                        <Paper elevation={8} sx={{mb: 2, width: '80%', padding: 2}}>
+                            <Typography variant='h5'>Current Batter:<br />{currentLineup[currentBatter].first_name}&nbsp;{currentLineup[currentBatter].last_name}&nbsp;#{currentLineup[currentBatter].number}</Typography>
+                            <Divider/>
+                            <Typography variant='h6'>{currentLineup[currentBatter].hits}-{currentLineup[currentBatter].at_bats}</Typography>
+                            <Typography variant='body1'>Lineup #{currentLineup[currentBatter].lineup_number} | Pos. {currentLineup[currentBatter].position}</Typography>
+                        </Paper>
+                        <Paper elevation={8} sx={{mb: 2, width: '80%', padding: 2}}>
+                            <Typography variant='h6'>On Deck:<br />{currentLineup[onDeck()].first_name}&nbsp;{currentLineup[onDeck()].last_name}&nbsp;#{currentLineup[onDeck()].number}</Typography>
+                            <Divider/>
+                            <Typography variant='body1'>{currentLineup[onDeck()].hits}-{currentLineup[onDeck()].at_bats}</Typography>
+                            <Typography variant='body2'>Lineup #{currentLineup[onDeck()].lineup_number} | Pos. {currentLineup[onDeck()].position}</Typography>
+                        </Paper>
+                    </Box>}
             <Button variant='outlined' onClick={completeGame}>Complete Game</Button>
         </Box>
     )
