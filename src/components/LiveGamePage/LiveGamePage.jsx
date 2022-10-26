@@ -331,6 +331,29 @@ function LiveGamePage() {
         updatePlayerObject[currentBatter].hits = Number(updatePlayerObject[currentBatter].hits + 1);
         updatePlayerObject[currentBatter].at_bats = Number(updatePlayerObject[currentBatter].at_bats + 1);
       }
+      // adds a walk to the current batter then moves to next batter
+      const addWalk = () => {
+        let updatePlayerObject = [...JSON.parse(localStorage.getItem('playerObjectArr'))];
+        updatePlayerObject[currentBatter].walks = Number(updatePlayerObject[currentBatter].walks + 1);
+        localStorage.setItem('playerObjectArr', JSON.stringify(updatePlayerObject));
+        setCurrentLineup(updatePlayerObject);
+        nextBatter();
+      }
+      // adds an at bat and adds an out
+      const addHitOut = () => {
+        let updatePlayerObject = [...JSON.parse(localStorage.getItem('playerObjectArr'))];
+        updatePlayerObject[currentBatter].at_bats = Number(updatePlayerObject[currentBatter].at_bats + 1);
+        localStorage.setItem('playerObjectArr', JSON.stringify(updatePlayerObject));
+        setCurrentLineup(updatePlayerObject);
+        addOut();
+        nextBatter();
+      }
+      // adds two outs
+      const doublePlay = () => {
+        for(let i=0;i<2;i++){
+            addOut();
+        }
+      }
 
     return (
       <Box>
@@ -506,18 +529,6 @@ function LiveGamePage() {
                 {currentLineup[currentBatter].number}
               </Typography>
               <Divider />
-              <ButtonGroup variant='contained' fullWidth sx={{mb: 1}}>
-                <Button onClick={addSingle}>1B</Button>
-                <Button onClick={addDouble}>2B</Button>
-                <Button onClick={addTriple}>3B</Button>
-                <Button color='success' onClick={addHr}>HR</Button>
-                <Button color='secondary'>WALK</Button>
-                <Button color='error' onClick={addOut}>OUT</Button>
-              </ButtonGroup>
-              <ButtonGroup variant='contained' fullWidth>
-                <Button color='warning' fullWidth>HIT + OUT</Button>
-                {localStorage.getItem('currentOuts')<2 && <Button color='error' fullWidth>DOUBLE PLAY</Button>}
-              </ButtonGroup>
               <Typography variant="h6">
                 {currentLineup[currentBatter].hits}-
                 {currentLineup[currentBatter].at_bats}
@@ -526,6 +537,21 @@ function LiveGamePage() {
                 Lineup #{currentLineup[currentBatter].lineup_number} | Pos.{" "}
                 {currentLineup[currentBatter].position}
               </Typography>
+              <ButtonGroup variant='contained' fullWidth sx={{mb: 1}}>
+                <Button onClick={addSingle}>1B</Button>
+                <Button onClick={addDouble}>2B</Button>
+                <Button onClick={addTriple}>3B</Button>
+                <Button color='success' onClick={addHr}>HR</Button>
+              </ButtonGroup>
+              <ButtonGroup variant='contained' fullWidth sx={{mb: 1}}>
+                <Button color='secondary' onClick={addWalk}>WALK</Button>
+                <Button color={localStorage.getItem('currentOuts')<2?'warning':'error'} onClick={addOut}>OUT</Button>
+                <Button color='error' onClick={addOut}>STRIKEOUT</Button>
+              </ButtonGroup>
+              <ButtonGroup variant='contained' size='small' fullWidth>
+                <Button color={localStorage.getItem('currentOuts')<2?'warning':'error'} onClick={addHitOut} fullWidth>HIT + OUT</Button>
+                {localStorage.getItem('currentOuts')<2 && <Button color='error' onClick={doublePlay} fullWidth>DOUBLE PLAY</Button>}
+              </ButtonGroup>
             </Paper>
             <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
               <Typography variant="h6">
