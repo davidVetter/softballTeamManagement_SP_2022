@@ -39,7 +39,6 @@ function LiveGamePage() {
     // will get the current players for the team id in url
     useEffect(() => {
         let id = location.pathname.match(/\d+/g);
-        console.log('This is id in useEffect: ', id);
         checkTeam(id);
         dispatch({
           type: 'GET_TEAM_PLAYERS',
@@ -49,7 +48,6 @@ function LiveGamePage() {
             type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
             payload: id
           }); 
-          console.log('in useeffect');
       }, []);
 
       // set roster to player array of objects in localStorage if it
@@ -123,7 +121,7 @@ function LiveGamePage() {
     setGetHomeOpponent(false);
     setOpponentName('');
     }
-    // This function accepts checks a team id exists in the url
+    // This function checks if a team id exists in the url and game is not in progress
     // if no team id(number) the user is returned home
     const checkTeam = (id) => {
         if (!id && !localStorage.getItem('gameInProgress')){
@@ -291,6 +289,47 @@ function LiveGamePage() {
           setCurrentBatter(batter + 1);
           return batter + 1;
         }
+      }
+      // this function will add a single the current batter then move to the next batter
+      const addSingle = () => {
+        let updatePlayerObject = [...JSON.parse(localStorage.getItem('playerObjectArr'))];
+        updatePlayerObject[currentBatter].single = Number(updatePlayerObject[currentBatter].single + 1);
+        addHitAtBat(updatePlayerObject);
+        localStorage.setItem('playerObjectArr', JSON.stringify(updatePlayerObject));
+        setCurrentLineup(updatePlayerObject);
+        nextBatter();
+      }
+      // this function will add a double the current batter then move to the next batter
+      const addDouble = () => {
+        let updatePlayerObject = [...JSON.parse(localStorage.getItem('playerObjectArr'))];
+        updatePlayerObject[currentBatter].double = Number(updatePlayerObject[currentBatter].double + 1);
+        addHitAtBat(updatePlayerObject);
+        localStorage.setItem('playerObjectArr', JSON.stringify(updatePlayerObject));
+        setCurrentLineup(updatePlayerObject);
+        nextBatter();
+      }
+      // this function will add a triple the current batter then move to the next batter
+      const addTriple = () => {
+        let updatePlayerObject = [...JSON.parse(localStorage.getItem('playerObjectArr'))];
+        updatePlayerObject[currentBatter].triple = Number(updatePlayerObject[currentBatter].triple + 1);
+        addHitAtBat(updatePlayerObject);
+        localStorage.setItem('playerObjectArr', JSON.stringify(updatePlayerObject));
+        setCurrentLineup(updatePlayerObject);
+        nextBatter();
+      }
+      // this function will add a hr the current batter then move to the next batter
+      const addHr = () => {
+        let updatePlayerObject = [...JSON.parse(localStorage.getItem('playerObjectArr'))];
+        updatePlayerObject[currentBatter].hr = Number(updatePlayerObject[currentBatter].hr + 1);
+        addHitAtBat(updatePlayerObject);
+        localStorage.setItem('playerObjectArr', JSON.stringify(updatePlayerObject));
+        setCurrentLineup(updatePlayerObject);
+        nextBatter();
+      }
+      // adds a hit and at bat to the current batter
+      const addHitAtBat = (updatePlayerObject) => {
+        updatePlayerObject[currentBatter].hits = Number(updatePlayerObject[currentBatter].hits + 1);
+        updatePlayerObject[currentBatter].at_bats = Number(updatePlayerObject[currentBatter].at_bats + 1);
       }
 
     return (
@@ -467,13 +506,17 @@ function LiveGamePage() {
                 {currentLineup[currentBatter].number}
               </Typography>
               <Divider />
-              <ButtonGroup variant='contained'>
-                <Button>1B</Button>
-                <Button>2B</Button>
-                <Button>3B</Button>
-                <Button>HR</Button>
+              <ButtonGroup variant='contained' fullWidth sx={{mb: 1}}>
+                <Button onClick={addSingle}>1B</Button>
+                <Button onClick={addDouble}>2B</Button>
+                <Button onClick={addTriple}>3B</Button>
+                <Button color='success' onClick={addHr}>HR</Button>
                 <Button color='secondary'>WALK</Button>
                 <Button color='error' onClick={addOut}>OUT</Button>
+              </ButtonGroup>
+              <ButtonGroup variant='contained' fullWidth>
+                <Button color='warning' fullWidth>HIT + OUT</Button>
+                {localStorage.getItem('currentOuts')<2 && <Button color='error' fullWidth>DOUBLE PLAY</Button>}
               </ButtonGroup>
               <Typography variant="h6">
                 {currentLineup[currentBatter].hits}-
