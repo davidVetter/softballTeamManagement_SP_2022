@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button, ButtonGroup, Box, Typography, Paper, TextField, Grid, FormLabel, FormControl, MenuItem, InputLabel, Select, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
+import { Button, ButtonGroup, Box, Typography, Paper, TextField, Grid, FormGroup, FormLabel, FormControl, MenuItem, InputLabel, Select, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -10,6 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import {Star} from '@mui/icons-material';
 
 function LiveGamePage() {
     const teamPlayers = useSelector((store) => store.team);
@@ -41,6 +42,8 @@ function LiveGamePage() {
     const [awayScore, setAwayScore] = useState(localStorage.getItem('awayScore')||0);
     // hold the runs that need to be added to home
     const [holdRuns, setHoldRuns] = useState(0);
+    // determine is add run inputs should be shown
+    const [runsInputToggle, setRunsInputToggle] = useState(false);
 
     // will get the current players for the team id in url
     useEffect(() => {
@@ -260,7 +263,8 @@ function LiveGamePage() {
       }
       // This function will add an out and determine if the inning half should change
       // and reset the outs for the next inning
-      const addOut = () => {
+      const addOut = (doublePlay) => {
+        doublePlay = !doublePlay?0:doublePlay;
         console.log('this is current out at the start: ', currentOuts);
         if (!localStorage.getItem('currentOuts')) {
           localStorage.setItem('currentOuts', 0);
@@ -288,7 +292,10 @@ function LiveGamePage() {
         // if it is then switch to next batter on out
         // Do not change batter if the half inning is the opponent half
         if (homeAway === currentInning.half) {
-        nextBatter(); // need to figure out how to only advance to next batter during your inning
+            if (doublePlay>0){
+                return;
+            }
+            nextBatter(); // need to figure out how to only advance to next batter during your inning
         }
       }
 
@@ -368,7 +375,7 @@ function LiveGamePage() {
       // adds two outs
       const doublePlay = () => {
         for(let i=0;i<2;i++){
-            addOut();
+            addOut(i);
         }
       }
       // This function will return true or false depending on which half
@@ -413,6 +420,15 @@ function LiveGamePage() {
         } else {
             homeScoreAdd(holdRuns);
         }
+        setRunsInputToggle(false);
+      }
+
+      const handleAddOppentTeamScore = () => {
+        if (homeAway === 'away') {
+            homeScoreAdd(1);
+        } else {
+            awayScoreAdd(1);
+        }
       }
 
       // this function will determine if the game should end or play another inning
@@ -424,12 +440,14 @@ function LiveGamePage() {
 
     return (
       <Box>
-        {console.log('this is opponent: ', opponentName)}
         {localStorage.getItem('gameInProgress') && 
             !localStorage.getItem('homeOpponent') && 
             !getHomeOpponent &&
-            <Button onClick={openOpponentForm}>
-                Set Opponent
+            <Button 
+                onClick={openOpponentForm}
+                variant='contained'
+                color='success'>
+                Ready to start?
             </Button>}
         <Dialog open={open} onClose={closeOpponentForm}>
             <DialogTitle>Opponent Name:</DialogTitle>
@@ -557,28 +575,22 @@ function LiveGamePage() {
             <Button onClick={setLineup}>Set Lineup</Button>
           </>
         )}
-        <Typography variant="h4">Lineup</Typography>
-        {teamRoster &&
-          teamRoster.map((player, index) => {
-            return (
-              <Typography key={index} variant="body1">
-                {index + 1}.&nbsp;
-                {player.first_name}&nbsp;
-                {player.last_name}&nbsp;
-                {player.position}
-              </Typography>
-            );
-          })}
         {localStorage.getItem("currentBatter") && (
           <Box>
             <Typography variant="h6">
-              Inning: {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
-              {currentInning.inning}
+              {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
+              {currentInning.inning}&nbsp;|&nbsp;Outs: {currentOuts}
             </Typography>
-            <Typography variant="h6">Outs: {currentOuts}</Typography>
+            <Divider />
+            {/* <Typography variant="h6">Outs: {currentOuts}</Typography> */}
+            <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start'}}>
+            {homeAway==='home'&&<Star color='success'/>}
             <Typography variant="h6">Home Score: {homeScore}</Typography>
+            </Box>
+            <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start'}}>
+            {homeAway==='away'&&<Star color='success'/>}
             <Typography variant="h6">Away Score: {awayScore}</Typography>
-            <Button onClick={()=>homeScoreAdd(1)}>Add Home Team Run</Button>
+            </Box>
           </Box>
         )}
         {localStorage.getItem("gameInProgress") && getHomeOpponent && (
@@ -591,29 +603,39 @@ function LiveGamePage() {
             }}
           >
             <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
-              <Box>
+              <Box >
+              {!(homeAway === currentInning.half) && <Button variant='outlined' color='error' onClick={handleAddOppentTeamScore}>They scored +1</Button>}
               <Typography variant="h5">
-                Current Batter:
+              {(homeAway === currentInning.half)?`Current Batter:`:`DUE UP NEXT INNING:`}
                 <br />
                 {currentLineup[currentBatter].first_name}&nbsp;
                 {currentLineup[currentBatter].last_name}&nbsp;#
                 {currentLineup[currentBatter].number}
               </Typography>
-              <FormControl>
-                <FormLabel id="demo-row-radio-buttons-group-label">Add how many runs?</FormLabel>
+              {/* if user team half inning, show the add runs buttons */}
+              {(homeAway === currentInning.half) && <>
+              {runsInputToggle ? <FormGroup>
+              <FormControl sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <FormLabel>Add how many runs?</FormLabel>
                 <RadioGroup
                     row
                     name="teamScore"
                     value={holdRuns}
                     onChange={(e)=>setHoldRuns(e.target.value)}
                 >
-                    <FormControlLabel value="1" control={<Radio />} label="1" />
-                    <FormControlLabel value="2" control={<Radio />} label="2" />
-                    <FormControlLabel value="3" control={<Radio />} label="3" />
-                    <FormControlLabel value="4" control={<Radio />} label="4" />
+                    <FormControlLabel value="1" labelPlacement='bottom' control={<Radio />} label="1" />
+                    <FormControlLabel value="2" labelPlacement='bottom' control={<Radio />} label="2" />
+                    <FormControlLabel value="3" labelPlacement='bottom' control={<Radio />} label="3" />
+                    <FormControlLabel value="4" labelPlacement='bottom' control={<Radio />} label="4" />
                 </RadioGroup>
             </FormControl>
-            <Button onClick={handleAddUserTeamScore}>Add Runs</Button>
+            <ButtonGroup fullWidth>
+                <Button color='success' variant='contained' onClick={handleAddUserTeamScore}>Add Runs</Button>
+                <Button color='error' onClick={()=>setRunsInputToggle(false)}>Cancel</Button>
+            </ButtonGroup>
+            </FormGroup>
+                :
+                <Button variant='contained' color='success' onClick={()=>setRunsInputToggle(true)}>We Scored!</Button>}</>}
               </Box>
               <Divider />
               <Typography variant="h6">
@@ -667,6 +689,18 @@ function LiveGamePage() {
             </Paper>
           </Box>
         )}
+        <Typography variant="h4">Lineup</Typography>
+        {teamRoster &&
+          teamRoster.map((player, index) => {
+            return (
+              <Typography key={index} variant="body1">
+                {index + 1}.&nbsp;
+                {player.first_name}&nbsp;
+                {player.last_name}&nbsp;
+                {player.position}
+              </Typography>
+            );
+          })}
         <Button color='success' variant='outlined' onClick={completeGame}>
           Complete Game
         </Button>
