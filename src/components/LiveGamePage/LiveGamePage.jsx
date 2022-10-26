@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, FormControl, MenuItem, InputLabel, Select, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
+import { Button, ButtonGroup, Box, Typography, Paper, TextField, Grid, FormLabel, FormControl, MenuItem, InputLabel, Select, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
 
 function LiveGamePage() {
     const teamPlayers = useSelector((store) => store.team);
@@ -176,7 +176,7 @@ function LiveGamePage() {
         localStorage.setItem('gameInProgress', true);
         localStorage.setItem('currentBatter', 0);
         localStorage.setItem('currentOuts', 0);
-        localStorage.setItem('currentInning', JSON.stringify({innning: 1, half: 'away'}));
+        localStorage.setItem('currentInning', JSON.stringify({inning: 1, half: 'away'}));
         const playerObjectArr = [];
         // loop through the sorted batting order and push an object with default game start and each user id, position and place in lineup
         // to an array that will be stored in a cookie to hold game data until the game in completed and sent to db
@@ -216,87 +216,209 @@ function LiveGamePage() {
         }
       }
 
+      const addOut = () => {
+        // debugger;
+        // let outs = Number(getCookie('outs'));
+        // console.log('this is outs: ', outs);
+        console.log('this is current out at the start: ', currentOuts);
+        if (!localStorage.getItem('currentOuts')) {
+          localStorage.setItem('currentOuts', 0);
+        }
+        if (Number(localStorage.getItem('currentOuts')) === 2) {
+          localStorage.setItem('currentOuts', 0);
+          if (currentInning.half==='away') {
+            localStorage.setItem('currentInning', JSON.stringify({ inning: currentInning.inning, half: 'home' }));
+            setCurrentInning({inning: currentInning.inning, half: 'home'});
+          } else {
+            localStorage.setItem('currentInning', JSON.stringify({ inning: Number(currentInning.inning)+1, half: 'away'}));
+            setCurrentInning({ inning: Number(currentInning.inning)+1, half: 'away' });
+          }
+          setCurrentOuts(Number(localStorage.getItem('currentOuts')));
+        } else {
+          // let newOuts = outs + 1;
+          // setCookie('outs', newOuts, 365);
+          console.log('This is outs in addOut else: ', localStorage.currentOuts);
+          localStorage.setItem('currentOuts', Number(localStorage.getItem('currentOuts'))+1);
+          console.log('This should increase outs by 1 in local storage: ', localStorage.currentOuts);
+          // let newOut = Number(localStorage.outs) + 1;
+          // console.log('this is newOut: ', newOut);
+          setCurrentOuts(localStorage.getItem('currentOuts'));
+        }
+        console.log('this is current out at the end: ', localStorage.getItem('currentOuts'));
+        // nextBatter(); // need to figure out how to only advance to next batter during your inning
+      }
+
     return (
-        <Box>
-            {!localStorage.getItem('gameInProgress') &&
-            <>
+      <Box>
+        {!localStorage.getItem("gameInProgress") && (
+          <>
             <List>
-            {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 && teamRoster.map((player, index) =>{
-                    {console.log('this is player each time: ', player);}
-                    return (
-                        <ListItem key={index} disablePadding alignItems="flex-start">
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    <ListItemText primary={`${player.first_name} ${player.last_name}`}/>
-                                    <Button onClick={()=>movePlayerUp(index, player.id)}>UP</Button>
-                                    <Button onClick={()=>movePlayerDown(index, player.id)}>DOWN</Button>
-                                    <Button onClick={()=>removePlayer(index, player.id)}>REMOVE</Button>
-                                    <FormControl >
-                                    <InputLabel htmlFor="team">Position</InputLabel>
-                                        <Select
-                                        value={player.position||''}
-                                        label="Position"
-                                        sx={{width: '100px'}}
-                                        required
-                                        size="small"
-                                        onChange={(event) => {
-                                            changePosition(event, player.user_id);
-                                        }}
-                                        >
-                                            <MenuItem key='P' value='P'>P</MenuItem>
-                                            <MenuItem key='C' value='C'>C</MenuItem>
-                                            <MenuItem key='1B' value='1B'>1B</MenuItem>
-                                            <MenuItem key='2B' value='2B'>2B</MenuItem>
-                                            <MenuItem key='SS' value='SS'>SS</MenuItem>
-                                            <MenuItem key='3B' value='3B'>3B</MenuItem>
-                                            <MenuItem key='LF' value='LF'>LF</MenuItem>
-                                            <MenuItem key='LC' value='LC'>LC</MenuItem>
-                                            <MenuItem key='RC' value='RC'>RC</MenuItem>
-                                            <MenuItem key='RF' value='RF'>RF</MenuItem>
-                                            <MenuItem key='EH' value='EH'>EH</MenuItem>
-                                        </Select>
-                                        </FormControl>
-                                </ListItemIcon>
-                            </ListItemButton>
-                        </ListItem>
-                    )
+              {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 &&
+                teamRoster.map((player, index) => {
+                  {
+                    console.log("this is player each time: ", player);
+                  }
+                  return (
+                    <ListItem
+                      key={index}
+                      disablePadding
+                      alignItems="flex-start"
+                    >
+                      <ListItemButton>
+                        <ListItemIcon>
+                          <ListItemText
+                            primary={`${player.first_name} ${player.last_name}`}
+                          />
+                          <Button
+                            onClick={() => movePlayerUp(index, player.id)}
+                          >
+                            UP
+                          </Button>
+                          <Button
+                            onClick={() => movePlayerDown(index, player.id)}
+                          >
+                            DOWN
+                          </Button>
+                          <Button
+                            onClick={() => removePlayer(index, player.id)}
+                          >
+                            REMOVE
+                          </Button>
+                          <FormControl>
+                            <InputLabel htmlFor="team">Position</InputLabel>
+                            <Select
+                              value={player.position || ""}
+                              label="Position"
+                              sx={{ width: "100px" }}
+                              required
+                              size="small"
+                              onChange={(event) => {
+                                changePosition(event, player.user_id);
+                              }}
+                            >
+                              <MenuItem key="P" value="P">
+                                P
+                              </MenuItem>
+                              <MenuItem key="C" value="C">
+                                C
+                              </MenuItem>
+                              <MenuItem key="1B" value="1B">
+                                1B
+                              </MenuItem>
+                              <MenuItem key="2B" value="2B">
+                                2B
+                              </MenuItem>
+                              <MenuItem key="SS" value="SS">
+                                SS
+                              </MenuItem>
+                              <MenuItem key="3B" value="3B">
+                                3B
+                              </MenuItem>
+                              <MenuItem key="LF" value="LF">
+                                LF
+                              </MenuItem>
+                              <MenuItem key="LC" value="LC">
+                                LC
+                              </MenuItem>
+                              <MenuItem key="RC" value="RC">
+                                RC
+                              </MenuItem>
+                              <MenuItem key="RF" value="RF">
+                                RF
+                              </MenuItem>
+                              <MenuItem key="EH" value="EH">
+                                EH
+                              </MenuItem>
+                            </Select>
+                          </FormControl>
+                        </ListItemIcon>
+                      </ListItemButton>
+                    </ListItem>
+                  );
                 })}
-                </List>
-                <Button onClick={setLineup}>Set Lineup</Button>
-                </>}
-                <Typography variant='h4'>Lineup</Typography>
-                {teamRoster && teamRoster.map((player, index)=>{ 
-                    return (
-                    <Typography key={index} variant='body1'>
-                        {index+1}&nbsp;
-                        {player.first_name}&nbsp;
-                        {player.last_name}&nbsp;
-                        {player.position}
-                    </Typography>
-                    )})}
-                {localStorage.getItem('currentBatter') && 
-                <Box>
-                    <Typography variant='h6'>Inning: {currentInning.half==='away'?'Top':'Bottom'}&nbsp;{currentInning.innning}</Typography>
-                    <Typography variant='h6'>Outs: {currentOuts}</Typography>
-                </Box>}
-                {localStorage.getItem('gameInProgress') && 
-                    <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-                        <Paper elevation={8} sx={{mb: 2, width: '80%', padding: 2}}>
-                            <Typography variant='h5'>Current Batter:<br />{currentLineup[currentBatter].first_name}&nbsp;{currentLineup[currentBatter].last_name}&nbsp;#{currentLineup[currentBatter].number}</Typography>
-                            <Divider/>
-                            <Typography variant='h6'>{currentLineup[currentBatter].hits}-{currentLineup[currentBatter].at_bats}</Typography>
-                            <Typography variant='body1'>Lineup #{currentLineup[currentBatter].lineup_number} | Pos. {currentLineup[currentBatter].position}</Typography>
-                        </Paper>
-                        <Paper elevation={8} sx={{mb: 2, width: '80%', padding: 2}}>
-                            <Typography variant='h6'>On Deck:<br />{currentLineup[onDeck()].first_name}&nbsp;{currentLineup[onDeck()].last_name}&nbsp;#{currentLineup[onDeck()].number}</Typography>
-                            <Divider/>
-                            <Typography variant='body1'>{currentLineup[onDeck()].hits}-{currentLineup[onDeck()].at_bats}</Typography>
-                            <Typography variant='body2'>Lineup #{currentLineup[onDeck()].lineup_number} | Pos. {currentLineup[onDeck()].position}</Typography>
-                        </Paper>
-                    </Box>}
-            <Button variant='outlined' onClick={completeGame}>Complete Game</Button>
-        </Box>
-    )
+            </List>
+            <Button onClick={setLineup}>Set Lineup</Button>
+          </>
+        )}
+        <Typography variant="h4">Lineup</Typography>
+        {teamRoster &&
+          teamRoster.map((player, index) => {
+            return (
+              <Typography key={index} variant="body1">
+                {index + 1}.&nbsp;
+                {player.first_name}&nbsp;
+                {player.last_name}&nbsp;
+                {player.position}
+              </Typography>
+            );
+          })}
+        {localStorage.getItem("currentBatter") && (
+          <Box>
+            <Typography variant="h6">
+              Inning: {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
+              {currentInning.inning}
+            </Typography>
+            <Typography variant="h6">Outs: {currentOuts}</Typography>
+          </Box>
+        )}
+        {localStorage.getItem("gameInProgress") && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
+              <Typography variant="h5">
+                Current Batter:
+                <br />
+                {currentLineup[currentBatter].first_name}&nbsp;
+                {currentLineup[currentBatter].last_name}&nbsp;#
+                {currentLineup[currentBatter].number}
+              </Typography>
+              <Divider />
+              <ButtonGroup variant='contained'>
+                <Button>1B</Button>
+                <Button>2B</Button>
+                <Button>3B</Button>
+                <Button>HR</Button>
+                <Button color='error' onClick={addOut}>OUT</Button>
+              </ButtonGroup>
+              <Typography variant="h6">
+                {currentLineup[currentBatter].hits}-
+                {currentLineup[currentBatter].at_bats}
+              </Typography>
+              <Typography variant="body1">
+                Lineup #{currentLineup[currentBatter].lineup_number} | Pos.{" "}
+                {currentLineup[currentBatter].position}
+              </Typography>
+            </Paper>
+            <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
+              <Typography variant="h6">
+                On Deck:
+                <br />
+                {currentLineup[onDeck()].first_name}&nbsp;
+                {currentLineup[onDeck()].last_name}&nbsp;#
+                {currentLineup[onDeck()].number}
+              </Typography>
+              <Divider />
+              <Typography variant="body1">
+                {currentLineup[onDeck()].hits}-{currentLineup[onDeck()].at_bats}
+              </Typography>
+              <Typography variant="body2">
+                Lineup #{currentLineup[onDeck()].lineup_number} | Pos.{" "}
+                {currentLineup[onDeck()].position}
+              </Typography>
+            </Paper>
+          </Box>
+        )}
+        <Button color='success' variant='outlined' onClick={completeGame}>
+          Complete Game
+        </Button>
+      </Box>
+    );
 }
 
 export default LiveGamePage;
