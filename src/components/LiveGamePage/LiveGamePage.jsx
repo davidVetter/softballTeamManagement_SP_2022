@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Button, ButtonGroup, Box, Typography, Paper, TextField, Grid, FormLabel, FormControl, MenuItem, InputLabel, Select, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 function LiveGamePage() {
     const teamPlayers = useSelector((store) => store.team);
@@ -19,6 +27,14 @@ function LiveGamePage() {
     const [currentBatter, setCurrentBatter] = useState(localStorage.getItem('currentBatter')||0);
     // current lineup for game
     const [currentLineup, setCurrentLineup] = useState(localStorage.getItem('playerObjectArr')?JSON.parse(localStorage.getItem('playerObjectArr')):{});
+    // toggle to get home if home or away team and the opponent name
+    const [getHomeOpponent, setGetHomeOpponent] = useState(localStorage.getItem('homeOpponent')?true:false);
+    // toggle for opponent and home team Dialog
+    const [open, setOpen] = useState(false);
+    // hold opponent name
+    const [opponentName, setOpponentName] = useState('');
+    // hold if home or away
+    const [homeAway, setHomeAway] = useState('away');
 
     // will get the current players for the team id in url
     useEffect(() => {
@@ -101,8 +117,11 @@ function LiveGamePage() {
     localStorage.removeItem('currentInning');
     localStorage.removeItem('currentBatter');
     localStorage.removeItem('currentOuts');
+    localStorage.removeItem('homeOpponent');
     setToggle(!toggle);
     setCurrentInning({});
+    setGetHomeOpponent(false);
+    setOpponentName('');
     }
     // This function accepts checks a team id exists in the url
     // if no team id(number) the user is returned home
@@ -206,6 +225,22 @@ function LiveGamePage() {
         setToggle(!toggle);
         setCurrentLineup(playerObjectArr);
     }
+    // sets an opponent and if home or away team
+    const openOpponentForm = () => {
+        setOpen(true);
+    }
+    const closeOpponentForm = () => {
+        setOpen(false);
+        setGetHomeOpponent(true);
+    }
+    const submitOpponentForm = () => {
+        localStorage.setItem('homeOpponent', JSON.stringify({opponent: opponentName, homeAway: homeAway}));
+        setOpen(false);
+        setGetHomeOpponent(true);
+    }
+    const handleHomeAway = (value) => {
+        setHomeAway(value);
+    }
     // This will determine the batter who is up next
     // next batter in list unless the end of the list, then first batter
     const onDeck = () => {
@@ -215,11 +250,9 @@ function LiveGamePage() {
           return Number(currentBatter)+1;
         }
       }
-
+      // This function will add an out and determine if the inning half should change
+      // and reset the outs for the next inning
       const addOut = () => {
-        // debugger;
-        // let outs = Number(getCookie('outs'));
-        // console.log('this is outs: ', outs);
         console.log('this is current out at the start: ', currentOuts);
         if (!localStorage.getItem('currentOuts')) {
           localStorage.setItem('currentOuts', 0);
@@ -235,21 +268,76 @@ function LiveGamePage() {
           }
           setCurrentOuts(Number(localStorage.getItem('currentOuts')));
         } else {
-          // let newOuts = outs + 1;
-          // setCookie('outs', newOuts, 365);
           console.log('This is outs in addOut else: ', localStorage.currentOuts);
           localStorage.setItem('currentOuts', Number(localStorage.getItem('currentOuts'))+1);
           console.log('This should increase outs by 1 in local storage: ', localStorage.currentOuts);
-          // let newOut = Number(localStorage.outs) + 1;
-          // console.log('this is newOut: ', newOut);
           setCurrentOuts(localStorage.getItem('currentOuts'));
         }
         console.log('this is current out at the end: ', localStorage.getItem('currentOuts'));
-        // nextBatter(); // need to figure out how to only advance to next batter during your inning
+        nextBatter(); // need to figure out how to only advance to next batter during your inning
+      }
+
+      // This function will advance to the next batter
+      // last batter moves to first batter
+      const nextBatter = () => {
+        let batter = Number(localStorage.getItem('currentBatter'));
+        let lineupLength = JSON.parse(localStorage.getItem('playerObjectArr')).length;
+        if ((Number(batter)+1) === lineupLength) {
+          localStorage.setItem('currentBatter', 0);
+          setCurrentBatter(0);
+          return 0;
+        } else {
+          localStorage.setItem('currentBatter', (batter + 1));
+          setCurrentBatter(batter + 1);
+          return batter + 1;
+        }
       }
 
     return (
       <Box>
+        {console.log('this is opponent: ', opponentName)}
+        {localStorage.getItem('gameInProgress') && 
+            !localStorage.getItem('homeOpponent') && 
+            !getHomeOpponent &&
+            <Button onClick={openOpponentForm}>
+                Set Opponent
+            </Button>}
+        <Dialog open={open} onClose={closeOpponentForm}>
+            <DialogTitle>Opponent Name:</DialogTitle>
+            <DialogContent>
+            <DialogContentText>
+                Please enter the opponent team name:
+            </DialogContentText>
+            <TextField
+                autoFocus
+                margin="dense"
+                id="opponent"
+                label="Opponent Name"
+                type="text"
+                fullWidth
+                variant="standard"
+                sx={{mb: 2}}
+                onChange={(e)=>setOpponentName(e.target.value)}
+                value={opponentName}
+            />
+            <FormControl>
+                <FormLabel id="demo-row-radio-buttons-group-label">What are you doing first?</FormLabel>
+                <RadioGroup
+                    row
+                    name="opponentHome"
+                    value={homeAway}
+                    onChange={(e)=>handleHomeAway(e.target.value)}
+                >
+                    <FormControlLabel value="away" control={<Radio />} label="Batting" />
+                    <FormControlLabel value="home" control={<Radio />} label="In Field" />
+                </RadioGroup>
+            </FormControl>
+            </DialogContent>
+            <DialogActions>
+            <Button onClick={closeOpponentForm}>Cancel</Button>
+            <Button onClick={submitOpponentForm}>Confirm</Button>
+            </DialogActions>
+      </Dialog>
         {!localStorage.getItem("gameInProgress") && (
           <>
             <List>
@@ -361,7 +449,7 @@ function LiveGamePage() {
             <Typography variant="h6">Outs: {currentOuts}</Typography>
           </Box>
         )}
-        {localStorage.getItem("gameInProgress") && (
+        {localStorage.getItem("gameInProgress") && getHomeOpponent && (
           <Box
             sx={{
               display: "flex",
@@ -384,6 +472,7 @@ function LiveGamePage() {
                 <Button>2B</Button>
                 <Button>3B</Button>
                 <Button>HR</Button>
+                <Button color='secondary'>WALK</Button>
                 <Button color='error' onClick={addOut}>OUT</Button>
               </ButtonGroup>
               <Typography variant="h6">
