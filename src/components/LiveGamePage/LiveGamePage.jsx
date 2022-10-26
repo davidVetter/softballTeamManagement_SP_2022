@@ -272,7 +272,14 @@ function LiveGamePage() {
           setCurrentOuts(localStorage.getItem('currentOuts'));
         }
         console.log('this is current out at the end: ', localStorage.getItem('currentOuts'));
+        console.log('This is homeAway: ', homeAway);
+        console.log('This is currentInning.half', currentInning.half);
+        // Determines if the current half inning is user team's half inning
+        // if it is then switch to next batter on out
+        // Do not change batter if the half inning is the opponent half
+        if (homeAway === currentInning.half) {
         nextBatter(); // need to figure out how to only advance to next batter during your inning
+        }
       }
 
       // This function will advance to the next batter
@@ -353,6 +360,27 @@ function LiveGamePage() {
         for(let i=0;i<2;i++){
             addOut();
         }
+      }
+      // This function will return true or false depending on which half
+      // inning the game is in
+      const disableHits = () => {
+        if (homeAway === currentInning.half) {
+            return false; // need to figure out how to only advance to next batter during your inning
+        } else {
+            return true;
+        }
+      }
+      // this function will advance the game to the next half inning
+      const skipOpponentHalfInning = () => {
+        let whatInning = JSON.parse(localStorage.getItem('currentInning'));
+        console.log('this is whatInning: ', whatInning);
+        if (whatInning.half === 'away') {
+        localStorage.setItem('currentInning', JSON.stringify({inning: whatInning.inning, half: 'home'}));
+        } else {
+            localStorage.setItem('currentInning', JSON.stringify({inning: (whatInning.inning+1), half: 'away'}));
+        }
+        localStorage.setItem('currentOuts', 0);
+        setToggle(!toggle);
       }
 
     return (
@@ -537,18 +565,26 @@ function LiveGamePage() {
                 Lineup #{currentLineup[currentBatter].lineup_number} | Pos.{" "}
                 {currentLineup[currentBatter].position}
               </Typography>
-              <ButtonGroup variant='contained' fullWidth sx={{mb: 1}}>
+              <Divider />
+              <Typography variant="h6">
+                Outcome of at bat:
+              </Typography>
+              <ButtonGroup disabled={disableHits()} variant='contained' fullWidth sx={{mb: 1}}>
                 <Button onClick={addSingle}>1B</Button>
                 <Button onClick={addDouble}>2B</Button>
                 <Button onClick={addTriple}>3B</Button>
                 <Button color='success' onClick={addHr}>HR</Button>
               </ButtonGroup>
+              {!(homeAway === currentInning.half) && 
+                <ButtonGroup variant='contained' fullWidth sx={{mb: 1}}>
+                    <Button color='secondary' onClick={skipOpponentHalfInning}>SKIP OPPONENT HALF INNING</Button>
+                </ButtonGroup>}
               <ButtonGroup variant='contained' fullWidth sx={{mb: 1}}>
-                <Button color='secondary' onClick={addWalk}>WALK</Button>
+                <Button disabled={disableHits()} color='secondary' onClick={addWalk}>WALK</Button>
                 <Button color={localStorage.getItem('currentOuts')<2?'warning':'error'} onClick={addOut}>OUT</Button>
-                <Button color='error' onClick={addOut}>STRIKEOUT</Button>
+                <Button disabled={disableHits()} color='error' onClick={addOut}>STRIKEOUT</Button>
               </ButtonGroup>
-              <ButtonGroup variant='contained' size='small' fullWidth>
+              <ButtonGroup disabled={disableHits()} variant='contained' size='small' fullWidth>
                 <Button color={localStorage.getItem('currentOuts')<2?'warning':'error'} onClick={addHitOut} fullWidth>HIT + OUT</Button>
                 {localStorage.getItem('currentOuts')<2 && <Button color='error' onClick={doublePlay} fullWidth>DOUBLE PLAY</Button>}
               </ButtonGroup>
