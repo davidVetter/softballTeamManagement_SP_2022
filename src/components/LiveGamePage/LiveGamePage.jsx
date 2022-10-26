@@ -34,7 +34,13 @@ function LiveGamePage() {
     // hold opponent name
     const [opponentName, setOpponentName] = useState('');
     // hold if home or away
-    const [homeAway, setHomeAway] = useState('away');
+    const [homeAway, setHomeAway] = useState(localStorage.getItem('homeOpponent')?JSON.parse(localStorage.getItem('homeOpponent')).homeAway:'away');
+    // hold the home team score
+    const [homeScore, setHomeScore] = useState(localStorage.getItem('homeScore')||0);
+    // hold the away team score
+    const [awayScore, setAwayScore] = useState(localStorage.getItem('awayScore')||0);
+    // hold the runs that need to be added to home
+    const [holdRuns, setHoldRuns] = useState(0);
 
     // will get the current players for the team id in url
     useEffect(() => {
@@ -116,10 +122,14 @@ function LiveGamePage() {
     localStorage.removeItem('currentBatter');
     localStorage.removeItem('currentOuts');
     localStorage.removeItem('homeOpponent');
+    localStorage.removeItem('awayScore');
+    localStorage.removeItem('homeScore');
     setToggle(!toggle);
     setCurrentInning({});
     setGetHomeOpponent(false);
     setOpponentName('');
+    setHomeScore(0);
+    setAwayScore(0);
     }
     // This function checks if a team id exists in the url and game is not in progress
     // if no team id(number) the user is returned home
@@ -371,6 +381,7 @@ function LiveGamePage() {
         }
       }
       // this function will advance the game to the next half inning
+      // ** allows the user to skip the opponent half inning **
       const skipOpponentHalfInning = () => {
         let whatInning = JSON.parse(localStorage.getItem('currentInning'));
         console.log('this is whatInning: ', whatInning);
@@ -381,6 +392,34 @@ function LiveGamePage() {
         }
         localStorage.setItem('currentOuts', 0);
         setToggle(!toggle);
+      }
+      // Add runs to the home score
+      const homeScoreAdd = (runs) => {
+        let currentHomeScore = localStorage.getItem('homeScore');
+        localStorage.setItem('homeScore', (Number(currentHomeScore)+ Number(runs)));
+        setHomeScore(localStorage.getItem('homeScore'));
+      }
+
+            // Add runs to the home score
+    const awayScoreAdd = (runs) => {
+        let currentAwayScore = localStorage.getItem('awayScore');
+        localStorage.setItem('awayScore', (Number(currentAwayScore)+ Number(runs)));
+        setAwayScore(localStorage.getItem('awayScore'));
+    }
+
+      const handleAddUserTeamScore = () => {
+        if (homeAway === 'away') {
+            awayScoreAdd(holdRuns); // need to figure out how to only advance to next batter during your inning
+        } else {
+            homeScoreAdd(holdRuns);
+        }
+      }
+
+      // this function will determine if the game should end or play another inning
+      const isGameDone = () => {
+        if (currentInning >= 7) {
+            
+        }
       }
 
     return (
@@ -537,6 +576,9 @@ function LiveGamePage() {
               {currentInning.inning}
             </Typography>
             <Typography variant="h6">Outs: {currentOuts}</Typography>
+            <Typography variant="h6">Home Score: {homeScore}</Typography>
+            <Typography variant="h6">Away Score: {awayScore}</Typography>
+            <Button onClick={()=>homeScoreAdd(1)}>Add Home Team Run</Button>
           </Box>
         )}
         {localStorage.getItem("gameInProgress") && getHomeOpponent && (
@@ -549,6 +591,7 @@ function LiveGamePage() {
             }}
           >
             <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
+              <Box>
               <Typography variant="h5">
                 Current Batter:
                 <br />
@@ -556,6 +599,22 @@ function LiveGamePage() {
                 {currentLineup[currentBatter].last_name}&nbsp;#
                 {currentLineup[currentBatter].number}
               </Typography>
+              <FormControl>
+                <FormLabel id="demo-row-radio-buttons-group-label">Add how many runs?</FormLabel>
+                <RadioGroup
+                    row
+                    name="teamScore"
+                    value={holdRuns}
+                    onChange={(e)=>setHoldRuns(e.target.value)}
+                >
+                    <FormControlLabel value="1" control={<Radio />} label="1" />
+                    <FormControlLabel value="2" control={<Radio />} label="2" />
+                    <FormControlLabel value="3" control={<Radio />} label="3" />
+                    <FormControlLabel value="4" control={<Radio />} label="4" />
+                </RadioGroup>
+            </FormControl>
+            <Button onClick={handleAddUserTeamScore}>Add Runs</Button>
+              </Box>
               <Divider />
               <Typography variant="h6">
                 {currentLineup[currentBatter].hits}-
