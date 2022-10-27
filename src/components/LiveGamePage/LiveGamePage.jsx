@@ -72,6 +72,10 @@ function LiveGamePage() {
         }   
       }, [teamPlayers.teamPlayersPersonalInfoReducer, toggle]);
 
+      useEffect(() => {
+        isGameDone();
+      }, [currentOuts, currentInning, homeScore]);
+
     // FORMAT THE END GAME OBJECT NEEDS TO BE IN
     const defaultGame = {
         teamId: "1",
@@ -288,6 +292,7 @@ function LiveGamePage() {
         console.log('this is current out at the end: ', localStorage.getItem('currentOuts'));
         console.log('This is homeAway: ', homeAway);
         console.log('This is currentInning.half', currentInning.half);
+        // Check if game is over (Over after 7 innings unless tied)
         // Determines if the current half inning is user team's half inning
         // if it is then switch to next batter on out
         // Do not change batter if the half inning is the opponent half
@@ -382,7 +387,7 @@ function LiveGamePage() {
       // inning the game is in
       const disableHits = () => {
         if (homeAway === currentInning.half) {
-            return false; // need to figure out how to only advance to next batter during your inning
+            return false;
         } else {
             return true;
         }
@@ -407,7 +412,7 @@ function LiveGamePage() {
         setHomeScore(localStorage.getItem('homeScore'));
       }
 
-            // Add runs to the home score
+    // Add runs to the home score
     const awayScoreAdd = (runs) => {
         let currentAwayScore = localStorage.getItem('awayScore');
         localStorage.setItem('awayScore', (Number(currentAwayScore)+ Number(runs)));
@@ -416,7 +421,7 @@ function LiveGamePage() {
 
       const handleAddUserTeamScore = () => {
         if (homeAway === 'away') {
-            awayScoreAdd(holdRuns); // need to figure out how to only advance to next batter during your inning
+            awayScoreAdd(holdRuns);
         } else {
             homeScoreAdd(holdRuns);
         }
@@ -433,8 +438,14 @@ function LiveGamePage() {
 
       // this function will determine if the game should end or play another inning
       const isGameDone = () => {
-        if (currentInning >= 7) {
-            
+        console.log('In isGameDone');
+        console.log('currentInning: ', currentInning);
+        console.log('homeAway: ', homeAway);
+        console.log('homeScore: ', homeScore, ' And away Score: ', awayScore);
+        if (currentInning.inning >= 7 && currentInning.half === 'home' && Number(homeScore) > Number(awayScore)) {
+            completeGame();
+        } else if (currentInning.inning > 7 && Number(homeScore) < Number(awayScore) && currentInning.half==='away' && currentOuts===0) {
+            completeGame();
         }
       }
 
