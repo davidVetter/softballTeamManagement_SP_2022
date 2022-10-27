@@ -132,12 +132,40 @@ function LiveGamePage() {
     
         ]
     }
+    // this function will create a complete game object to send to the database
+    const buildGameObject = () =>  {
+        let opponentString = JSON.parse(localStorage.getItem('homeOpponent'));
+
+        const gameObject = {
+            teamId: localStorage.getItem('teamId'),
+            opponent: opponentString.opponent,
+            isWinner: determineWinner(),
+            scoreHomeTeam: homeScore,
+            scoreAwayTeam: awayScore,
+            innings: currentInning.inning,
+            isHomeTeam: homeAway==='home'?true:false,
+            playerArray: JSON.parse(localStorage.getItem('playerObjectArr'))
+        }
+        console.log('This is game object after a completed game: ', gameObject);
+        completeGame(gameObject);
+    }
+    // This function will determine if the user team won the game or not
+    const determineWinner = () => {
+        if (homeAway==='home' && homeScore > awayScore) {
+            return true;
+        } else if (homeAway==='away' && awayScore > homeScore) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     // Send complete game object to db
-    const completeGame = () => {
-    //    dispatch({
-    //     type: 'ADD_GAME',
-    //     payload: defaultGame
-    //    }) 
+    const completeGame = (gameInfo) => {
+       console.log('This is gameInfo: ', gameInfo);
+        dispatch({
+        type: 'ADD_GAME',
+        payload: gameInfo
+       }) 
     localStorage.removeItem('gameInProgress');
     localStorage.removeItem('playerObjectArr');
     localStorage.removeItem('currentInning');
@@ -152,7 +180,7 @@ function LiveGamePage() {
     setOpponentName('');
     setHomeScore(0);
     setAwayScore(0);
-    history.push('/');
+    // history.push('/');
     }
     // This function checks if a team id exists in the url and game is not in progress
     // if no team id(number) the user is returned home
@@ -232,9 +260,9 @@ function LiveGamePage() {
         // to an array that will be stored in a cookie to hold game data until the game in completed and sent to db
         let index = 0;
         for (let player of teamRoster) {
-          console.log('This is player in setLineup: ', player);
-            playerObjectArr.push({
-            user_id: player.userID,
+          console.log('This is player in setLineup: ', player);  
+          playerObjectArr.push({
+            user_id: player.user_id,
             hits: 0,
             at_bats: 0,
             walks: 0,
@@ -490,9 +518,9 @@ function LiveGamePage() {
         console.log('homeAway: ', homeAway);
         console.log('homeScore: ', homeScore, ' And away Score: ', awayScore);
         if (currentInning.inning >= 7 && currentInning.half === 'home' && Number(homeScore) > Number(awayScore)) {
-            completeGame();
+            buildGameObject();
         } else if (currentInning.inning > 7 && Number(homeScore) < Number(awayScore) && currentInning.half==='away' && currentOuts===0) {
-            completeGame();
+            buildGameObject();
         }
       }
 
@@ -782,6 +810,7 @@ function LiveGamePage() {
         <Button color='success' variant='outlined' onClick={completeGame}>
           Complete Game
         </Button>
+        <Button color="success" variant='contained' onClick={buildGameObject}>Build Game Object</Button>
       </Box>
     );
 }

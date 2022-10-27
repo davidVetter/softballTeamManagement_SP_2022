@@ -123,6 +123,16 @@ function InfoPage() {
     }
     return count;
   }
+  // counts the number of losses for the selected team
+    const countLoses = () => {
+      let count = 0;
+      for (let game of teamGames.teamGamesReducer) {
+        if (game.is_winner === false) {
+          count ++;
+        }
+      }
+      return count;
+    }
   // allows the user to be able to click anywhere off the select element to close it
   const closeSelect = () => {
     if (teamClick === true) {
@@ -208,7 +218,7 @@ function InfoPage() {
           )
         )}
         <Typography variant="body1" gutterBottom>
-          Record: {countWins()}-{teamGames.teamGamesReducer.length}
+          Record: {countWins()}-{countLoses()}
         </Typography>
       </Paper>
       {/* TEAM ROSTER */}

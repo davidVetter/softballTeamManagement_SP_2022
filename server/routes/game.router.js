@@ -46,15 +46,15 @@ router.post('/', rejectUnauthenticated, (req, res) => {
             console.log('this is the new game id: ', result.rows[0].id);
             console.log('this is playerArray: ', req.body.playerArray);
             for (let player of req.body.playerArray) {
-            const userId = player.userId;
+            const userId = player.user_id;
             const gameId = result.rows[0].id;
             const hits = player.hits;
             const walks = player.walks;
-            const atBats = player.atBats;
+            const atBats = player.at_bats;
             const rbi = player.rbi;
             const strikeouts = player.strikeouts;
             const position = player.position;
-            const lineupNumber = player.lineupNumber;
+            const lineupNumber = player.lineup_number;
             const single = player.single;
             const double = player.double;
             const triple = player.triple;
