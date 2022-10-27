@@ -41,9 +41,11 @@ function LiveGamePage() {
     // hold the away team score
     const [awayScore, setAwayScore] = useState(localStorage.getItem('awayScore')||0);
     // hold the runs that need to be added to home
-    const [holdRuns, setHoldRuns] = useState(0);
+    const [holdRuns, setHoldRuns] = useState(1);
     // determine is add run inputs should be shown
     const [runsInputToggle, setRunsInputToggle] = useState(false);
+    // hold is the last runs scored are rbi's and how they belong too
+    const [isRBI, setIsRBI] = useState('n');
 
     // will get the current players for the team id in url
     useEffect(() => {
@@ -379,6 +381,19 @@ function LiveGamePage() {
         setCurrentLineup(updatePlayerObject);
         nextBatter();
       }
+
+      // adds rbi's to a player
+      const handleRbi = (runs) => {
+        let switchPlayer = whichPlayerRbi();
+        if (switchPlayer === 'n') {
+            return;
+        }
+        let updatePlayerObject = [...JSON.parse(localStorage.getItem('playerObjectArr'))];
+        updatePlayerObject[switchPlayer].rbi = Number(updatePlayerObject[switchPlayer].rbi + Number(runs));
+        localStorage.setItem('playerObjectArr', JSON.stringify(updatePlayerObject));
+        setCurrentLineup(updatePlayerObject);
+      }
+
       // adds an at bat and adds an out
       const addHitOut = () => {
         let updatePlayerObject = [...JSON.parse(localStorage.getItem('playerObjectArr'))];
@@ -387,6 +402,24 @@ function LiveGamePage() {
         setCurrentLineup(updatePlayerObject);
         addOut();
         nextBatter();
+      }
+      // determine who gets the rbi
+      const whichPlayerRbi = () => {
+        if (isRBI==='c') {
+            return currentBatter;
+        } else if (isRBI==='l') {
+            console.log('isRbi: ', isRBI);
+            console.log('currentBatter:', currentBatter);
+            if (currentBatter === '0' || currentBatter === 0) {
+                let newBatter = currentLineup.length - 1;
+                console.log('This is newBatter: ', newBatter);
+                return newBatter;
+            } else {
+            return Number(currentBatter) - 1;
+            }
+        } else {
+            return 'n'
+        }
       }
       // adds two outs
       const doublePlay = () => {
@@ -429,13 +462,14 @@ function LiveGamePage() {
         localStorage.setItem('awayScore', (Number(currentAwayScore)+ Number(runs)));
         setAwayScore(localStorage.getItem('awayScore'));
     }
-
+    
       const handleAddUserTeamScore = () => {
         if (homeAway === 'away') {
             awayScoreAdd(holdRuns);
         } else {
             homeScoreAdd(holdRuns);
         }
+        handleRbi(holdRuns);
         setRunsInputToggle(false);
       }
 
@@ -649,6 +683,19 @@ function LiveGamePage() {
                     <FormControlLabel value="2" labelPlacement='bottom' control={<Radio />} label="2" />
                     <FormControlLabel value="3" labelPlacement='bottom' control={<Radio />} label="3" />
                     <FormControlLabel value="4" labelPlacement='bottom' control={<Radio />} label="4" />
+                </RadioGroup>
+            </FormControl>
+            <FormControl sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <FormLabel>Are these RBI's?</FormLabel>
+                <RadioGroup
+                    row
+                    name="rbiPrompt"
+                    value={isRBI}
+                    onChange={(e)=>setIsRBI(e.target.value)}
+                >
+                    <FormControlLabel value="n" labelPlacement='bottom' control={<Radio size='small' />} label="No" />
+                    <FormControlLabel value="l" labelPlacement='bottom' control={<Radio size='small' />} label={`Last Batter`} />
+                    <FormControlLabel value="c" labelPlacement='bottom' control={<Radio size='smallf' />} label="Current Batter" />
                 </RadioGroup>
             </FormControl>
             <ButtonGroup fullWidth>
