@@ -91,47 +91,6 @@ function LiveGamePage() {
         }
       }
 
-    // FORMAT THE END GAME OBJECT NEEDS TO BE IN
-    const defaultGame = {
-        teamId: "1",
-        opponent: "The Losers",
-        isWinner: "true",
-        scoreHomeTeam: "20",
-        scoreAwayTeam: "8",
-        innings: "7",
-        isHomeTeam: "true",
-        playerArray: [
-            {
-                userId: "3",
-                hits: "5",
-                walks: "0",
-                atBats: "5",
-                rbi: "4",
-                strikeouts: "0",
-                position: "SS",
-                lineupNumber: "4",
-                single: "2",
-                double: "2",
-                triple: "0",
-                hr: "1"
-            },
-            {
-                userId: "5",
-                hits: "2",
-                walks: "1",
-                atBats: "3",
-                rbi: "1",
-                strikeouts: "1",
-                position: "C",
-                lineupNumber: "8",
-                single: "1",
-                double: "1",
-                triple: "0",
-                hr: "0"
-            }
-    
-        ]
-    }
     // this function will create a complete game object to send to the database
     const buildGameObject = () =>  {
         let opponentString = JSON.parse(localStorage.getItem('homeOpponent'));
@@ -161,11 +120,10 @@ function LiveGamePage() {
     }
     // Send complete game object to db
     const completeGame = (gameInfo) => {
-       console.log('This is gameInfo: ', gameInfo);
-        dispatch({
+    dispatch({
         type: 'ADD_GAME',
         payload: gameInfo
-       }) 
+    }) 
     localStorage.removeItem('gameInProgress');
     localStorage.removeItem('playerObjectArr');
     localStorage.removeItem('currentInning');
@@ -180,7 +138,7 @@ function LiveGamePage() {
     setOpponentName('');
     setHomeScore(0);
     setAwayScore(0);
-    // history.push('/');
+    history.push('/');
     }
     // This function checks if a team id exists in the url and game is not in progress
     // if no team id(number) the user is returned home
@@ -288,15 +246,18 @@ function LiveGamePage() {
     const openOpponentForm = () => {
         setOpen(true);
     }
+    // Closes opponent form
     const closeOpponentForm = () => {
         setOpen(false);
         setGetHomeOpponent(true);
     }
+    // submits opponent form data
     const submitOpponentForm = () => {
         localStorage.setItem('homeOpponent', JSON.stringify({opponent: opponentName, homeAway: homeAway}));
         setOpen(false);
         setGetHomeOpponent(true);
     }
+    // sets if the user team is home or away team
     const handleHomeAway = (value) => {
         setHomeAway(value);
     }
