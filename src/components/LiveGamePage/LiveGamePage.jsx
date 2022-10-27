@@ -48,6 +48,8 @@ function LiveGamePage() {
     const [isRBI, setIsRBI] = useState('n');
 
     // will get the current players for the team id in url
+    // clears teamId in localStorage (in case one exists)
+    // sets teamId in localStorage to current teamId
     useEffect(() => {
         let id = location.pathname.match(/\d+/g);
         checkTeam(id);
@@ -76,6 +78,7 @@ function LiveGamePage() {
         }   
       }, [teamPlayers.teamPlayersPersonalInfoReducer, toggle]);
 
+      // monitors if the game should be completed or not
       useEffect(() => {
         isGameDone();
       }, [currentOuts, currentInning, homeScore]);
@@ -461,7 +464,7 @@ function LiveGamePage() {
         localStorage.setItem('awayScore', (Number(currentAwayScore)+ Number(runs)));
         setAwayScore(localStorage.getItem('awayScore'));
     }
-    
+    // This function will add runs to the user team
       const handleAddUserTeamScore = () => {
         if (homeAway === 'away') {
             awayScoreAdd(holdRuns);
@@ -471,7 +474,7 @@ function LiveGamePage() {
         handleRbi(holdRuns);
         setRunsInputToggle(false);
       }
-
+    // This function will add a single run to the opponent score
       const handleAddOppentTeamScore = () => {
         if (homeAway === 'away') {
             homeScoreAdd(1);
