@@ -44,6 +44,8 @@ function LiveGamePage() {
     const [holdRuns, setHoldRuns] = useState(0);
     // determine is add run inputs should be shown
     const [runsInputToggle, setRunsInputToggle] = useState(false);
+    // hold current teamId
+    const [currentTeam, setCurrentTeam] = useState(0);
 
     // will get the current players for the team id in url
     useEffect(() => {
@@ -56,7 +58,9 @@ function LiveGamePage() {
         dispatch({
             type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
             payload: id
-          }); 
+          });
+          localStorage.removeItem('teamId');
+          setTeamId(id);
       }, []);
 
       // set roster to player array of objects in localStorage if it
@@ -75,6 +79,14 @@ function LiveGamePage() {
       useEffect(() => {
         isGameDone();
       }, [currentOuts, currentInning, homeScore]);
+
+      // This function will accept a number and store
+      // it in local storage if that key 'teamId' doesn't already exist
+      const setTeamId = (id) => {
+        if (!localStorage.getItem('teamId')) {
+            localStorage.setItem('teamId', id);
+        }
+      }
 
     // FORMAT THE END GAME OBJECT NEEDS TO BE IN
     const defaultGame = {
@@ -131,12 +143,13 @@ function LiveGamePage() {
     localStorage.removeItem('homeOpponent');
     localStorage.removeItem('awayScore');
     localStorage.removeItem('homeScore');
-    setToggle(!toggle);
+    localStorage.removeItem('teamId');
     setCurrentInning({});
     setGetHomeOpponent(false);
     setOpponentName('');
     setHomeScore(0);
     setAwayScore(0);
+    history.push('/');
     }
     // This function checks if a team id exists in the url and game is not in progress
     // if no team id(number) the user is returned home
