@@ -44,8 +44,6 @@ function LiveGamePage() {
     const [holdRuns, setHoldRuns] = useState(0);
     // determine is add run inputs should be shown
     const [runsInputToggle, setRunsInputToggle] = useState(false);
-    // hold current teamId
-    const [currentTeam, setCurrentTeam] = useState(0);
 
     // will get the current players for the team id in url
     useEffect(() => {
@@ -526,7 +524,7 @@ function LiveGamePage() {
                       <ListItemButton>
                         <ListItemIcon>
                           <ListItemText
-                            primary={`${player.first_name} ${player.last_name}`}
+                            primary={`${index+1}. ${player.first_name} ${player.last_name}`}
                           />
                           <Button
                             onClick={() => movePlayerUp(index, player.id)}
@@ -543,7 +541,7 @@ function LiveGamePage() {
                           >
                             REMOVE
                           </Button>
-                          <FormControl>
+                          <FormControl required>
                             <InputLabel htmlFor="team">Position</InputLabel>
                             <Select
                               value={player.position || ""}
