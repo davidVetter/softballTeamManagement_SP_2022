@@ -313,6 +313,7 @@ function LiveGamePage() {
             if (doublePlay>0){
                 return;
             }
+            addAtBatOnOut();
             nextBatter(); // need to figure out how to only advance to next batter during your inning
         }
       }
@@ -331,6 +332,13 @@ function LiveGamePage() {
           setCurrentBatter(batter + 1);
           return batter + 1;
         }
+      }
+      // This function will add an at bat to a batter on out
+      const addAtBatOnOut = () => {
+        let updatePlayerObject = [...JSON.parse(localStorage.getItem('playerObjectArr'))];
+        updatePlayerObject[currentBatter].at_bats = Number(updatePlayerObject[currentBatter].at_bats + 1);
+        localStorage.setItem('playerObjectArr', JSON.stringify(updatePlayerObject));
+        setCurrentLineup(updatePlayerObject);
       }
       // this function will add a single the current batter then move to the next batter
       const addSingle = () => {
@@ -394,15 +402,6 @@ function LiveGamePage() {
         setCurrentLineup(updatePlayerObject);
       }
 
-      // adds an at bat and adds an out
-      const addHitOut = () => {
-        let updatePlayerObject = [...JSON.parse(localStorage.getItem('playerObjectArr'))];
-        updatePlayerObject[currentBatter].at_bats = Number(updatePlayerObject[currentBatter].at_bats + 1);
-        localStorage.setItem('playerObjectArr', JSON.stringify(updatePlayerObject));
-        setCurrentLineup(updatePlayerObject);
-        addOut();
-        nextBatter();
-      }
       // determine who gets the rbi
       const whichPlayerRbi = () => {
         if (isRBI==='c') {
@@ -686,16 +685,16 @@ function LiveGamePage() {
                 </RadioGroup>
             </FormControl>
             <FormControl sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <FormLabel>Are these RBI's?</FormLabel>
+                <FormLabel>Which person caused the runs?(RBI)</FormLabel>
                 <RadioGroup
                     row
                     name="rbiPrompt"
                     value={isRBI}
                     onChange={(e)=>setIsRBI(e.target.value)}
                 >
-                    <FormControlLabel value="n" labelPlacement='bottom' control={<Radio size='small' />} label="No" />
-                    <FormControlLabel value="l" labelPlacement='bottom' control={<Radio size='small' />} label={`Last Batter`} />
-                    <FormControlLabel value="c" labelPlacement='bottom' control={<Radio size='smallf' />} label="Current Batter" />
+                    <FormControlLabel value="n" labelPlacement='bottom' control={<Radio size='small' />} label="None" />
+                    <FormControlLabel value="l" labelPlacement='bottom' control={<Radio size='small' />} label="Last" />
+                    <FormControlLabel value="c" labelPlacement='bottom' control={<Radio size='small' />} label="Current" />
                 </RadioGroup>
             </FormControl>
             <ButtonGroup fullWidth>
@@ -704,7 +703,7 @@ function LiveGamePage() {
             </ButtonGroup>
             </FormGroup>
                 :
-                <Button variant='contained' color='success' onClick={()=>setRunsInputToggle(true)}>We Scored!</Button>}</>}
+                <Button fullWidth variant='contained' color='success' onClick={()=>setRunsInputToggle(true)}>We Scored!</Button>}</>}
               </Box>
               <Divider />
               <Typography variant="h6">
@@ -732,12 +731,19 @@ function LiveGamePage() {
               <ButtonGroup variant='contained' fullWidth sx={{mb: 1}}>
                 <Button disabled={disableHits()} color='secondary' onClick={addWalk}>WALK</Button>
                 <Button color={localStorage.getItem('currentOuts')<2?'warning':'error'} onClick={addOut}>OUT</Button>
-                <Button disabled={disableHits()} color='error' onClick={addOut}>STRIKEOUT</Button>
+                <Button disabled={disableHits()} color='error' onClick={addOut}>K</Button>
               </ButtonGroup>
               <ButtonGroup disabled={disableHits()} variant='contained' size='small' fullWidth>
-                <Button color={localStorage.getItem('currentOuts')<2?'warning':'error'} onClick={addHitOut} fullWidth>HIT + OUT</Button>
+                <Button color={localStorage.getItem('currentOuts')<2?'warning':'error'} onClick={addOut} fullWidth>FIELDER CHOICE</Button>
                 {localStorage.getItem('currentOuts')<2 && <Button color='error' onClick={doublePlay} fullWidth>DOUBLE PLAY</Button>}
               </ButtonGroup>
+              <Button 
+                sx={{mt: 1}} 
+                fullWidth variant='contained' 
+                color={localStorage.getItem('currentOuts')<2?'warning':'error'}
+                onClick={()=>addOut(1)}>
+                    OUT (NO BATTER CHANGE)
+            </Button>
             </Paper>
             <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
               <Typography variant="h6">
