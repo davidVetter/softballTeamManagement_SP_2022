@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, InputLabel, Select, MenuItem, TableRow, TableHead, TableContainer, TableCell, TableBody, Table} from '@mui/material';
 import './InfoPage.css';
 
@@ -19,8 +20,12 @@ function InfoPage() {
   const teamGames = useSelector((store) => store.game);
   const errors = useSelector((store) => store.errors);
   const dispatch = useDispatch();
+  const history = useHistory();
+  let location = useLocation(); // allows reading of the current url
+  let teamId = location.pathname.match(/\d+/g);
+  console.log('this is teamId on load: ', teamId);
   const [teamClick, setTeamClick] = useState(true);
-  const [team, setTeam] = useState('');
+  const [team, setTeam] = useState(teamId===null?'':Number(teamId[0]));
   const [firstClick, setFirstClick] = useState(true);
   const [toggle, setToggle] = useState(false);
 
@@ -36,10 +41,20 @@ function InfoPage() {
     dispatch({
       type: 'RESET_MANAGER'
     });
+    if(location.pathname.match(/\d+/g)===null && userTeamGames.playerTeamReducer.length > 0) {
+      setTeam(userTeamGames.playerTeamReducer[0].id);
+    }
+    if (location.pathname.match(/\d+/g) > 0){
+      let teamId = location.pathname.match(/\d+/g);
+      console.log('teamid: ', teamId);
+      setTeamClick(!teamClick);
+      setTeam(Number(teamId[0]));
+      console.log('This is team in useEffect: ', team);
+    }
   }, []);
   // sets default team to the first team in players team array
   useEffect(() => {
-    if(userTeamGames.playerTeamReducer.length > 0) {
+    if(userTeamGames.playerTeamReducer.length < 0) {
     setTeam(userTeamGames.playerTeamReducer[0].id);
     }
   }, [userTeamGames]);
@@ -70,13 +85,12 @@ function InfoPage() {
       payload: team
     });
   }
-  }, [team, toggle]);
+  }, [team, toggle, teamClick]);
 
   // Sets team local state to determine which team's info to display
   const selectTeam = (e) => {
     setTeamClick(!teamClick);
     setTeam(e.target.value);
-    // setWins(countWins());
   }
   // converts the selected teams id to team's name for display
   const teamName = (e) => {
@@ -109,6 +123,16 @@ function InfoPage() {
     }
     return count;
   }
+  // counts the number of losses for the selected team
+    const countLoses = () => {
+      let count = 0;
+      for (let game of teamGames.teamGamesReducer) {
+        if (game.is_winner === false) {
+          count ++;
+        }
+      }
+      return count;
+    }
   // allows the user to be able to click anywhere off the select element to close it
   const closeSelect = () => {
     if (teamClick === true) {
@@ -147,6 +171,16 @@ function InfoPage() {
     });
   }
 
+  // function will start a new game for the selected team
+  const startGame = () => {
+    dispatch({
+      type: 'GET_TEAM_PLAYERS',
+      payload: team
+    })
+    history.push(`/live/${team}`);
+
+  }
+
   return (
     <Box onClick={closeSelect}>
       <Paper>
@@ -179,11 +213,12 @@ function InfoPage() {
               <Typography variant="h4" onClick={teamNameClick}>
                 {teamName()}
               </Typography>
+              <Button variant='contained' onClick={startGame}>PLAY BALL!</Button>
             </>
           )
         )}
         <Typography variant="body1" gutterBottom>
-          Record: {countWins()}-{teamGames.teamGamesReducer.length}
+          Record: {countWins()}-{countLoses()}
         </Typography>
       </Paper>
       {/* TEAM ROSTER */}

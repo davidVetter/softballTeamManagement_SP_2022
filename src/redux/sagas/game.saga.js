@@ -27,9 +27,9 @@ function* getTeamGames(action) {
 // with the game that was just added in the database
 function* addGame(action) {
     try {
-        console.log('In add game');
+        console.log('In add game gameSAGA with: ', action.payload);
         yield axios.post('api/game/', action.payload);
-        yield put({ type: "GET_TEAM_GAMES"});
+        // yield put({ type: "GET_TEAM_GAMES"});
     } catch (err) {
         console.log('Error in adding game', err);
     }
