@@ -47,6 +47,13 @@ function UserPage() {
     setJoinTeamToggle(false);
   }
 
+  // This function hides create team and join team when edit form is displayed
+  const showEdit = () => {
+    setEditMode(!editMode);
+    setCreateTeamToggle(false);
+    setJoinTeamToggle(false);
+  }
+
   return (
     <Box className="container">
       <Typography variant="h4">
@@ -59,13 +66,13 @@ function UserPage() {
       <Divider />
       </Box>
       <Typography variant='body2'>Bats: {user.bats.toUpperCase()} | Throws: {user.throws.toUpperCase()}</Typography>
-      <Button
+      {!editMode && <Button
         variant="outlined"
         type="button"
-        onClick={() => setEditMode(!editMode)}
+        onClick={showEdit}
       >
         Edit My Info
-      </Button>
+      </Button>}
       {/* Create a Team Form */}
       {createTeamToggle ? (
         <CreateTeam errors={errors} setCreateTeamToggle={setCreateTeamToggle} />
