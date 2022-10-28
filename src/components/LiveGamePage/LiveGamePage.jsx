@@ -110,9 +110,12 @@ function LiveGamePage() {
     }
     // This function will determine if the user team won the game or not
     const determineWinner = () => {
-        if (homeAway==='home' && homeScore > awayScore) {
+        console.log('Start determine winner');
+        console.log('This is homeScore: ', homeScore, 'This is awayScore: ', awayScore);
+        console.log('This is homeAway: ', homeAway);
+        if (homeAway==='home' && Number(homeScore) > Number(awayScore)) {
             return true;
-        } else if (homeAway==='away' && awayScore > homeScore) {
+        } else if (homeAway==='away' && Number(awayScore) > Number(homeScore)) {
             return true;
         } else {
             return false;
@@ -438,6 +441,7 @@ function LiveGamePage() {
             localStorage.setItem('currentInning', JSON.stringify({inning: (whatInning.inning+1), half: 'away'}));
         }
         localStorage.setItem('currentOuts', 0);
+        setCurrentOuts(0);
         setToggle(!toggle);
       }
       // Add runs to the home score
@@ -476,11 +480,12 @@ function LiveGamePage() {
       const isGameDone = () => {
         console.log('In isGameDone');
         console.log('currentInning: ', currentInning);
+        console.log('currentOuts: ', currentOuts);
         console.log('homeAway: ', homeAway);
         console.log('homeScore: ', homeScore, ' And away Score: ', awayScore);
         if (currentInning.inning >= 7 && currentInning.half === 'home' && Number(homeScore) > Number(awayScore)) {
             buildGameObject();
-        } else if (currentInning.inning > 7 && Number(homeScore) < Number(awayScore) && currentInning.half==='away' && currentOuts===0) {
+        } else if (currentInning.inning > 7 && Number(homeScore) < Number(awayScore) && currentInning.half==='away' && Number(currentOuts)===0) {
             buildGameObject();
         }
       }

@@ -41,6 +41,15 @@ function RegisterForm() {
     }
     // Send data to saga for POST to server
     dispatch({
+      type: 'CLEAR_TEAM_GAMES'
+    });
+    dispatch({
+      type: 'CLEAR_TEAM_PLAYER_PERSONAL_INFO'
+    });
+    dispatch({
+      type: 'CLEAR_TEAM_PLAYERS_STATS'
+    })
+    dispatch({
       type: 'REGISTER',
       payload: {
         username: username,
