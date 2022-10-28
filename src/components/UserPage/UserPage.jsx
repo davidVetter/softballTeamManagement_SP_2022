@@ -39,6 +39,13 @@ function UserPage() {
     }
     return null;
   }
+  // This function hides edit and join team forms when create team
+  // is being displayed
+  const showCreateTeam = () => {
+    setCreateTeamToggle(true)
+    setEditMode(false);
+    setJoinTeamToggle(false);
+  }
 
   return (
     <Box className="container">
@@ -63,7 +70,7 @@ function UserPage() {
       {createTeamToggle ? (
         <CreateTeam errors={errors} setCreateTeamToggle={setCreateTeamToggle} />
       ) : (
-        <Button variant="outlined" onClick={() => setCreateTeamToggle(true)}>
+        <Button variant="outlined" onClick={showCreateTeam}>
           Create A Team
         </Button>
       )}
