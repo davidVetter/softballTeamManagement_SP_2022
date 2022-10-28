@@ -32,6 +32,7 @@ function UserPage() {
     });
   }, []);
 
+  // get current players teams after joining new team
   useEffect(() => {
     dispatch({
       type: 'GET_PLAYER_TEAMS'

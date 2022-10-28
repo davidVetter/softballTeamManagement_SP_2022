@@ -153,7 +153,9 @@ function LiveGamePage() {
     }
     // Move a player up in the lineup before setting
     // player at #1 moves to bottom on up
-    const movePlayerUp = (index, id) => {
+    const movePlayerUp = (e, index, id) => {
+        console.log('this is e: ', event);
+        e.preventDefault();
         let newRoster = [...teamRoster];
         let temp = newRoster[index-1];
         console.log('This is TEMP: ', temp);
@@ -170,7 +172,8 @@ function LiveGamePage() {
     }
     // Move a player down in the lineup before setting
     // player at last position moves to top of lineup
-    const movePlayerDown = (index, id) => {
+    const movePlayerDown = (e, index, id) => {
+        e.preventDefault();
         let newRoster = [...teamRoster];
         let temp = newRoster[index+1];
         console.log('This is TEMP: ', temp);
@@ -187,7 +190,8 @@ function LiveGamePage() {
         setTeamRoster(newRoster);
     }
     // Remove a player from the lineup (does not remove player from team only this view)
-    const removePlayer = (index) => {
+    const removePlayer = (e, index) => {
+        e.preventDefault();
         let newRoster = [...teamRoster];
         console.log('this is newRoster: ', newRoster);
         newRoster.splice(index, 1);
@@ -211,7 +215,8 @@ function LiveGamePage() {
     }
     // this function sets an object into localStorage that contains
     // the user set batting lineup
-    const setLineup = () => {
+    const setLineup = (e) => {
+        e.preventDefault();
         localStorage.setItem('gameInProgress', true);
         localStorage.setItem('currentBatter', 0);
         localStorage.setItem('currentOuts', 0);
@@ -539,6 +544,7 @@ function LiveGamePage() {
       </Dialog>
         {!localStorage.getItem("gameInProgress") && (
           <>
+          <form onSubmit={setLineup}>
             <List>
               {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 &&
                 teamRoster.map((player, index) => {
@@ -557,17 +563,17 @@ function LiveGamePage() {
                             primary={`${index+1}. ${player.first_name} ${player.last_name}`}
                           />
                           <Button
-                            onClick={() => movePlayerUp(index, player.id)}
+                            onClick={(e) => movePlayerUp(e, index, player.id)}
                           >
                             UP
                           </Button>
                           <Button
-                            onClick={() => movePlayerDown(index, player.id)}
+                            onClick={(e) => movePlayerDown(e, index, player.id)}
                           >
                             DOWN
                           </Button>
                           <Button
-                            onClick={() => removePlayer(index, player.id)}
+                            onClick={(e) => removePlayer(e, index, player.id)}
                           >
                             REMOVE
                           </Button>
@@ -624,7 +630,8 @@ function LiveGamePage() {
                   );
                 })}
             </List>
-            <Button onClick={setLineup}>Set Lineup</Button>
+            <Button type='submit'>Set Lineup</Button>
+            </form>
           </>
         )}
         {localStorage.getItem("currentBatter") && (
