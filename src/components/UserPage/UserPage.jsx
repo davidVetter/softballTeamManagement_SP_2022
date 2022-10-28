@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
+import { Button, ButtonGroup, Box, Typography, Paper, TextField, Grid, FormLabel, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
 import EditUserForm from '../EditUserForm/EditUserForm'
 import LiveGamePage from '../LiveGamePage/LiveGamePage';
 import CreateTeam from '../CreateTeam/CreateTeam';
@@ -18,6 +18,7 @@ function UserPage() {
   const [editMode, setEditMode] = useState(false);
   const [createTeamToggle, setCreateTeamToggle] = useState(false);
   const [joinTeamToggle, setJoinTeamToggle] = useState(false);
+  const [toggle, setToggle] = useState(false);
 
   useEffect(() => {
     dispatch({
@@ -30,6 +31,14 @@ function UserPage() {
       type: 'GET_TEAMS'
     });
   }, []);
+
+  useEffect(() => {
+    dispatch({
+      type: 'GET_PLAYER_TEAMS'
+    });
+    setToggle(!toggle);
+  }, [joinTeamToggle])
+
   // Convert 10 digit phone number string to (XXX) XXX-XXXX format
   const formatPhone = (phoneNumberString) => {
     const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
@@ -49,9 +58,17 @@ function UserPage() {
 
   // This function hides create team and join team when edit form is displayed
   const showEdit = () => {
-    setEditMode(!editMode);
+    setEditMode(true);
     setCreateTeamToggle(false);
     setJoinTeamToggle(false);
+  }
+
+  // this function hides edit and create team forms when join team
+  // is active
+  const showJoinTeam = () => {
+    setJoinTeamToggle(true);
+    setCreateTeamToggle(false);
+    setEditMode(false);
   }
 
   return (
@@ -66,29 +83,31 @@ function UserPage() {
       <Divider />
       </Box>
       <Typography variant='body2'>Bats: {user.bats.toUpperCase()} | Throws: {user.throws.toUpperCase()}</Typography>
+      <ButtonGroup fullWidth sx={{mb: 2}}>
       {!editMode && <Button
         variant="outlined"
         type="button"
+        color='secondary'
         onClick={showEdit}
       >
         Edit My Info
       </Button>}
-      {/* Create a Team Form */}
-      {createTeamToggle ? (
-        <CreateTeam errors={errors} setCreateTeamToggle={setCreateTeamToggle} />
-      ) : (
-        <Button variant="outlined" onClick={showCreateTeam}>
+      {!createTeamToggle && <Button 
+        variant="outlined"
+        color='success'
+        onClick={showCreateTeam}
+      >
           Create A Team
-        </Button>
-      )}
-      {/* Request to join a team */}
-      {joinTeamToggle ? (
-        <JoinTeamForm errors={errors} setJoinTeamToggle={setJoinTeamToggle} />
-      ) : (
-        <Button variant="outlined" onClick={() => setJoinTeamToggle(true)}>
+        </Button>}
+      {!joinTeamToggle && <Button 
+        variant="outlined" 
+        color='success'
+        onClick={showJoinTeam}
+      >
           Join A Team
-        </Button>
-      )}
+        </Button>}
+      </ButtonGroup>
+      {/* Create a Team Form */}
       <Box
         sx={{
           width: "100%",
@@ -97,11 +116,19 @@ function UserPage() {
           justifyContent: "center",
           flexDirection: "column",
         }}
-      >
+        >
+        {createTeamToggle && (
+          <CreateTeam errors={errors} setCreateTeamToggle={setCreateTeamToggle} />
+        )}
+        {/* Request to join a team */}
+        {joinTeamToggle && (
+          <JoinTeamForm errors={errors} joinTeamToggle={joinTeamToggle} setToggle={setToggle} toggle={toggle} setJoinTeamToggle={setJoinTeamToggle} />
+        )}
         {editMode && <EditUserForm setEditMode={setEditMode} />}
-        <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", width: "80%" }}>
+        <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", width: "80%", padding: 2 }}>
           <Typography variant="h4">My Teams</Typography>
           <List>
+            {!playerGames.playerTeamReducer.length > 0 && `Uh-oh no teams found! Join one to see it here! Simply click 'Join a Team' button above to get started.`}
             {playerGames.playerTeamReducer.length > 0 &&
               playerGames.playerTeamReducer.map((team, index) => {
                 return (

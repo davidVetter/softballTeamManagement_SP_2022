@@ -73,6 +73,9 @@ function InfoPage() {
       payload: team
     });
     dispatch({
+      type: 'GET_PLAYER_TEAMS'
+    });
+    dispatch({
       type: 'GET_TEAM_PLAYERS',
       payload: team 
     });

@@ -18,6 +18,10 @@ function JoinTeamForm(props) {
             number
           }
         });
+        clearJoinTeamForm();
+        console.log('This is props.joinTeamToggle: ', props.joinTeamToggle);
+        props.setJoinTeamToggle(false);
+        props.setToggle(!props.toggle);
       }; // end registerTeam
 
       useEffect(() => {
@@ -26,6 +30,10 @@ function JoinTeamForm(props) {
         });
       }, []);
       
+      const clearJoinTeamForm = () => {
+        setTeamId('');
+        setNumber('');
+      }
     return (
       <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", width: "80%" }}>
         <form onSubmit={registerUser}>
