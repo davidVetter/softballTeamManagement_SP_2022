@@ -496,7 +496,7 @@ function LiveGamePage() {
       }
 
     return (
-      <Box>
+      <Box color='primary'>
         {localStorage.getItem('gameInProgress') && 
             !localStorage.getItem('homeOpponent') && 
             !getHomeOpponent &&
@@ -636,11 +636,11 @@ function LiveGamePage() {
         )}
         {localStorage.getItem("currentBatter") && (
           <Box>
-            <Typography variant="h6">
+            {/* <Typography variant="h6">
               {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
               {currentInning.inning}&nbsp;|&nbsp;Outs: {currentOuts}
             </Typography>
-            <Divider />
+            <Divider /> */}
             {/* <Typography variant="h6">Outs: {currentOuts}</Typography> */}
             <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start'}}>
             {homeAway==='home'&&<Star color='success'/>}
@@ -664,6 +664,14 @@ function LiveGamePage() {
             <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
               <Box >
               {!(homeAway === currentInning.half) && <Button variant='outlined' color='error' onClick={handleAddOppentTeamScore}>They scored +1</Button>}
+              
+              <Typography variant="h6">
+                {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
+              </Typography>
+              <Typography variant="h6">
+                {currentInning.inning}&nbsp;|&nbsp;Outs: {currentOuts}
+              </Typography>
+              <Divider />
               <Typography variant="h5">
               {(homeAway === currentInning.half)?`Current Batter:`:`DUE UP NEXT INNING:`}
                 <br />

@@ -3,14 +3,17 @@ import { Link } from 'react-router-dom';
 import LogOutButton from '../LogOutButton/LogOutButton';
 import './Nav.css';
 import { useSelector } from 'react-redux';
+import AppBar from '@mui/material/AppBar';
+import Typography from '@mui/material/Typography';
+
 
 function Nav() {
   const user = useSelector((store) => store.user);
 
   return (
-    <div className="nav">
+    <AppBar position='static' color="secondary">
       <Link to="/home">
-        <h2 className="nav-title">Benchwarmer</h2>
+        <Typography variant='h3' className="nav-title">Benchwarmer</Typography>
       </Link>
       <div>
         {/* If no user is logged in, show these links */}
@@ -40,7 +43,7 @@ function Nav() {
           About
         </Link>
       </div>
-    </div>
+    </AppBar>
   );
 }
 

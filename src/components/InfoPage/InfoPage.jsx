@@ -3,6 +3,8 @@ import {useSelector, useDispatch} from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, InputLabel, Select, MenuItem, TableRow, TableHead, TableContainer, TableCell, TableBody, Table} from '@mui/material';
 import './InfoPage.css';
+import Slide from '@mui/material/Slide';
+
 
 // This is one of our simplest components
 // It doesn't have local state
@@ -185,8 +187,9 @@ function InfoPage() {
   }
 
   return (
-    <Box onClick={closeSelect}>
-      <Paper>
+    <Slide in={true} direction='up'>
+    <Box onClick={closeSelect} sx={{padding: 2}}>
+      <Paper sx={{padding: 1}}>
         {userTeamGames.playerTeamReducer.length > 0 && teamClick ? (
           <>
             <InputLabel htmlFor="team">Team</InputLabel>
@@ -324,8 +327,8 @@ function InfoPage() {
         teamPlayers.teamPlayersPending.map((player, index) => {
           return (
             <Box key={index}>
-              <Paper>
-                <Typography variant="heading6">Needs approval:</Typography>
+              <Paper sx={{padding: 1}}>
+                <Typography color='primary' variant="heading6">Needs approval:</Typography>
                 <Typography variant="body2">
                   {player.first_name}&nbsp;{player.last_name}
                   <Button onClick={() => approvePlayer(player.user_id)}>
@@ -396,6 +399,7 @@ function InfoPage() {
         </Table>
       </TableContainer>
     </Box>
+    </Slide>
   );
 }
 

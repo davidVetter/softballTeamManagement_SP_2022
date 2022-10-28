@@ -6,6 +6,8 @@ import EditUserForm from '../EditUserForm/EditUserForm'
 import LiveGamePage from '../LiveGamePage/LiveGamePage';
 import CreateTeam from '../CreateTeam/CreateTeam';
 import JoinTeamForm from '../JoinTeamForm/JoinTeamForm';
+import Zoom from '@mui/material/Zoom';
+import Chip from '@mui/material/Chip';
 
 function UserPage() {
   const user = useSelector((store) => store.user);
@@ -73,7 +75,9 @@ function UserPage() {
   }
 
   return (
+      <Zoom in={true}>
     <Box className="container">
+      <Paper elevation={4} sx={{mb: 2, padding: 1}}>
       <Typography variant="h4">
         {user.first_name}&nbsp;{user.last_name}
       </Typography>
@@ -84,9 +88,11 @@ function UserPage() {
       <Divider />
       </Box>
       <Typography variant='body2'>Bats: {user.bats.toUpperCase()} | Throws: {user.throws.toUpperCase()}</Typography>
-      <ButtonGroup fullWidth sx={{mb: 2}}>
+      </Paper>
+      <Paper color='secondary' sx={{width: '100%', mb: 2}}>
+      <ButtonGroup fullWidth>
       {!editMode && <Button
-        variant="outlined"
+        variant="contained"
         type="button"
         color='secondary'
         onClick={showEdit}
@@ -94,20 +100,21 @@ function UserPage() {
         Edit My Info
       </Button>}
       {!createTeamToggle && <Button 
-        variant="outlined"
+        variant="contained"
         color='success'
         onClick={showCreateTeam}
       >
           Create A Team
         </Button>}
       {!joinTeamToggle && <Button 
-        variant="outlined" 
+        variant="contained" 
         color='success'
         onClick={showJoinTeam}
       >
           Join A Team
         </Button>}
       </ButtonGroup>
+      </Paper>
       {/* Create a Team Form */}
       <Box
         sx={{
@@ -128,7 +135,7 @@ function UserPage() {
         {editMode && <EditUserForm setEditMode={setEditMode} />}
         <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", width: "80%", padding: 2 }}>
           <Typography variant="h4">My Teams</Typography>
-          <List>
+          <List sx={{maxHeight: 200, overflowY: 'scroll'}}>
             {!playerGames.playerTeamReducer.length > 0 && `Uh-oh no teams found! Join one to see it here! Simply click 'Join a Team' button above to get started.`}
             {playerGames.playerTeamReducer.length > 0 &&
               playerGames.playerTeamReducer.map((team, index) => {
@@ -165,6 +172,7 @@ function UserPage() {
         </Paper>
       </Box>
     </Box>
+      </Zoom>
   );
 }
 
