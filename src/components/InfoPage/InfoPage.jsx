@@ -225,7 +225,7 @@ function InfoPage() {
       <Typography variant="h6">Roster</Typography>
       <TableContainer
         component={Paper}
-        sx={{ maxHeight: 400, mb: 2 }}
+        sx={{ maxHeight: 300, mb: 2 }}
         elevation={8}
       >
         <Table
@@ -335,7 +335,7 @@ function InfoPage() {
         })}
       {/* TEAM GAMES TABLE */}
       <Typography variant="h6">Games</Typography>
-      <TableContainer component={Paper} elevation={8}>
+      <TableContainer component={Paper} elevation={8} sx={{maxHeight: 300}}>
         <Table sx={{ minWidth: 400, maxWidth: 600 }}>
           <TableHead>
             <TableRow>
