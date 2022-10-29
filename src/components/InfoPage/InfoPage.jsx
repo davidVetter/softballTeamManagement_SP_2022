@@ -370,13 +370,17 @@ function InfoPage() {
                     className={game.is_home_team ? "yourTeam" : "opponentTeam"}
                   >
                     {game.is_home_team
-                      ? `${game.team_name}}`
+                      ? `${game.team_name}`
                       : `${game.opponent}`}
                   </TableCell>
                   <TableCell
                     className={game.is_home_team ? "yourTeam" : "opponentTeam"}
                   >
+                    <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     {game.score_home_team}
+                    {(game.score_home_team > game.score_away_team) &&
+                       <SportsScoreIcon color={(game.is_home_team&&game.is_winner?'success':'error')}/>}
+                    </Box>
                   </TableCell>
                   <TableCell
                     className={game.is_home_team ? "opponentTeam" : "yourTeam"}
@@ -388,7 +392,11 @@ function InfoPage() {
                   <TableCell
                     className={game.is_home_team ? "opponentTeam" : "yourTeam"}
                   >
+                  <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     {game.score_away_team}
+                    {(game.score_home_team < game.score_away_team) &&
+                       <SportsScoreIcon color={(!game.is_home_team&&game.is_winner?'success':'error')}/>}
+                  </Box>
                   </TableCell>
                   <TableCell>{game.is_winner ? "Won" : "Lost"}</TableCell>
                   <TableCell>{formatDate(game.date)}</TableCell>
