@@ -361,7 +361,7 @@ function InfoPage() {
         <Divider  color='secondary'/>
       </Card>
       <TableContainer component={Paper} elevation={8} sx={{maxHeight: 300}}>
-        <Table stickyHeader={true} sx={{ minWidth: 400, maxWidth: 600 }}>
+        <Table stickyHeader={true} sx={{ minWidth: 400 }}>
           <TableHead>
             <TableRow>
               <TableCell>Home Team</TableCell>

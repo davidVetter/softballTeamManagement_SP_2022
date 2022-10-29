@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button, ButtonGroup, Box, Typography, Paper, TextField, Grid, FormGroup, FormLabel, FormControl, MenuItem, InputLabel, Select, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
+import { Button, ButtonGroup, Box, Chip, Typography, Paper, TextField, Grid, FormGroup, FormLabel, FormControl, MenuItem, InputLabel, Select, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -15,6 +15,9 @@ import InfoIcon from '@mui/icons-material/Info';
 import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import Avatar from '@mui/material/Avatar';
+
 
 function LiveGamePage() {
     const teamPlayers = useSelector((store) => store.team);
@@ -50,6 +53,8 @@ function LiveGamePage() {
     const [runsInputToggle, setRunsInputToggle] = useState(false);
     // hold is the last runs scored are rbi's and how they belong too
     const [isRBI, setIsRBI] = useState('n');
+    // state to show / hide lineup
+    const [showLineup, setShowLineup] = useState(false);
 
     // will get the current players for the team id in url
     // clears teamId in localStorage (in case one exists)
@@ -499,140 +504,238 @@ function LiveGamePage() {
         }
       }
 
+      // control if line modal is displayed or not
+      // toggles state that controls modal
+      const closeLineupForm = () => {
+        setShowLineup(false);
+      }
+
     return (
-      <Box color='primary'>
-        {localStorage.getItem('gameInProgress') && 
-            !localStorage.getItem('homeOpponent') && 
-            !getHomeOpponent &&
-            <Button 
-                onClick={openOpponentForm}
-                variant='contained'
-                color='success'>
-                Ready to start?
-            </Button>}
+      <Box
+        color="primary"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+          minWidth: 315,
+          width: "100%",
+        }}
+      >
+        {localStorage.getItem("gameInProgress") &&
+          !localStorage.getItem("homeOpponent") &&
+          !getHomeOpponent && (
+            <Button
+              onClick={openOpponentForm}
+              variant="contained"
+              color="success"
+            >
+              Ready to start?
+            </Button>
+          )}
         <Dialog open={open} onClose={closeOpponentForm}>
-            <DialogTitle>Opponent Name:</DialogTitle>
-            <DialogContent>
+          <DialogTitle>Opponent Name:</DialogTitle>
+          <DialogContent>
             <DialogContentText>
-                Please enter the opponent team name:
+              Please enter the opponent team name:
             </DialogContentText>
             <TextField
-                autoFocus
-                margin="dense"
-                id="opponent"
-                label="Opponent Name"
-                type="text"
-                fullWidth
-                variant="standard"
-                sx={{mb: 2}}
-                onChange={(e)=>setOpponentName(e.target.value)}
-                value={opponentName}
+              autoFocus
+              margin="dense"
+              id="opponent"
+              label="Opponent Name"
+              type="text"
+              fullWidth
+              variant="standard"
+              sx={{ mb: 2 }}
+              onChange={(e) => setOpponentName(e.target.value)}
+              value={opponentName}
             />
             <FormControl>
-                <FormLabel id="demo-row-radio-buttons-group-label">What are you doing first?</FormLabel>
-                <RadioGroup
-                    row
-                    name="opponentHome"
-                    value={homeAway}
-                    onChange={(e)=>handleHomeAway(e.target.value)}
-                >
-                    <FormControlLabel value="away" control={<Radio />} label="Batting" />
-                    <FormControlLabel value="home" control={<Radio />} label="In Field" />
-                </RadioGroup>
+              <FormLabel id="demo-row-radio-buttons-group-label">
+                What are you doing first?
+              </FormLabel>
+              <RadioGroup
+                row
+                name="opponentHome"
+                value={homeAway}
+                onChange={(e) => handleHomeAway(e.target.value)}
+              >
+                <FormControlLabel
+                  value="away"
+                  control={<Radio />}
+                  label="Batting"
+                />
+                <FormControlLabel
+                  value="home"
+                  control={<Radio />}
+                  label="In Field"
+                />
+              </RadioGroup>
             </FormControl>
-            </DialogContent>
-            <DialogActions>
+          </DialogContent>
+          <DialogActions>
             <Button onClick={closeOpponentForm}>Cancel</Button>
             <Button onClick={submitOpponentForm}>Confirm</Button>
-            </DialogActions>
-      </Dialog>
+          </DialogActions>
+        </Dialog>
         {!localStorage.getItem("gameInProgress") && (
-          <>
-          <form onSubmit={setLineup}>
-            <List>
-              {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 &&
-                teamRoster.map((player, index) => {
-                  {
-                    console.log("this is player each time: ", player);
-                  }
-                  return (
-                    <ListItem
-                      key={index}
-                      disablePadding
-                      alignItems="flex-start"
-                    >
-                      <ListItemButton>
-                        <ListItemIcon>
-                          <ListItemText
-                            primary={`${index+1}. ${player.first_name} ${player.last_name}`}
-                          />
-                            <ArrowUpwardIcon color='success' onClick={(e) => movePlayerUp(e, index, player.id)} />
-                          <Button
-                            onClick={(e) => movePlayerDown(e, index, player.id)}
-                          >
-                            <ArrowDownwardIcon color='warning' />
-                          </Button>
-                          <Button
-                            onClick={(e) => removePlayer(e, index, player.id)}
-                          >
-                            REMOVE
-                          </Button>
-                          <FormControl required>
-                            <InputLabel htmlFor="team">Position</InputLabel>
-                            <Select
-                              value={player.position || ""}
-                              label="Position"
-                              sx={{ width: "100px" }}
-                              required
-                              size="small"
-                              onChange={(event) => {
-                                changePosition(event, player.user_id);
-                              }}
-                            >
-                              <MenuItem key="P" value="P">
-                                P
-                              </MenuItem>
-                              <MenuItem key="C" value="C">
-                                C
-                              </MenuItem>
-                              <MenuItem key="1B" value="1B">
-                                1B
-                              </MenuItem>
-                              <MenuItem key="2B" value="2B">
-                                2B
-                              </MenuItem>
-                              <MenuItem key="SS" value="SS">
-                                SS
-                              </MenuItem>
-                              <MenuItem key="3B" value="3B">
-                                3B
-                              </MenuItem>
-                              <MenuItem key="LF" value="LF">
-                                LF
-                              </MenuItem>
-                              <MenuItem key="LC" value="LC">
-                                LC
-                              </MenuItem>
-                              <MenuItem key="RC" value="RC">
-                                RC
-                              </MenuItem>
-                              <MenuItem key="RF" value="RF">
-                                RF
-                              </MenuItem>
-                              <MenuItem key="EH" value="EH">
-                                EH
-                              </MenuItem>
-                            </Select>
-                          </FormControl>
-                        </ListItemIcon>
-                      </ListItemButton>
-                    </ListItem>
-                  );
-                })}
-            </List>
-            <Button type='submit'>Set Lineup</Button>
-            </form>
-          </>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Paper
+              elevation={4}
+              sx={{
+                width: "80%",
+                minWidth: 350,
+                mt: 2,
+                padding: 1,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <form onSubmit={setLineup}>
+                <List>
+                  {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 &&
+                    teamRoster.map((player, index) => {
+                      {
+                        console.log("this is player each time: ", player);
+                      }
+                      return (
+                        <ListItem
+                          key={index}
+                          disablePadding
+                          alignItems="flex-start"
+                          style={
+                            index % 2
+                              ? { background: "#121212" }
+                              : { background: "rgba(255, 255, 255, 0.08)" }
+                          }
+                        >
+                          <ListItemButton>
+                            <ListItemIcon>
+                              <Box
+                                sx={{
+                                  minWidth: 160,
+                                  maxWidth: 160,
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "start",
+                                  flexDirection: "column",
+                                }}
+                              >
+                                <Chip
+                                  avatar={
+                                    <Avatar sx={{ bgcolor: "deepskyblue" }}>
+                                      {index + 1}
+                                    </Avatar>
+                                  }
+                                  className="chip"
+                                  sx={{ mb: 1, height: 45 }}
+                                  label={
+                                    <ListItemText
+                                      sx={{ width: 100, overflowX: "hidden" }}
+                                      primary={player.first_name}
+                                      secondary={player.last_name}
+                                    />
+                                  }
+                                ></Chip>
+                                <FormControl required sx={{ width: "95%" }}>
+                                  <InputLabel htmlFor="team">
+                                    Position
+                                  </InputLabel>
+                                  <Select
+                                    value={player.position || ""}
+                                    label="Position"
+                                    sx={{ width: "100%" }}
+                                    required
+                                    size="small"
+                                    onChange={(event) => {
+                                      changePosition(event, player.user_id);
+                                    }}
+                                  >
+                                    <MenuItem key="P" value="P">
+                                      P
+                                    </MenuItem>
+                                    <MenuItem key="C" value="C">
+                                      C
+                                    </MenuItem>
+                                    <MenuItem key="1B" value="1B">
+                                      1B
+                                    </MenuItem>
+                                    <MenuItem key="2B" value="2B">
+                                      2B
+                                    </MenuItem>
+                                    <MenuItem key="SS" value="SS">
+                                      SS
+                                    </MenuItem>
+                                    <MenuItem key="3B" value="3B">
+                                      3B
+                                    </MenuItem>
+                                    <MenuItem key="LF" value="LF">
+                                      LF
+                                    </MenuItem>
+                                    <MenuItem key="LC" value="LC">
+                                      LC
+                                    </MenuItem>
+                                    <MenuItem key="RC" value="RC">
+                                      RC
+                                    </MenuItem>
+                                    <MenuItem key="RF" value="RF">
+                                      RF
+                                    </MenuItem>
+                                    <MenuItem key="EH" value="EH">
+                                      EH
+                                    </MenuItem>
+                                  </Select>
+                                </FormControl>
+                              </Box>
+                              <ButtonGroup>
+                                <Button
+                                  onClick={(e) =>
+                                    movePlayerUp(e, index, player.id)
+                                  }
+                                >
+                                  <ArrowUpwardIcon color="success" />
+                                </Button>
+                                <Button
+                                  onClick={(e) =>
+                                    movePlayerDown(e, index, player.id)
+                                  }
+                                >
+                                  <ArrowDownwardIcon color="warning" />
+                                </Button>
+                                <Button
+                                  onClick={(e) =>
+                                    removePlayer(e, index, player.id)
+                                  }
+                                >
+                                  <RemoveCircleOutlineIcon color="error" />
+                                </Button>
+                              </ButtonGroup>
+                            </ListItemIcon>
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    })}
+                </List>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="success"
+                  sx={{ mb: 1 }}
+                  type="submit"
+                >
+                  Set Lineup
+                </Button>
+              </form>
+            </Paper>
+          </Box>
         )}
         {localStorage.getItem("currentBatter") && (
           <Box>
@@ -642,13 +745,25 @@ function LiveGamePage() {
             </Typography>
             <Divider /> */}
             {/* <Typography variant="h6">Outs: {currentOuts}</Typography> */}
-            <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start'}}>
-            {homeAway==='home'&&<Star color='success'/>}
-            <Typography variant="h6">Home Score: {homeScore}</Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+              }}
+            >
+              {homeAway === "home" && <Star color="success" />}
+              <Typography variant="h6">Home Score: {homeScore}</Typography>
             </Box>
-            <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start'}}>
-            {homeAway==='away'&&<Star color='success'/>}
-            <Typography variant="h6">Away Score: {awayScore}</Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+              }}
+            >
+              {homeAway === "away" && <Star color="success" />}
+              <Typography variant="h6">Away Score: {awayScore}</Typography>
             </Box>
           </Box>
         )}
@@ -662,60 +777,158 @@ function LiveGamePage() {
             }}
           >
             <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
-              <Box >
-              {!(homeAway === currentInning.half) && <Button variant='outlined' color='error' onClick={handleAddOppentTeamScore}>They scored +1</Button>}
-              
-              <Typography variant="h6">
-                {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
-              </Typography>
-              <Typography variant="h6">
-                {currentInning.inning}&nbsp;|&nbsp;Outs: {currentOuts}
-              </Typography>
-              <Divider />
-              <Typography variant="h5">
-              {(homeAway === currentInning.half)?`Current Batter:`:`DUE UP NEXT INNING:`}
-                <br />
-                {currentLineup[currentBatter].first_name}&nbsp;
-                {currentLineup[currentBatter].last_name}&nbsp;#
-                {currentLineup[currentBatter].number}
-              </Typography>
-              {/* if user team half inning, show the add runs buttons */}
-              {(homeAway === currentInning.half) && <>
-              {runsInputToggle ? <FormGroup>
-              <FormControl sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <FormLabel>Add how many runs?</FormLabel>
-                <RadioGroup
-                    row
-                    name="teamScore"
-                    value={holdRuns}
-                    onChange={(e)=>setHoldRuns(e.target.value)}
-                >
-                    <FormControlLabel value="1" labelPlacement='bottom' control={<Radio />} label="1" />
-                    <FormControlLabel value="2" labelPlacement='bottom' control={<Radio />} label="2" />
-                    <FormControlLabel value="3" labelPlacement='bottom' control={<Radio />} label="3" />
-                    <FormControlLabel value="4" labelPlacement='bottom' control={<Radio />} label="4" />
-                </RadioGroup>
-            </FormControl>
-            <FormControl sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <FormLabel>Which person caused the runs?(RBI)</FormLabel>
-                <RadioGroup
-                    row
-                    name="rbiPrompt"
-                    value={isRBI}
-                    onChange={(e)=>setIsRBI(e.target.value)}
-                >
-                    <FormControlLabel value="n" labelPlacement='bottom' control={<Radio size='small' />} label="None" />
-                    <FormControlLabel value="l" labelPlacement='bottom' control={<Radio size='small' />} label="Last" />
-                    <FormControlLabel value="c" labelPlacement='bottom' control={<Radio size='small' />} label="Current" />
-                </RadioGroup>
-            </FormControl>
-            <ButtonGroup fullWidth>
-                <Button color='success' variant='contained' onClick={handleAddUserTeamScore}>Add Runs</Button>
-                <Button color='error' onClick={()=>setRunsInputToggle(false)}>Cancel</Button>
-            </ButtonGroup>
-            </FormGroup>
-                :
-                <Button fullWidth variant='contained' color='success' onClick={()=>setRunsInputToggle(true)}>We Scored!</Button>}</>}
+              <Button
+                sx={{ float: "right" }}
+                onClick={() => setShowLineup(true)}
+              >
+                Lineup
+              </Button>
+              <Box sx={{ maxWidth: 320 }}>
+                {!(homeAway === currentInning.half) && (
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={handleAddOppentTeamScore}
+                  >
+                    They scored +1
+                  </Button>
+                )}
+
+                <Typography variant="h6">
+                  {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
+                </Typography>
+                <Typography variant="h6">
+                  {currentInning.inning}&nbsp;|&nbsp;Outs: {currentOuts}
+                </Typography>
+                <Divider />
+                <Typography variant="h5" sx={{ overflowX: "scroll" }}>
+                  {homeAway === currentInning.half
+                    ? `Current Batter:`
+                    : `DUE UP NEXT INNING:`}
+                  <br />
+                  {/* {currentLineup[currentBatter].first_name}&nbsp;
+                  {currentLineup[currentBatter].last_name}&nbsp;#
+                  {currentLineup[currentBatter].number} */}
+                </Typography>
+                <Chip
+                  sx={{mb: 1}}
+                  label={
+                    <Typography variant="h5" sx={{ overflowX: "scroll" }}>
+                      {currentLineup[currentBatter].first_name}&nbsp;
+                      {currentLineup[currentBatter].last_name}&nbsp;#
+                      {currentLineup[currentBatter].number}
+                    </Typography>
+                  }
+                />
+                {/* if user team half inning, show the add runs buttons */}
+                {homeAway === currentInning.half && (
+                  <>
+                    {runsInputToggle ? (
+                      <FormGroup>
+                        <FormControl
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <FormLabel>Add how many runs?</FormLabel>
+                          <RadioGroup
+                            row
+                            name="teamScore"
+                            value={holdRuns}
+                            onChange={(e) => setHoldRuns(e.target.value)}
+                          >
+                            <FormControlLabel
+                              value="1"
+                              labelPlacement="bottom"
+                              control={<Radio />}
+                              label="1"
+                            />
+                            <FormControlLabel
+                              value="2"
+                              labelPlacement="bottom"
+                              control={<Radio />}
+                              label="2"
+                            />
+                            <FormControlLabel
+                              value="3"
+                              labelPlacement="bottom"
+                              control={<Radio />}
+                              label="3"
+                            />
+                            <FormControlLabel
+                              value="4"
+                              labelPlacement="bottom"
+                              control={<Radio />}
+                              label="4"
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                        <FormControl
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <FormLabel>
+                            Which person caused the runs?(RBI)
+                          </FormLabel>
+                          <RadioGroup
+                            row
+                            name="rbiPrompt"
+                            value={isRBI}
+                            onChange={(e) => setIsRBI(e.target.value)}
+                          >
+                            <FormControlLabel
+                              value="n"
+                              labelPlacement="bottom"
+                              control={<Radio size="small" />}
+                              label="None"
+                            />
+                            <FormControlLabel
+                              value="l"
+                              labelPlacement="bottom"
+                              control={<Radio size="small" />}
+                              label="Last"
+                            />
+                            <FormControlLabel
+                              value="c"
+                              labelPlacement="bottom"
+                              control={<Radio size="small" />}
+                              label="Current"
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                        <ButtonGroup fullWidth>
+                          <Button
+                            color="success"
+                            variant="contained"
+                            onClick={handleAddUserTeamScore}
+                          >
+                            Add Runs
+                          </Button>
+                          <Button
+                            color="error"
+                            onClick={() => setRunsInputToggle(false)}
+                          >
+                            Cancel
+                          </Button>
+                        </ButtonGroup>
+                      </FormGroup>
+                    ) : (
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="success"
+                        onClick={() => setRunsInputToggle(true)}
+                      >
+                        We Scored!
+                      </Button>
+                    )}
+                  </>
+                )}
               </Box>
               <Divider />
               <Typography variant="h6">
@@ -727,74 +940,176 @@ function LiveGamePage() {
                 {currentLineup[currentBatter].position}
               </Typography>
               <Divider />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-              <Typography variant="h6">
-                Outcome of at bat:
-              </Typography>
-              <InfoIcon color='primary' sx={{m: 1}}/>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h6">Outcome of at bat:</Typography>
+                <InfoIcon color="primary" sx={{ m: 1 }} />
               </Box>
-              <ButtonGroup disabled={disableHits()} variant='contained' fullWidth sx={{mb: 1}}>
+              <ButtonGroup
+                disabled={disableHits()}
+                variant="contained"
+                fullWidth
+                sx={{ mb: 1 }}
+              >
                 <Button onClick={addSingle}>1B</Button>
                 <Button onClick={addDouble}>2B</Button>
                 <Button onClick={addTriple}>3B</Button>
-                <Button color='success' onClick={addHr}>HR</Button>
+                <Button color="success" onClick={addHr}>
+                  HR
+                </Button>
               </ButtonGroup>
-              {!(homeAway === currentInning.half) && 
-                <ButtonGroup variant='contained' fullWidth sx={{mb: 1}}>
-                    <Button color='secondary' onClick={skipOpponentHalfInning}>SKIP OPPONENT HALF INNING</Button>
-                </ButtonGroup>}
-              <ButtonGroup variant='contained' fullWidth sx={{mb: 1}}>
-                <Button disabled={disableHits()} color='secondary' onClick={addWalk}>WALK</Button>
-                <Button color={localStorage.getItem('currentOuts')<2?'warning':'error'} onClick={addOut}>OUT</Button>
-                <Button disabled={disableHits()} color='error' onClick={addOut}>K</Button>
+              {!(homeAway === currentInning.half) && (
+                <ButtonGroup variant="contained" fullWidth sx={{ mb: 1 }}>
+                  <Button color="secondary" onClick={skipOpponentHalfInning}>
+                    SKIP OPPONENT HALF INNING
+                  </Button>
+                </ButtonGroup>
+              )}
+              <ButtonGroup variant="contained" fullWidth sx={{ mb: 1 }}>
+                <Button
+                  disabled={disableHits()}
+                  color="secondary"
+                  onClick={addWalk}
+                >
+                  WALK
+                </Button>
+                <Button
+                  color={
+                    localStorage.getItem("currentOuts") < 2
+                      ? "warning"
+                      : "error"
+                  }
+                  onClick={addOut}
+                >
+                  OUT
+                </Button>
+                <Button disabled={disableHits()} color="error" onClick={addOut}>
+                  K
+                </Button>
               </ButtonGroup>
-              <ButtonGroup disabled={disableHits()} variant='contained' size='small' fullWidth>
-                <Button color={localStorage.getItem('currentOuts')<2?'warning':'error'} onClick={addOut} fullWidth>FIELDER CHOICE</Button>
-                {localStorage.getItem('currentOuts')<2 && <Button color='error' onClick={doublePlay} fullWidth>DOUBLE PLAY</Button>}
+              <ButtonGroup
+                disabled={disableHits()}
+                variant="contained"
+                size="small"
+                fullWidth
+              >
+                <Button
+                  color={
+                    localStorage.getItem("currentOuts") < 2
+                      ? "warning"
+                      : "error"
+                  }
+                  onClick={addOut}
+                  fullWidth
+                >
+                  FIELDER CHOICE
+                </Button>
+                {localStorage.getItem("currentOuts") < 2 && (
+                  <Button color="error" onClick={doublePlay} fullWidth>
+                    DOUBLE PLAY
+                  </Button>
+                )}
               </ButtonGroup>
-              <Button 
-                sx={{mt: 1}} 
-                fullWidth variant='contained' 
-                color={localStorage.getItem('currentOuts')<2?'warning':'error'}
-                onClick={()=>addOut(1)}>
-                    OUT (NO BATTER CHANGE)
-            </Button>
+              <Button
+                sx={{ mt: 1 }}
+                fullWidth
+                variant="contained"
+                color={
+                  localStorage.getItem("currentOuts") < 2 ? "warning" : "error"
+                }
+                onClick={() => addOut(1)}
+              >
+                OUT (NO BATTER CHANGE)
+              </Button>
             </Paper>
-            <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
-              <Typography variant="h6">
-                On Deck:
-                <br />
-                {currentLineup[onDeck()].first_name}&nbsp;
-                {currentLineup[onDeck()].last_name}&nbsp;#
-                {currentLineup[onDeck()].number}
-              </Typography>
-              <Divider />
-              <Typography variant="body1">
-                {currentLineup[onDeck()].hits}-{currentLineup[onDeck()].at_bats}
-              </Typography>
-              <Typography variant="body2">
-                Lineup #{currentLineup[onDeck()].lineup_number} | Pos.{" "}
-                {currentLineup[onDeck()].position}
-              </Typography>
+            <Paper
+              elevation={8}
+              sx={{
+                mb: 2,
+                width: "80%",
+                padding: 2,
+                display: "flex",
+                justifyContent: "start",
+                alignItems: "center",
+              }}
+            >
+              <Box sx={{ maxWidth: 328, overflowX: "scroll" }}>
+                <Typography variant="h6">
+                  On Deck:
+                  <br />
+                </Typography>
+                <Chip
+                  sx={{mb: 1}}
+                  label={
+                    <Typography sx={{ overflowX: "scroll" }} variant="h6">
+                      {currentLineup[onDeck()].first_name}&nbsp;
+                      {currentLineup[onDeck()].last_name}&nbsp; #
+                      {currentLineup[onDeck()].number}
+                    </Typography>
+                  }
+                />
+                <Divider />
+                <Typography variant="body1">
+                  {currentLineup[onDeck()].hits}-
+                  {currentLineup[onDeck()].at_bats}
+                </Typography>
+                <Typography variant="body2">
+                  Lineup #{currentLineup[onDeck()].lineup_number} | Pos.{" "}
+                  {currentLineup[onDeck()].position}
+                </Typography>
+              </Box>
             </Paper>
           </Box>
         )}
-        <Typography variant="h4">Lineup</Typography>
-        {teamRoster &&
-          teamRoster.map((player, index) => {
-            return (
-              <Typography key={index} variant="body1">
-                {index + 1}.&nbsp;
-                {player.first_name}&nbsp;
-                {player.last_name}&nbsp;
-                {player.position}
-              </Typography>
-            );
-          })}
-        <Button color='success' variant='outlined' onClick={completeGame}>
+        {teamRoster.length > 0 &&
+          teamPlayers.teamPlayersPersonalInfoReducer.length > 0 && (
+            <>
+              <Dialog open={showLineup} onClose={closeLineupForm}>
+                <DialogTitle> Current Lineup</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Currently batting: {teamRoster[currentBatter].first_name}
+                    &nbsp;{teamRoster[currentBatter].last_name}
+                  </DialogContentText>
+                  {teamRoster &&
+                    teamRoster.map((player, index) => {
+                      return (
+                        <Box sx={{ display: "flex", alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Typography
+                            key={index}
+                            variant="body1"
+                            sx={{
+                              display: "flex",
+                              justifyContent: "start",
+                              alignItems: "center",
+                            }}
+                          >
+                            {index + 1}.&nbsp;
+                            {player.first_name}&nbsp;
+                            {player.last_name}&nbsp;
+                          </Typography>
+                            <Chip sx={{mb: 1}} label={`#${player.number} | ${player.position}`}></Chip>
+                        </Box>
+                      );
+                    })}
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={closeLineupForm}>Close</Button>
+                </DialogActions>
+              </Dialog>
+            </>
+          )}
+        <Button color="success" variant="outlined" onClick={completeGame}>
           Complete Game
         </Button>
-        <Button color="success" variant='contained' onClick={buildGameObject}>Build Game Object</Button>
+        <Button color="success" variant="contained" onClick={buildGameObject}>
+          Build Game Object
+        </Button>
       </Box>
     );
 }

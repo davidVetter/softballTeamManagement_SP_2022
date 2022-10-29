@@ -16,7 +16,7 @@ function Nav() {
 
   return (
     <AppBar position='sticky' color="primary" sx={{display: 'flex', justifyContent: 'space-between'}}>
-      <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+      <Box sx={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
       <Link to="/home">
         <Typography variant='h4' color='primary'>Benchwarmer</Typography>
       </Link>

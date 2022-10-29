@@ -21,6 +21,7 @@ import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
 import './App.css';
 import LiveGamePage from '../LiveGamePage/LiveGamePage';
+import { Box } from '@mui/material';
 
 function App(props) {
   const dispatch = useDispatch();
@@ -32,7 +33,7 @@ function App(props) {
 
   return (
     <Router>
-      <div>
+      <Box>
         <Nav />
         <Switch>
           {/* Visiting localhost:3000 will redirect to localhost:3000/home */}
@@ -123,7 +124,7 @@ function App(props) {
           </Route>
         </Switch>
         <Footer />
-      </div>
+      </Box>
     </Router>
   );
 }
