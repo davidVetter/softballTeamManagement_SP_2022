@@ -257,7 +257,10 @@ function InfoPage() {
               <TableCell align="center">WINS</TableCell>
               <TableCell align="center">AVG LINEUP #</TableCell>
               {teamPlayers.isManager && (
+                <>
                 <TableCell align="center">MANAGER?</TableCell>
+                <TableCell align="center">OFF TEAM?</TableCell>
+                </>
               )}
             </TableRow>
           </TableHead>

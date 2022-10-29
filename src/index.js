@@ -1,7 +1,12 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+
+import store from './redux/store';
+
+import App from './components/App/App';
 
 const theme = createTheme({
   palette: {
@@ -16,13 +21,10 @@ const theme = createTheme({
     },
     success: {
       main: "#b2ff9e"
-    }
+    },
+    mode: 'dark'
   }
 });
-
-import store from './redux/store';
-
-import App from './components/App/App';
 
 ReactDOM.render(
   <Provider store={store}>
