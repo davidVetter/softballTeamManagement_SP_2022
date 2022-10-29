@@ -962,6 +962,13 @@ function LiveGamePage() {
                 <Button color="success" onClick={addHr}>
                   HR
                 </Button>
+                <Button
+                  disabled={disableHits()}
+                  color="secondary"
+                  onClick={addWalk}
+                >
+                  WALK
+                </Button>
               </ButtonGroup>
               {!(homeAway === currentInning.half) && (
                 <ButtonGroup variant="contained" fullWidth sx={{ mb: 1 }}>
@@ -971,13 +978,13 @@ function LiveGamePage() {
                 </ButtonGroup>
               )}
               <ButtonGroup variant="contained" fullWidth sx={{ mb: 1 }}>
-                <Button
+                {/* <Button
                   disabled={disableHits()}
                   color="secondary"
                   onClick={addWalk}
                 >
                   WALK
-                </Button>
+                </Button> */}
                 <Button
                   color={
                     localStorage.getItem("currentOuts") < 2
@@ -985,12 +992,24 @@ function LiveGamePage() {
                       : "error"
                   }
                   onClick={addOut}
+                  style={{ display: "block", textAlign: "center" }}
                 >
-                  OUT
+                  OUT<br/><span className='smallTextButton'>(NEXT BATTER)</span>
                 </Button>
-                <Button disabled={disableHits()} color="error" onClick={addOut}>
+                <Button
+                fullWidth
+                variant="contained"
+                color={
+                  localStorage.getItem("currentOuts") < 2 ? "warning" : "error"
+                }
+                onClick={() => addOut(1)}
+                style={{ display: "block", textAlign: "center" }}
+              >
+                OUT<br /><span className='smallTextButton'>(NO BATTER CHANGE)</span>
+              </Button>
+                {/* <Button disabled={disableHits()} color="error" onClick={addOut}>
                   K
-                </Button>
+                </Button> */}
               </ButtonGroup>
               <ButtonGroup
                 disabled={disableHits()}
@@ -1007,15 +1026,18 @@ function LiveGamePage() {
                   onClick={addOut}
                   fullWidth
                 >
-                  FIELDER CHOICE
+                  F.C.
                 </Button>
                 {localStorage.getItem("currentOuts") < 2 && (
                   <Button color="error" onClick={doublePlay} fullWidth>
-                    DOUBLE PLAY
+                    D.P.
                   </Button>
                 )}
+                <Button disabled={disableHits()} color="error" onClick={addOut}>
+                  K
+                </Button>
               </ButtonGroup>
-              <Button
+              {/* <Button
                 sx={{ mt: 1 }}
                 fullWidth
                 variant="contained"
@@ -1025,7 +1047,7 @@ function LiveGamePage() {
                 onClick={() => addOut(1)}
               >
                 OUT (NO BATTER CHANGE)
-              </Button>
+              </Button> */}
             </Paper>
             <Paper
               elevation={8}
