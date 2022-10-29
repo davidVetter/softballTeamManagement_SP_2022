@@ -11,6 +11,8 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {Star} from '@mui/icons-material';
+import InfoIcon from '@mui/icons-material/Info';
+import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
 
 function LiveGamePage() {
     const teamPlayers = useSelector((store) => store.team);
@@ -727,9 +729,12 @@ function LiveGamePage() {
                 {currentLineup[currentBatter].position}
               </Typography>
               <Divider />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
               <Typography variant="h6">
                 Outcome of at bat:
               </Typography>
+              <InfoIcon color='primary' sx={{m: 1}}/>
+              </Box>
               <ButtonGroup disabled={disableHits()} variant='contained' fullWidth sx={{mb: 1}}>
                 <Button onClick={addSingle}>1B</Button>
                 <Button onClick={addDouble}>2B</Button>

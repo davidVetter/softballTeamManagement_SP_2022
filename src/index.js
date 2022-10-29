@@ -10,18 +10,18 @@ import App from './components/App/App';
 
 const theme = createTheme({
   palette: {
-    primary: {
-      main: "#1DD3B0"
-    },
-    secondary: {
-      main: "#affc41"
-    },
-    warning: {
-      main: "#FFFF00"
-    },
-    success: {
-      main: "#b2ff9e"
-    },
+    // primary: {
+    //   main: "#1DD3B0"
+    // },
+    // secondary: {
+    //   main: "#affc41"
+    // },
+    // warning: {
+    //   main: "#FFFF00"
+    // },
+    // success: {
+    //   main: "#b2ff9e"
+    // },
     mode: 'dark'
   }
 });

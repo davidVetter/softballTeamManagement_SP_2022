@@ -4,7 +4,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, InputLabel, Select, MenuItem, TableRow, TableHead, TableContainer, TableCell, TableBody, Table} from '@mui/material';
 import './InfoPage.css';
 import Slide from '@mui/material/Slide';
-
+import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
+import SportsScoreIcon from '@mui/icons-material/SportsScore';
 
 // This is one of our simplest components
 // It doesn't have local state
@@ -219,7 +220,7 @@ function InfoPage() {
               <Typography variant="h4" onClick={teamNameClick}>
                 {teamName()}
               </Typography>
-              <Button variant='contained' onClick={startGame}>PLAY BALL!</Button>
+              <Button variant='contained' onClick={startGame}><SportsBaseballIcon />&nbsp;PLAY BALL</Button>
             </>
           )
         )}
@@ -264,11 +265,12 @@ function InfoPage() {
               )}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody stripedRows>
             {teamPlayers.teamPlayersStatsReducer.length > 0 ? (
               teamPlayers.teamPlayersStatsReducer.map((player, index) => (
                 <TableRow
                   key={index}
+                  style ={ index % 2? { background : "#121212" }:{ background : "rgba(255, 255, 255, 0.08)" }}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell align="center">
@@ -361,13 +363,14 @@ function InfoPage() {
               teamGames.teamGamesReducer.map((game, index) => (
                 <TableRow
                   key={index}
+                  style ={ index % 2? { background : "#121212" }:{ background : "rgba(255, 255, 255, 0.08)" }}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell
                     className={game.is_home_team ? "yourTeam" : "opponentTeam"}
                   >
                     {game.is_home_team
-                      ? `${game.team_name}`
+                      ? `${game.team_name}}`
                       : `${game.opponent}`}
                   </TableCell>
                   <TableCell
