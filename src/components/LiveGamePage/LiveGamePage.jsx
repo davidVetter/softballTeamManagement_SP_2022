@@ -13,6 +13,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import {Star} from '@mui/icons-material';
 import InfoIcon from '@mui/icons-material/Info';
 import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 function LiveGamePage() {
     const teamPlayers = useSelector((store) => store.team);
@@ -564,15 +566,11 @@ function LiveGamePage() {
                           <ListItemText
                             primary={`${index+1}. ${player.first_name} ${player.last_name}`}
                           />
-                          <Button
-                            onClick={(e) => movePlayerUp(e, index, player.id)}
-                          >
-                            UP
-                          </Button>
+                            <ArrowUpwardIcon color='success' onClick={(e) => movePlayerUp(e, index, player.id)} />
                           <Button
                             onClick={(e) => movePlayerDown(e, index, player.id)}
                           >
-                            DOWN
+                            <ArrowDownwardIcon color='warning' />
                           </Button>
                           <Button
                             onClick={(e) => removePlayer(e, index, player.id)}

@@ -225,7 +225,7 @@ function InfoPage() {
                 {teamName()}
               </Typography>
               </Box>
-              {teamPlayers.isManager && <Button variant='contained' color='success'onClick={startGame}><SportsBaseballIcon />&nbsp;PLAY BALL</Button>}
+              {teamPlayers.isManager && <Button size='small' variant='contained' color='success'onClick={startGame}><SportsBaseballIcon />&nbsp;PLAY BALL</Button>}
             </Box>
           )
         )}
