@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, InputLabel, Select, MenuItem, TableRow, TableHead, TableContainer, TableCell, TableBody, Table} from '@mui/material';
+import { Button, Box, Typography, Paper, Card, Divider,  TextField, Grid, FormLabel, InputLabel, Select, MenuItem, TableRow, TableHead, TableContainer, TableCell, TableBody, Table} from '@mui/material';
 import './InfoPage.css';
 import Slide from '@mui/material/Slide';
 import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
 import SportsScoreIcon from '@mui/icons-material/SportsScore';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 
 // This is one of our simplest components
 // It doesn't have local state
@@ -213,23 +215,29 @@ function InfoPage() {
           </>
         ) : (
           userTeamGames.playerTeamReducer.length > 0 && (
-            <>
-              <Typography variant="h6" gutterBottom>
+            <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'start'}}>
+              <Box sx={{display: 'flex', alignItems: 'start', flexDirection: 'column'}}>
+              <Typography variant="h6" color='secondary'>
                 Team
               </Typography>
-              <Typography variant="h4" onClick={teamNameClick}>
+              <Divider />
+              <Typography variant="h4" color='primary' onClick={teamNameClick}>
                 {teamName()}
               </Typography>
-              <Button variant='contained' onClick={startGame}><SportsBaseballIcon />&nbsp;PLAY BALL</Button>
-            </>
+              </Box>
+              {teamPlayers.isManager && <Button variant='contained' color='success'onClick={startGame}><SportsBaseballIcon />&nbsp;PLAY BALL</Button>}
+            </Box>
           )
         )}
-        <Typography variant="body1" gutterBottom>
+        <Typography color={(countWins()>countLoses())?'secondary':'error'}variant="body1" gutterBottom>
           Record: {countWins()}-{countLoses()}
         </Typography>
       </Paper>
       {/* TEAM ROSTER */}
-      <Typography variant="h6">Roster</Typography>
+      <Card sx={{ width: 'fit-content', padding: 1, mt: 1, mb: 1 }}>
+      <Typography color='secondary' variant="h6">Active Roster</Typography>
+      <Divider  color='secondary'/>
+      </Card>
       <TableContainer
         component={Paper}
         sx={{ maxHeight: 300, mb: 2 }}
@@ -334,20 +342,26 @@ function InfoPage() {
             <Box key={index}>
               <Paper sx={{padding: 1}}>
                 <Typography color='primary' variant="heading6">Needs approval:</Typography>
+                <Box sx={{display: 'flex', justifyContent: 'start', alignItems: 'center'}}>
                 <Typography variant="body2">
                   {player.first_name}&nbsp;{player.last_name}
-                  <Button onClick={() => approvePlayer(player.user_id)}>
-                    Approve
-                  </Button>
                 </Typography>
+                  <Box sx={{display: 'flex', justifyContent: 'start', alignItems: 'center'}}>
+                    <ThumbUpIcon sx={{mr: 1, ml: 1, padding: 0}} onClick={() => approvePlayer(player.user_id)} color='success' />
+                    <ThumbDownIcon onClick={() => approvePlayer(player.user_id)} color='error' />
+                  </Box>
+                </Box>
               </Paper>
             </Box>
           );
         })}
       {/* TEAM GAMES TABLE */}
-      <Typography variant="h6">Games</Typography>
+      <Card sx={{ width: 'fit-content', padding: 1, mt: 1, mb: 1 }}>
+        <Typography color='secondary' variant="h6">Games</Typography>
+        <Divider  color='secondary'/>
+      </Card>
       <TableContainer component={Paper} elevation={8} sx={{maxHeight: 300}}>
-        <Table sx={{ minWidth: 400, maxWidth: 600 }}>
+        <Table stickyHeader={true} sx={{ minWidth: 400, maxWidth: 600 }}>
           <TableHead>
             <TableRow>
               <TableCell>Home Team</TableCell>
@@ -367,14 +381,12 @@ function InfoPage() {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell
-                    className={game.is_home_team ? "yourTeam" : "opponentTeam"}
                   >
                     {game.is_home_team
                       ? `${game.team_name}`
                       : `${game.opponent}`}
                   </TableCell>
                   <TableCell
-                    className={game.is_home_team ? "yourTeam" : "opponentTeam"}
                   >
                     <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     {game.score_home_team}
@@ -383,14 +395,12 @@ function InfoPage() {
                     </Box>
                   </TableCell>
                   <TableCell
-                    className={game.is_home_team ? "opponentTeam" : "yourTeam"}
                   >
                     {game.is_home_team
                       ? `${game.opponent}`
                       : `${game.team_name}`}
                   </TableCell>
                   <TableCell
-                    className={game.is_home_team ? "opponentTeam" : "yourTeam"}
                   >
                   <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     {game.score_away_team}
@@ -398,7 +408,7 @@ function InfoPage() {
                        <SportsScoreIcon color={(!game.is_home_team&&game.is_winner?'success':'error')}/>}
                   </Box>
                   </TableCell>
-                  <TableCell>{game.is_winner ? "Won" : "Lost"}</TableCell>
+                  <TableCell className={game.is_winner?'yourTeam':'opponentTeam'}>{game.is_winner ? "Won" : "Lost"}</TableCell>
                   <TableCell>{formatDate(game.date)}</TableCell>
                 </TableRow>
               ))
