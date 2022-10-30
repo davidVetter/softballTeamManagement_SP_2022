@@ -287,7 +287,7 @@ function LiveGamePage() {
     // Closes opponent form
     const closeOpponentForm = () => {
         setOpen(false);
-        setGetHomeOpponent(true);
+        setGetHomeOpponent(false);
     }
     // submits opponent form data
     const submitOpponentForm = () => {
@@ -602,7 +602,8 @@ function LiveGamePage() {
               Ready to start?
             </Button>
           )}
-        <Dialog open={open} onClose={closeOpponentForm}>
+        <Dialog open={open} >
+            <form onSubmit={submitOpponentForm}>
           <DialogTitle>Opponent Name:</DialogTitle>
           <DialogContent>
             <DialogContentText>
@@ -615,6 +616,7 @@ function LiveGamePage() {
               label="Opponent Name"
               type="text"
               fullWidth
+              required
               variant="standard"
               sx={{ mb: 2 }}
               onChange={(e) => setOpponentName(e.target.value)}
@@ -642,9 +644,10 @@ function LiveGamePage() {
             </FormControl>
           </DialogContent>
           <DialogActions>
-            <Button onClick={closeOpponentForm}>Cancel</Button>
-            <Button onClick={submitOpponentForm}>Confirm</Button>
+            <Button type='button'onClick={closeOpponentForm}>Cancel</Button>
+            <Button type='submit'>Confirm</Button>
           </DialogActions>
+            </form>
         </Dialog>
         {!localStorage.getItem("gameInProgress") && (
           <Box
