@@ -8,6 +8,10 @@ import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
 import SportsScoreIcon from '@mui/icons-material/SportsScore';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import RemoveModeratorIcon from '@mui/icons-material/RemoveModerator';
+import AddModeratorIcon from '@mui/icons-material/AddModerator';
 
 // This is one of our simplest components
 // It doesn't have local state
@@ -240,17 +244,17 @@ function InfoPage() {
       </Card>
       <TableContainer
         component={Paper}
-        sx={{ maxHeight: 300, mb: 2 }}
+        sx={{ maxHeight: 370, mb: 2 }}
         elevation={8}
       >
         <Table
           stickyHeader={true}
           size="small"
-          sx={{ minWidth: 400, mb: 2, maxWidth: 600 }}
+          sx={{ minWidth: 400, m: 2, maxWidth: 600 }}
         >
           <TableHead>
             <TableRow>
-              <TableCell align="center">NAME</TableCell>
+              <TableCell align="left">NAME</TableCell>
               <TableCell align="center">HITS</TableCell>
               <TableCell align="center">AT BATS</TableCell>
               <TableCell align="center">AVG</TableCell>
@@ -268,7 +272,7 @@ function InfoPage() {
               {teamPlayers.isManager && (
                 <>
                 <TableCell align="center">MANAGER?</TableCell>
-                <TableCell align="center">OFF TEAM?</TableCell>
+                <TableCell align="center">&nbsp;</TableCell>
                 </>
               )}
             </TableRow>
@@ -281,7 +285,7 @@ function InfoPage() {
                   style ={ index % 2? { background : "#121212" }:{ background : "rgba(255, 255, 255, 0.08)" }}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell align="center">
+                  <TableCell align="left" style={{wordBreak: 'break-word', whiteSpace: 'normal', minWidth: 165}}>
                     {player.first_name}&nbsp;{player.last_name}
                   </TableCell>
                   <TableCell align="center">{player.total_hits}</TableCell>
@@ -308,16 +312,16 @@ function InfoPage() {
                     <>
                       <TableCell
                         align="center"
-                        className={player.is_manager ? "manager" : "notManager"}
+                        // className={player.is_manager ? "manager" : "notManager"}
                       >
-                        {player.is_manager ? "Yes" : "No"}
+                        <Typography variant='body2' color='primary'>{player.is_manager ? "Yes" : "No"}</Typography>
                         <Button onClick={() => toggleManager(player.u_id)}>
-                          {player.is_manager ? "Demote" : "Promote"}
+                          {player.is_manager ? <RemoveModeratorIcon color='error'/> : <AddModeratorIcon color='success' />}
                         </Button>
                       </TableCell>
                       <TableCell align="center">
                         <Button onClick={() => removePlayer(player.u_id)}>
-                          Remove
+                          <DeleteForeverIcon color='error'/>
                         </Button>
                       </TableCell>
                     </>
@@ -360,8 +364,8 @@ function InfoPage() {
         <Typography color='secondary' variant="h6">Games</Typography>
         <Divider  color='secondary'/>
       </Card>
-      <TableContainer component={Paper} elevation={8} sx={{maxHeight: 300}}>
-        <Table stickyHeader={true} sx={{ minWidth: 400 }}>
+      <TableContainer component={Paper} elevation={8} sx={{maxHeight: 400}}>
+        <Table stickyHeader={true} sx={{ minWidth: 400, m: 2 }}>
           <TableHead>
             <TableRow>
               <TableCell>Home Team</TableCell>
@@ -381,6 +385,7 @@ function InfoPage() {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell
+                  style={{minWidth: 70}}
                   >
                     {game.is_home_team
                       ? `${game.team_name}`
@@ -395,6 +400,7 @@ function InfoPage() {
                     </Box>
                   </TableCell>
                   <TableCell
+                  style={{minWidth: 70}}
                   >
                     {game.is_home_team
                       ? `${game.opponent}`

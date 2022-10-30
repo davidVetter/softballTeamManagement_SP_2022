@@ -55,6 +55,10 @@ function LiveGamePage() {
     const [isRBI, setIsRBI] = useState('n');
     // state to show / hide lineup
     const [showLineup, setShowLineup] = useState(false);
+    // toggle for showing advanced batting stats
+    const [advancedBatting, setAdvancedBatting] = useState(false);
+    // toggle if user wants rbi controls
+    const [rbiToggle, setRbiToggle] = useState(false);
 
     // will get the current players for the team id in url
     // clears teamId in localStorage (in case one exists)
@@ -842,30 +846,46 @@ function LiveGamePage() {
                             <FormControlLabel
                               value="1"
                               labelPlacement="bottom"
-                              control={<Radio />}
+                              control={<Radio size='small' />}
                               label="1"
                             />
                             <FormControlLabel
                               value="2"
                               labelPlacement="bottom"
-                              control={<Radio />}
+                              control={<Radio size='small' />}
                               label="2"
                             />
                             <FormControlLabel
                               value="3"
                               labelPlacement="bottom"
-                              control={<Radio />}
+                              control={<Radio size='small' />}
                               label="3"
                             />
                             <FormControlLabel
                               value="4"
                               labelPlacement="bottom"
-                              control={<Radio />}
+                              control={<Radio size='small' />}
                               label="4"
                             />
                           </RadioGroup>
                         </FormControl>
-                        <FormControl
+                        {/* <ButtonGroup fullWidth>
+                          <Button
+                            color="success"
+                            variant="contained"
+                            onClick={handleAddUserTeamScore}
+                          >
+                            Add Runs
+                          </Button>
+                          <Button
+                            color="error"
+                            onClick={() => setRunsInputToggle(false)}
+                          >
+                            Cancel
+                          </Button>
+                        </ButtonGroup> */}
+                        {!rbiToggle && <Button onClick={()=>setRbiToggle(true)}>ADD RBI</Button>}
+                        {rbiToggle && <FormControl
                           sx={{
                             display: "flex",
                             alignItems: "center",
@@ -873,7 +893,7 @@ function LiveGamePage() {
                           }}
                         >
                           <FormLabel>
-                            Which person caused the runs?(RBI)
+                            Which batter gets RBI(s)?
                           </FormLabel>
                           <RadioGroup
                             row
@@ -900,7 +920,8 @@ function LiveGamePage() {
                               label="Current"
                             />
                           </RadioGroup>
-                        </FormControl>
+                          {rbiToggle && <Button variant='outlined' onClick={()=>setRbiToggle(false)}>Close</Button>}
+                        </FormControl>}
                         <ButtonGroup fullWidth>
                           <Button
                             color="success"
@@ -948,7 +969,10 @@ function LiveGamePage() {
                 }}
               >
                 <Typography variant="h6">Outcome of at bat:</Typography>
+                <Box sx={{display: 'flex', alignItems: 'center'}}>
+                {/* <Button onClick={()=>setAdvancedBatting(!advancedBatting)}>Adv.</Button> */}
                 <InfoIcon color="primary" sx={{ m: 1 }} />
+                </Box>
               </Box>
               <ButtonGroup
                 disabled={disableHits()}
@@ -978,13 +1002,6 @@ function LiveGamePage() {
                 </ButtonGroup>
               )}
               <ButtonGroup variant="contained" fullWidth sx={{ mb: 1 }}>
-                {/* <Button
-                  disabled={disableHits()}
-                  color="secondary"
-                  onClick={addWalk}
-                >
-                  WALK
-                </Button> */}
                 <Button
                   color={
                     localStorage.getItem("currentOuts") < 2
@@ -1007,10 +1024,10 @@ function LiveGamePage() {
               >
                 OUT<br /><span className='smallTextButton'>(NO BATTER CHANGE)</span>
               </Button>
-                {/* <Button disabled={disableHits()} color="error" onClick={addOut}>
-                  K
-                </Button> */}
               </ButtonGroup>
+              {!advancedBatting && <Button onClick={()=>setAdvancedBatting(!advancedBatting)}>Advanced</Button>}
+              {advancedBatting && 
+              <>
               <ButtonGroup
                 disabled={disableHits()}
                 variant="contained"
@@ -1037,17 +1054,8 @@ function LiveGamePage() {
                   K
                 </Button>
               </ButtonGroup>
-              {/* <Button
-                sx={{ mt: 1 }}
-                fullWidth
-                variant="contained"
-                color={
-                  localStorage.getItem("currentOuts") < 2 ? "warning" : "error"
-                }
-                onClick={() => addOut(1)}
-              >
-                OUT (NO BATTER CHANGE)
-              </Button> */}
+              <Button onClick={()=>setAdvancedBatting(!advancedBatting)}>Close</Button>
+              </>}
             </Paper>
             <Paper
               elevation={8}
