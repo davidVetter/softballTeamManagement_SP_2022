@@ -1321,20 +1321,20 @@ function LiveGamePage() {
           )}
             <>
               <Dialog open={showInningScore} onClose={closeInningSummary}>
-                <DialogTitle> Inning Summary</DialogTitle>
+                <DialogTitle align='center'> Inning Summary</DialogTitle>
                 <DialogContent>
-                  <DialogContentText sx={{ overflowX: "auto" }}>
+                  <DialogContentText align='center' sx={{ overflowX: "auto" }}>
                     Runs this inning:
                   </DialogContentText>
                         <Box
                           sx={{
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "space-between",
+                            justifyContent: "center",
                           }}
                         >
                           <Typography
-                            variant="h4"
+                            variant="h2"
                             sx={{
                               display: "flex",
                               justifyContent: "start",

@@ -250,7 +250,7 @@ function InfoPage() {
         <Table
           stickyHeader={true}
           size="small"
-          sx={{ minWidth: 400, m: 2, maxWidth: 600 }}
+          sx={{ minWidth: 400, m: 2 }}
         >
           <TableHead>
             <TableRow>
