@@ -277,7 +277,7 @@ function InfoPage() {
               )}
             </TableRow>
           </TableHead>
-          <TableBody stripedRows>
+          <TableBody>
             {teamPlayers.teamPlayersStatsReducer.length > 0 ? (
               teamPlayers.teamPlayersStatsReducer.map((player, index) => (
                 <TableRow

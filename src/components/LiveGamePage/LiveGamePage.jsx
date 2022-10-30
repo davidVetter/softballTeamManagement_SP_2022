@@ -19,6 +19,7 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Avatar from '@mui/material/Avatar';
 import HomeIcon from '@mui/icons-material/Home';
 import AppBar from '@mui/material/AppBar';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 
 function LiveGamePage() {
@@ -536,6 +537,23 @@ function LiveGamePage() {
         const opponentString = JSON.parse(localStorage.getItem('homeOpponent'));
         return opponentString.opponent;
       }
+      // determine user team score
+      const determineScoreColor = () => {
+        let isHome = '';
+        if (localStorage.getItem('homeOpponent')){
+            isHome = JSON.parse(localStorage.getItem('homeOpponent')).homeAway;
+        } else {
+            return 'primary'
+        }
+        console.log('This is homeScore: ', homeScore, 'This is awayScore: ', awayScore);
+        if ((isHome === 'home' && Number(homeScore) > Number(awayScore)) || (isHome==='away' && Number(awayScore) > Number(homeScore))) {
+            return 'success'
+        } else if (homeScore === awayScore) {
+            return 'warning'
+        } else {
+            return 'error'
+        }
+      }
 
     return (
       <Box
@@ -579,9 +597,7 @@ function LiveGamePage() {
               value={opponentName}
             />
             <FormControl>
-              <FormLabel>
-                What are you doing first?
-              </FormLabel>
+              <FormLabel>What are you doing first?</FormLabel>
               <RadioGroup
                 row
                 name="opponentHome"
@@ -765,57 +781,96 @@ function LiveGamePage() {
           </Box>
         )}
         {localStorage.getItem("currentBatter") && (
-          <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
+          <AppBar
+            position="fixed"
+            color="primary"
+            sx={{ top: "auto", bottom: 0 }}
+          >
             {/* <Typography variant="h6">
               {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
               {currentInning.inning}&nbsp;|&nbsp;Outs: {currentOuts}
             </Typography>
             <Divider /> */}
             {/* <Typography variant="h6">Outs: {currentOuts}</Typography> */}
-            <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
-            <Paper elevation={12} sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', width: '95%', padding: 1}}>
             <Box
               sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <Paper
+                elevation={12}
+                sx={{
                   display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                   alignItems: "flex-end",
-                  justifyContent: "flex-start",
+                  width: "100%",
+                  padding: 1,
                 }}
-                >
-              {/* {localStorage.getItem("homeOpponent") && homeAway === "away" && (
-                  <HomeIcon color='primary' />
-                  )} */}
-              <Chip 
-                label={localStorage.getItem("homeOpponent") && (
-                    <Typography textAlign='right' variant="h6">
-                  {getOpponentName()}: {awayScore}
+              >
+                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start'}}>
+                <Typography variant="h6">
+                  {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;{currentInning.inning}
                 </Typography>
-              )}
-              icon={localStorage.getItem("homeOpponent") && homeAway === "away" && (
-              <HomeIcon color='secondary' />
-              )}
-              />
-            </Box>
+                <Typography variant="h6">
+                  Outs: {currentOuts}
+                </Typography>
+                </Box>
+                <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'space-between'}}>
                 <Box
                   sx={{
                     display: "flex",
                     alignItems: "flex-end",
-                    justifyContent: "flex-start"
+                    justifyContent: "flex-end",
+                    mb: 1
+                  }}
+                >
+                  {/* {localStorage.getItem("homeOpponent") && homeAway === "away" && (
+                  <HomeIcon color='primary' />
+                  )} */}
+                  <Chip
+                    label={
+                      localStorage.getItem("homeOpponent") && (
+                        <Typography textAlign="right" variant="h6">
+                          {getOpponentName()}: {homeAway==='away'?homeScore:awayScore}
+                        </Typography>
+                      )
+                    }
+                    icon={
+                      localStorage.getItem("homeOpponent") &&
+                      homeAway === "away" && <HomeIcon />
+                    }
+                  />
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    justifyContent: "flex-end",
                   }}
                 >
                   {/* {localStorage.getItem("homeOpponent") && homeAway === "home" && (
                     <HomeIcon color='primary' />
                   )} */}
-                  <Chip 
-                    icon={localStorage.getItem("homeOpponent") && homeAway === "home" && (
-                        <HomeIcon color='secondary' />
-                      )}
+                  <Chip
+                    icon={
+                      localStorage.getItem("homeOpponent") &&
+                      homeAway === "home" && <HomeIcon />
+                    }
+                    color={determineScoreColor()}
                     label={
-                    teamPlayers.allTeams.length > 0 &&
-                    localStorage.getItem("homeOpponent") && (
-                      <Typography textAlign='right' variant="h6">
-                        {getTeamName()}: {homeScore}
-                      </Typography>
-                    )} />
+                      teamPlayers.allTeams.length > 0 &&
+                      localStorage.getItem("homeOpponent") && (
+                        <Typography textAlign="right" variant="h6">
+                          {getTeamName()}: {homeAway==='away'?awayScore:homeScore}
+                        </Typography>
+                      )
+                    }
+                  />
+                </Box>
                 </Box>
               </Paper>
             </Box>
@@ -828,7 +883,8 @@ function LiveGamePage() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              width: '100%'
+              width: "100%",
+              mt: 2
             }}
           >
             <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
@@ -838,8 +894,8 @@ function LiveGamePage() {
               >
                 Lineup
               </Button>
-              <Box >
-                {!(homeAway === currentInning.half) && (
+              <Box>
+                {/* {!(homeAway === currentInning.half) && (
                   <Button
                     variant="outlined"
                     color="error"
@@ -847,15 +903,14 @@ function LiveGamePage() {
                   >
                     They scored +1
                   </Button>
-                )}
+                )} */}
 
-                <Typography variant="h6">
-                  {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
+                {/* <Typography variant="h6">
+                  {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;{currentInning.inning}
                 </Typography>
                 <Typography variant="h6">
-                  {currentInning.inning}&nbsp;|&nbsp;Outs: {currentOuts}
-                </Typography>
-                <Divider />
+                  Outs: {currentOuts}
+                </Typography> */}
                 <Typography variant="h5">
                   {homeAway === currentInning.half
                     ? `Current Batter:`
@@ -866,15 +921,26 @@ function LiveGamePage() {
                   {currentLineup[currentBatter].number} */}
                 </Typography>
                 <Chip
-                  sx={{ mb: 1, padding: 1, width: '90%' }}
+                  sx={{ mb: 1, padding: 1, width: "90%" }}
+                  color='primary'
                   label={
-                    <Typography sx={{overflowX: "auto"}} variant="h5">
+                    <Typography sx={{ overflowX: "auto" }} variant="h5">
                       {currentLineup[currentBatter].first_name}&nbsp;
                       {currentLineup[currentBatter].last_name}&nbsp;&nbsp;#
                       {currentLineup[currentBatter].number}
                     </Typography>
                   }
                 />
+                {!(homeAway === currentInning.half) && (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="error"
+                    onClick={handleAddOppentTeamScore}
+                  >
+                    They scored +1
+                  </Button>
+                )}
                 {/* if user team half inning, show the add runs buttons */}
                 {homeAway === currentInning.half && (
                   <Box>
@@ -1032,6 +1098,9 @@ function LiveGamePage() {
               >
                 <Typography variant="h6">Outcome of at bat:</Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
+                {!advancedBatting && (
+                <MoreHorizIcon onClick={() => setAdvancedBatting(!advancedBatting)} color='primary'/>
+              )}
                   <InfoIcon color="primary" sx={{ m: 1 }} />
                 </Box>
               </Box>
@@ -1092,11 +1161,10 @@ function LiveGamePage() {
                   <span className="smallTextButton">(NO BATTER CHANGE)</span>
                 </Button>
               </ButtonGroup>
-              {!advancedBatting && (
-                <Button onClick={() => setAdvancedBatting(!advancedBatting)}>
-                  Advanced
+              {/* {!advancedBatting && (
+                <Button startIcon={<MoreHorizIcon color='primary'/>} onClick={() => setAdvancedBatting(!advancedBatting)}>
                 </Button>
-              )}
+              )} */}
               {advancedBatting && (
                 <>
                   <ButtonGroup
@@ -1146,13 +1214,14 @@ function LiveGamePage() {
                 alignItems: "center",
               }}
             >
-              <Box sx={{ width: '100%' }}>
+              <Box sx={{ width: "100%" }}>
                 <Typography variant="h6">
                   On Deck:
                   <br />
                 </Typography>
                 <Chip
-                  sx={{ mb: 1, width: '90%', padding: 1 }}
+                  sx={{ mb: 1, width: "90%", padding: 1 }}
+                  color='secondary'
                   label={
                     <Typography sx={{ overflowX: "auto" }} variant="h6">
                       {currentLineup[onDeck()].first_name}&nbsp;
@@ -1180,7 +1249,7 @@ function LiveGamePage() {
               <Dialog open={showLineup} onClose={closeLineupForm}>
                 <DialogTitle> Current Lineup</DialogTitle>
                 <DialogContent>
-                  <DialogContentText sx={{overflowX: 'auto'}}>
+                  <DialogContentText sx={{ overflowX: "auto" }}>
                     Currently batting: {teamRoster[currentBatter].first_name}
                     &nbsp;{teamRoster[currentBatter].last_name}
                   </DialogContentText>
@@ -1202,7 +1271,7 @@ function LiveGamePage() {
                               display: "flex",
                               justifyContent: "start",
                               alignItems: "center",
-                              overflowX: 'auto'
+                              overflowX: "auto",
                             }}
                           >
                             {index + 1}.&nbsp;
