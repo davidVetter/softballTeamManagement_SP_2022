@@ -63,7 +63,7 @@ function LiveGamePage() {
     // toggle if user wants rbi controls
     const [rbiToggle, setRbiToggle] = useState(false);
     // toggle if ready to start
-    const [readyStart, setReadyStart] = useState(false);
+    const [showEndGame, setShowEndGame] = useState(false);
     // toggle if runs scored during inning should show
     const [showInningScore, setShowInningScore] = useState(false);
 
@@ -149,7 +149,7 @@ function LiveGamePage() {
     dispatch({
         type: 'ADD_GAME',
         payload: gameInfo
-    }) 
+    }); 
     localStorage.removeItem('gameInProgress');
     localStorage.removeItem('playerObjectArr');
     localStorage.removeItem('currentInning');
@@ -165,7 +165,13 @@ function LiveGamePage() {
     setOpponentName('');
     setHomeScore(0);
     setAwayScore(0);
-    history.push('/');
+    // history.push('/');
+    }
+    // this function will close the end game dialog and move user to home screen
+    const closeEndGame = () => {
+        buildGameObject();
+        setShowEndGame(false);
+        history.push('/');
     }
     // This function checks if a team id exists in the url and game is not in progress
     // if no team id(number) the user is returned home
@@ -281,7 +287,6 @@ function LiveGamePage() {
     // Closes opponent form
     const closeOpponentForm = () => {
         setOpen(false);
-        setReadyStart(true);
         setGetHomeOpponent(true);
     }
     // submits opponent form data
@@ -523,9 +528,11 @@ function LiveGamePage() {
         console.log('homeAway: ', homeAway);
         console.log('homeScore: ', homeScore, ' And away Score: ', awayScore);
         if (currentInning.inning >= 7 && currentInning.half === 'home' && Number(homeScore) > Number(awayScore)) {
-            buildGameObject();
+            setShowEndGame(true);
+            // buildGameObject();
         } else if (currentInning.inning > 7 && Number(homeScore) < Number(awayScore) && currentInning.half==='away' && Number(currentOuts)===0) {
-            buildGameObject();
+            setShowEndGame(true);
+            // buildGameObject();
         }
       }
 
@@ -1309,8 +1316,6 @@ function LiveGamePage() {
               </Dialog>
             </>
           )}
-        {teamRoster.length > 0 &&
-          teamPlayers.teamPlayersPersonalInfoReducer.length > 0 && (
             <>
               <Dialog open={showInningScore} onClose={closeInningSummary}>
                 <DialogTitle> Inning Summary</DialogTitle>
@@ -1343,7 +1348,37 @@ function LiveGamePage() {
                 </DialogActions>
               </Dialog>
             </>
-          )}
+            {localStorage.getItem('homeOpponent')&&<Dialog open={showEndGame} onClose={closeEndGame}>
+                <DialogTitle color={determineWinner()?'primary':'error'}> {determineWinner()?'WIN':'LOST'}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText sx={{ overflowX: "auto" }}>
+                    Scores
+                  </DialogContentText>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Typography
+                            variant="h4"
+                            sx={{
+                              display: "flex",
+                              justifyContent: "start",
+                              alignItems: "center",
+                              overflowX: "auto",
+                            }}
+                          >
+                            {getTeamName()}: {homeAway==='away'?awayScore:homeScore}<br/>
+                            {getOpponentName()}: {homeAway==='away'?homeScore:awayScore}
+                          </Typography>
+                        </Box>
+                </DialogContent>
+                <DialogActions>
+                  <Button variant='outlined' color={determineWinner()?'success':'error'}onClick={closeEndGame}>End Game</Button>
+                </DialogActions>
+              </Dialog>}
         {/* <Button color="success" variant="outlined" onClick={completeGame}>
           Complete Game
         </Button> */}
