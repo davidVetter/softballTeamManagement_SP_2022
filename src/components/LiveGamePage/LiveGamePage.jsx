@@ -74,6 +74,9 @@ function LiveGamePage() {
             type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
             payload: id
           });
+          dispatch({
+            type: 'GET_TEAMS'
+          });
           localStorage.removeItem('teamId');
           setTeamId(id);
       }, []);
@@ -514,6 +517,21 @@ function LiveGamePage() {
         setShowLineup(false);
       }
 
+      // returns the current team name
+      const getTeamName = () => {
+        const team = localStorage.getItem('teamId');
+        for(let findTeam of teamPlayers.allTeams) {
+            if (Number(team) === findTeam.id) {
+                return findTeam.name;
+            }
+        }
+      }
+      //returns the opponent teams name
+      const getOpponentName = () => {
+        const opponentString = JSON.parse(localStorage.getItem('homeOpponent'));
+        return opponentString.opponent;
+      }
+
     return (
       <Box
         color="primary"
@@ -757,7 +775,7 @@ function LiveGamePage() {
               }}
             >
               {homeAway === "home" && <Star color="success" />}
-              <Typography variant="h6">Home Score: {homeScore}</Typography>
+              {teamPlayers.allTeams.length > 0 && <Typography variant="h6">{getTeamName()}: {homeScore}</Typography>}
             </Box>
             <Box
               sx={{
@@ -767,7 +785,7 @@ function LiveGamePage() {
               }}
             >
               {homeAway === "away" && <Star color="success" />}
-              <Typography variant="h6">Away Score: {awayScore}</Typography>
+              <Typography variant="h6">{getOpponentName()}: {awayScore}</Typography>
             </Box>
           </Box>
         )}
@@ -1109,7 +1127,7 @@ function LiveGamePage() {
                   {teamRoster &&
                     teamRoster.map((player, index) => {
                       return (
-                        <Box sx={{ display: "flex", alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Box key={index} sx={{ display: "flex", alignItems: 'center', justifyContent: 'space-between' }}>
                           <Typography
                             key={index}
                             variant="body1"
