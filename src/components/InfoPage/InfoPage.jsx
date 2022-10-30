@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button, Box, Typography, Paper, Card, Divider,  TextField, Grid, FormLabel, InputLabel, Select, MenuItem, TableRow, TableHead, TableContainer, TableCell, TableBody, Table} from '@mui/material';
+import { Button, Box, Typography, Paper, Card, Divider, List, ListItem, ListItemButton, ListItemText, ListItemIcon, TextField, Grid, FormLabel, InputLabel, Select, MenuItem, TableRow, TableHead, TableContainer, TableCell, TableBody, Table} from '@mui/material';
 import './InfoPage.css';
 import Slide from '@mui/material/Slide';
 import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
@@ -12,6 +12,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import RemoveModeratorIcon from '@mui/icons-material/RemoveModerator';
 import AddModeratorIcon from '@mui/icons-material/AddModerator';
+import FullTeam from '../FullTeam/FullTeam';
 
 // This is one of our simplest components
 // It doesn't have local state
@@ -79,6 +80,10 @@ function InfoPage() {
     });
     dispatch({
       type: 'GET_TEAM_PENDING_PLAYERS',
+      payload: team
+    });
+    dispatch({
+      type: 'GET_TEAM_PLAYERS_PERSONAL_INFO',
       payload: team
     });
     dispatch({
@@ -254,7 +259,7 @@ function InfoPage() {
         >
           <TableHead>
             <TableRow>
-              <TableCell align="left">NAME</TableCell>
+              <TableCell sx={{position: 'sticky', left: 0, background: 'black', zIndex: 99}} align="left">NAME</TableCell>
               <TableCell align="center">HITS</TableCell>
               <TableCell align="center">AT BATS</TableCell>
               <TableCell align="center">AVG</TableCell>
@@ -285,7 +290,10 @@ function InfoPage() {
                   style ={ index % 2? { background : "#121212" }:{ background : "rgba(255, 255, 255, 0.08)" }}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell align="left" style={{wordBreak: 'break-word', whiteSpace: 'normal', minWidth: 165}}>
+                  <TableCell 
+                    align="left" 
+                    sx={{position: 'sticky', left: 0, zIndex: 98, background: index%2?"#121212":"rgba(48, 48, 48)"}} 
+                    style={{wordBreak: 'break-word', whiteSpace: 'normal', minWidth: 120 }}>
                     {player.first_name}&nbsp;{player.last_name}
                   </TableCell>
                   <TableCell align="center">{player.total_hits}</TableCell>
@@ -428,6 +436,50 @@ function InfoPage() {
           </TableBody>
         </Table>
       </TableContainer>
+      {/* <List>
+                  {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 &&
+                    teamPlayers.teamPlayersPersonalInfoReducer.map((player, index) => {
+                      {
+                        console.log("this is player each time: ", player);
+                      }
+                      return (
+                        <ListItem
+                          key={index}
+                          disablePadding
+                          alignItems="flex-start"
+                          style={
+                            index % 2
+                              ? { background: "#121212" }
+                              : { background: "rgba(255, 255, 255, 0.08)" }
+                          }
+                        >
+                          <ListItemButton>
+                            <ListItemIcon>
+                              <Box
+                                sx={{
+                                  minWidth: 160,
+                                  maxWidth: 160,
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "start",
+                                  flexDirection: "column",
+                                }}
+                              >
+                                    <ListItemText
+                                      sx={{ width: 100, overflowX: "hidden" }}
+                                      primary={player.first_name}
+                                      secondary={player.last_name}
+                                    />
+                              </Box>
+                            </ListItemIcon>
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    })}
+                </List> */}
+                {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 &&
+                  teamPlayers.isManager &&
+                <FullTeam teamPlayers={teamPlayers}/>}
     </Box>
     </Slide>
   );

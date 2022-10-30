@@ -66,6 +66,8 @@ function LiveGamePage() {
     const [showEndGame, setShowEndGame] = useState(false);
     // toggle if runs scored during inning should show
     const [showInningScore, setShowInningScore] = useState(false);
+    // toggle if clear game confirmation should be shown
+    const [cancelConfirm, setCancelConfirm] = useState(false);
 
     // will get the current players for the team id in url
     // clears teamId in localStorage (in case one exists)
@@ -577,6 +579,16 @@ function LiveGamePage() {
       const closeInningSummary = () => {
         setShowInningScore(false);
         localStorage.setItem('currentInningRuns', 0);
+      }
+      // cancel game in progess
+      const cancelGame = () => {
+        localStorage.clear();
+        setCancelConfirm(false);
+        history.push('/');
+      }
+      // trip confirmmation dialog on game cancel
+      const toggleCancelGameConfirm = () => {
+        setCancelConfirm(true);
       }
 
     return (
@@ -1385,9 +1397,30 @@ function LiveGamePage() {
         {/* <Button color="success" variant="outlined" onClick={completeGame}>
           Complete Game
         </Button> */}
-        <Button color="success" variant="contained" onClick={buildGameObject}>
-          Build Game Object
-        </Button>
+        {localStorage.getItem("gameInProgress") &&
+         localStorage.getItem("homeOpponent") &&
+            <ButtonGroup orientation='vertical' fullWidth>
+            <Button color="success" variant="contained" onClick={()=>setShowEndGame(true)}>
+            End Game Early
+            </Button>
+            <Button color="error" variant="contained" onClick={toggleCancelGameConfirm}>
+            Clear Game
+            </Button>
+            </ButtonGroup>}
+        <Dialog open={cancelConfirm} onClose={cancelGame}>
+            <DialogTitle color='error'>Confirm Clear Game</DialogTitle>
+            <DialogContent>
+                <DialogContentText sx={{ overflowX: "auto" }}>
+                    Are you sure?<br /> This action can NOT be undone...
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <ButtonGroup fullWidth>
+                    <Button variant='outlined' color='warning' onClick={()=>setCancelConfirm(false)}>Cancel</Button>
+                    <Button variant='contained' color='error' onClick={cancelGame}>End Game</Button>
+                </ButtonGroup>
+            </DialogActions>
+        </Dialog>
       </Box>
     );
 }

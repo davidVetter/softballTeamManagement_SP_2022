@@ -76,12 +76,12 @@ function UserPage() {
 
   return (
       <Zoom in={true}>
-    <Box className="container">
+    <Box className="container" >
       <Paper elevation={4} sx={{mb: 2, padding: 1}}>
       <Typography variant="h4">
         {user.first_name}&nbsp;{user.last_name}
       </Typography>
-      <Box sx={{width: 'fit-content'}}>
+      <Box sx={{width: '100%'}}>
       <Typography variant="body1">
         Email: {user.username}<br/>Phone: {formatPhone(user.phone_number)}
       </Typography>
@@ -118,7 +118,7 @@ function UserPage() {
       {/* Create a Team Form */}
       <Box
         sx={{
-          width: "100%",
+          width: 'inherit',
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -133,7 +133,7 @@ function UserPage() {
           <JoinTeamForm errors={errors} joinTeamToggle={joinTeamToggle} setToggle={setToggle} toggle={toggle} setJoinTeamToggle={setJoinTeamToggle} />
         )}
         {editMode && <EditUserForm setEditMode={setEditMode} />}
-        <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", width: "80%", padding: 2 }}>
+        <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", maxWidth: 450, width: "98%", padding: 1 }}>
           <Typography variant="h4">My Teams</Typography>
           <List sx={{maxHeight: 200, overflowY: 'scroll'}}>
             {!playerGames.playerTeamReducer.length > 0 && `Uh-oh no teams found! Join one to see it here! Simply click 'Join a Team' button above to get started.`}
