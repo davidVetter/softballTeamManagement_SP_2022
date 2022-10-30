@@ -157,6 +157,7 @@ function LiveGamePage() {
     localStorage.removeItem('awayScore');
     localStorage.removeItem('homeScore');
     localStorage.removeItem('teamId');
+    localStorage.removeItem('currentInningRuns');
     setCurrentInning({});
     setGetHomeOpponent(false);
     setOpponentName('');
@@ -318,6 +319,7 @@ function LiveGamePage() {
             setCurrentInning({ inning: Number(currentInning.inning)+1, half: 'away' });
           }
           setCurrentOuts(Number(localStorage.getItem('currentOuts')));
+          localStorage.setItem('currentInningRuns', 0);
         } else {
           console.log('This is outs in addOut else: ', localStorage.currentOuts);
           localStorage.setItem('currentOuts', Number(localStorage.getItem('currentOuts'))+1);
@@ -491,6 +493,7 @@ function LiveGamePage() {
         } else {
             homeScoreAdd(holdRuns);
         }
+        handleCurrentInningRuns(holdRuns);
         handleRbi(holdRuns);
         setRunsInputToggle(false);
       }
@@ -502,7 +505,12 @@ function LiveGamePage() {
             awayScoreAdd(1);
         }
       }
-
+      // This function will keep track of the runs for this inning
+      // clear at the start of each inning
+      const handleCurrentInningRuns = (runs) => {
+        let currentInningRuns = localStorage.getItem('currentInningRuns');
+        localStorage.setItem('currentInningRuns', (Number(currentInningRuns) + Number(runs)))
+      }
       // this function will determine if the game should end or play another inning
       const isGameDone = () => {
         console.log('In isGameDone');
