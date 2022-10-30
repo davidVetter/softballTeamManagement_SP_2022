@@ -12,7 +12,6 @@ body {
   background-attachment: fixed;
   text-overflow: clip;
   overflow-x: hidden;
-  scroll-behavior: smooth;
   background-size: cover;
   background-repeat: no-repeat;
   background-color: RGB(217, 79, 57);

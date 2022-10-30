@@ -17,6 +17,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Avatar from '@mui/material/Avatar';
+import HomeIcon from '@mui/icons-material/Home';
 
 
 function LiveGamePage() {
@@ -59,6 +60,8 @@ function LiveGamePage() {
     const [advancedBatting, setAdvancedBatting] = useState(false);
     // toggle if user wants rbi controls
     const [rbiToggle, setRbiToggle] = useState(false);
+    // toggle if ready to start
+    const [readyStart, setReadyStart] = useState(false);
 
     // will get the current players for the team id in url
     // clears teamId in localStorage (in case one exists)
@@ -273,6 +276,7 @@ function LiveGamePage() {
     // Closes opponent form
     const closeOpponentForm = () => {
         setOpen(false);
+        setReadyStart(true);
         setGetHomeOpponent(true);
     }
     // submits opponent form data
@@ -574,7 +578,7 @@ function LiveGamePage() {
               value={opponentName}
             />
             <FormControl>
-              <FormLabel id="demo-row-radio-buttons-group-label">
+              <FormLabel>
                 What are you doing first?
               </FormLabel>
               <RadioGroup
@@ -760,32 +764,59 @@ function LiveGamePage() {
           </Box>
         )}
         {localStorage.getItem("currentBatter") && (
-          <Box>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '80%'}}>
             {/* <Typography variant="h6">
               {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
               {currentInning.inning}&nbsp;|&nbsp;Outs: {currentOuts}
             </Typography>
             <Divider /> */}
             {/* <Typography variant="h6">Outs: {currentOuts}</Typography> */}
+            <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 1}}>
+            <Paper elevation={12} sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', width: '90%', padding: 1}}>
             <Box
               sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-start",
-              }}
-            >
-              {homeAway === "home" && <Star color="success" />}
-              {teamPlayers.allTeams.length > 0 && <Typography variant="h6">{getTeamName()}: {homeScore}</Typography>}
+                  display: "flex",
+                  alignItems: "flex-end",
+                  justifyContent: "flex-start",
+                }}
+                >
+              {/* {localStorage.getItem("homeOpponent") && homeAway === "away" && (
+                  <HomeIcon color='primary' />
+                  )} */}
+              <Chip 
+                label={localStorage.getItem("homeOpponent") && (
+                    <Typography textAlign='right' variant="h6">
+                  {getOpponentName()}: {awayScore}
+                </Typography>
+              )}
+              icon={localStorage.getItem("homeOpponent") && homeAway === "away" && (
+              <HomeIcon color='secondary' />
+              )}
+              />
             </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-start",
-              }}
-            >
-              {homeAway === "away" && <Star color="success" />}
-              <Typography variant="h6">{getOpponentName()}: {awayScore}</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    justifyContent: "flex-start"
+                  }}
+                >
+                  {/* {localStorage.getItem("homeOpponent") && homeAway === "home" && (
+                    <HomeIcon color='primary' />
+                  )} */}
+                  <Chip 
+                    icon={localStorage.getItem("homeOpponent") && homeAway === "home" && (
+                        <HomeIcon color='secondary' />
+                      )}
+                    label={
+                    teamPlayers.allTeams.length > 0 &&
+                    localStorage.getItem("homeOpponent") && (
+                      <Typography textAlign='right' variant="h6">
+                        {getTeamName()}: {homeScore}
+                      </Typography>
+                    )} />
+                </Box>
+              </Paper>
             </Box>
           </Box>
         )}
@@ -796,6 +827,7 @@ function LiveGamePage() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
+              width: '100%'
             }}
           >
             <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
@@ -805,7 +837,7 @@ function LiveGamePage() {
               >
                 Lineup
               </Button>
-              <Box sx={{ maxWidth: 320 }}>
+              <Box >
                 {!(homeAway === currentInning.half) && (
                   <Button
                     variant="outlined"
@@ -823,7 +855,7 @@ function LiveGamePage() {
                   {currentInning.inning}&nbsp;|&nbsp;Outs: {currentOuts}
                 </Typography>
                 <Divider />
-                <Typography variant="h5" sx={{ overflowX: "scroll" }}>
+                <Typography variant="h5">
                   {homeAway === currentInning.half
                     ? `Current Batter:`
                     : `DUE UP NEXT INNING:`}
@@ -833,18 +865,18 @@ function LiveGamePage() {
                   {currentLineup[currentBatter].number} */}
                 </Typography>
                 <Chip
-                  sx={{mb: 1}}
+                  sx={{ mb: 1, padding: 1, width: '90%' }}
                   label={
-                    <Typography variant="h5" sx={{ overflowX: "scroll" }}>
+                    <Typography sx={{overflowX: "auto"}} variant="h5">
                       {currentLineup[currentBatter].first_name}&nbsp;
-                      {currentLineup[currentBatter].last_name}&nbsp;#
+                      {currentLineup[currentBatter].last_name}&nbsp;&nbsp;#
                       {currentLineup[currentBatter].number}
                     </Typography>
                   }
                 />
                 {/* if user team half inning, show the add runs buttons */}
                 {homeAway === currentInning.half && (
-                  <>
+                  <Box>
                     {runsInputToggle ? (
                       <FormGroup>
                         <FormControl
@@ -864,25 +896,25 @@ function LiveGamePage() {
                             <FormControlLabel
                               value="1"
                               labelPlacement="bottom"
-                              control={<Radio size='small' />}
+                              control={<Radio size="small" />}
                               label="1"
                             />
                             <FormControlLabel
                               value="2"
                               labelPlacement="bottom"
-                              control={<Radio size='small' />}
+                              control={<Radio size="small" />}
                               label="2"
                             />
                             <FormControlLabel
                               value="3"
                               labelPlacement="bottom"
-                              control={<Radio size='small' />}
+                              control={<Radio size="small" />}
                               label="3"
                             />
                             <FormControlLabel
                               value="4"
                               labelPlacement="bottom"
-                              control={<Radio size='small' />}
+                              control={<Radio size="small" />}
                               label="4"
                             />
                           </RadioGroup>
@@ -902,44 +934,55 @@ function LiveGamePage() {
                             Cancel
                           </Button>
                         </ButtonGroup> */}
-                        {!rbiToggle && <Button onClick={()=>setRbiToggle(true)}>ADD RBI</Button>}
-                        {rbiToggle && <FormControl
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <FormLabel>
-                            Which batter gets RBI(s)?
-                          </FormLabel>
-                          <RadioGroup
-                            row
-                            name="rbiPrompt"
-                            value={isRBI}
-                            onChange={(e) => setIsRBI(e.target.value)}
+                        {!rbiToggle && (
+                          <Button onClick={() => setRbiToggle(true)}>
+                            ADD RBI
+                          </Button>
+                        )}
+                        {rbiToggle && (
+                          <FormControl
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
                           >
-                            <FormControlLabel
-                              value="n"
-                              labelPlacement="bottom"
-                              control={<Radio size="small" />}
-                              label="None"
-                            />
-                            <FormControlLabel
-                              value="l"
-                              labelPlacement="bottom"
-                              control={<Radio size="small" />}
-                              label="Last"
-                            />
-                            <FormControlLabel
-                              value="c"
-                              labelPlacement="bottom"
-                              control={<Radio size="small" />}
-                              label="Current"
-                            />
-                          </RadioGroup>
-                          {rbiToggle && <Button variant='outlined' onClick={()=>setRbiToggle(false)}>Close</Button>}
-                        </FormControl>}
+                            <FormLabel>Which batter gets RBI(s)?</FormLabel>
+                            <RadioGroup
+                              row
+                              name="rbiPrompt"
+                              value={isRBI}
+                              onChange={(e) => setIsRBI(e.target.value)}
+                            >
+                              <FormControlLabel
+                                value="n"
+                                labelPlacement="bottom"
+                                control={<Radio size="small" />}
+                                label="None"
+                              />
+                              <FormControlLabel
+                                value="l"
+                                labelPlacement="bottom"
+                                control={<Radio size="small" />}
+                                label="Last"
+                              />
+                              <FormControlLabel
+                                value="c"
+                                labelPlacement="bottom"
+                                control={<Radio size="small" />}
+                                label="Current"
+                              />
+                            </RadioGroup>
+                            {rbiToggle && (
+                              <Button
+                                variant="outlined"
+                                onClick={() => setRbiToggle(false)}
+                              >
+                                Close
+                              </Button>
+                            )}
+                          </FormControl>
+                        )}
                         <ButtonGroup fullWidth>
                           <Button
                             color="success"
@@ -966,7 +1009,7 @@ function LiveGamePage() {
                         We Scored!
                       </Button>
                     )}
-                  </>
+                  </Box>
                 )}
               </Box>
               <Divider />
@@ -987,9 +1030,8 @@ function LiveGamePage() {
                 }}
               >
                 <Typography variant="h6">Outcome of at bat:</Typography>
-                <Box sx={{display: 'flex', alignItems: 'center'}}>
-                {/* <Button onClick={()=>setAdvancedBatting(!advancedBatting)}>Adv.</Button> */}
-                <InfoIcon color="primary" sx={{ m: 1 }} />
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <InfoIcon color="primary" sx={{ m: 1 }} />
                 </Box>
               </Box>
               <ButtonGroup
@@ -1029,51 +1071,68 @@ function LiveGamePage() {
                   onClick={addOut}
                   style={{ display: "block", textAlign: "center" }}
                 >
-                  OUT<br/><span className='smallTextButton'>(NEXT BATTER)</span>
+                  OUT
+                  <br />
+                  <span className="smallTextButton">(NEXT BATTER)</span>
                 </Button>
                 <Button
-                fullWidth
-                variant="contained"
-                color={
-                  localStorage.getItem("currentOuts") < 2 ? "warning" : "error"
-                }
-                onClick={() => addOut(1)}
-                style={{ display: "block", textAlign: "center" }}
-              >
-                OUT<br /><span className='smallTextButton'>(NO BATTER CHANGE)</span>
-              </Button>
-              </ButtonGroup>
-              {!advancedBatting && <Button onClick={()=>setAdvancedBatting(!advancedBatting)}>Advanced</Button>}
-              {advancedBatting && 
-              <>
-              <ButtonGroup
-                disabled={disableHits()}
-                variant="contained"
-                size="small"
-                fullWidth
-              >
-                <Button
+                  fullWidth
+                  variant="contained"
                   color={
                     localStorage.getItem("currentOuts") < 2
                       ? "warning"
                       : "error"
                   }
-                  onClick={addOut}
-                  fullWidth
+                  onClick={() => addOut(1)}
+                  style={{ display: "block", textAlign: "center" }}
                 >
-                  F.C.
-                </Button>
-                {localStorage.getItem("currentOuts") < 2 && (
-                  <Button color="error" onClick={doublePlay} fullWidth>
-                    D.P.
-                  </Button>
-                )}
-                <Button disabled={disableHits()} color="error" onClick={addOut}>
-                  K
+                  OUT
+                  <br />
+                  <span className="smallTextButton">(NO BATTER CHANGE)</span>
                 </Button>
               </ButtonGroup>
-              <Button onClick={()=>setAdvancedBatting(!advancedBatting)}>Close</Button>
-              </>}
+              {!advancedBatting && (
+                <Button onClick={() => setAdvancedBatting(!advancedBatting)}>
+                  Advanced
+                </Button>
+              )}
+              {advancedBatting && (
+                <>
+                  <ButtonGroup
+                    disabled={disableHits()}
+                    variant="contained"
+                    size="small"
+                    fullWidth
+                  >
+                    <Button
+                      color={
+                        localStorage.getItem("currentOuts") < 2
+                          ? "warning"
+                          : "error"
+                      }
+                      onClick={addOut}
+                      fullWidth
+                    >
+                      F.C.
+                    </Button>
+                    {localStorage.getItem("currentOuts") < 2 && (
+                      <Button color="error" onClick={doublePlay} fullWidth>
+                        D.P.
+                      </Button>
+                    )}
+                    <Button
+                      disabled={disableHits()}
+                      color="error"
+                      onClick={addOut}
+                    >
+                      K
+                    </Button>
+                  </ButtonGroup>
+                  <Button onClick={() => setAdvancedBatting(!advancedBatting)}>
+                    Close
+                  </Button>
+                </>
+              )}
             </Paper>
             <Paper
               elevation={8}
@@ -1086,15 +1145,15 @@ function LiveGamePage() {
                 alignItems: "center",
               }}
             >
-              <Box sx={{ maxWidth: 328, overflowX: "scroll" }}>
+              <Box sx={{ width: '100%' }}>
                 <Typography variant="h6">
                   On Deck:
                   <br />
                 </Typography>
                 <Chip
-                  sx={{mb: 1}}
+                  sx={{ mb: 1, width: '90%', padding: 1 }}
                   label={
-                    <Typography sx={{ overflowX: "scroll" }} variant="h6">
+                    <Typography sx={{ overflowX: "auto" }} variant="h6">
                       {currentLineup[onDeck()].first_name}&nbsp;
                       {currentLineup[onDeck()].last_name}&nbsp; #
                       {currentLineup[onDeck()].number}
@@ -1120,14 +1179,21 @@ function LiveGamePage() {
               <Dialog open={showLineup} onClose={closeLineupForm}>
                 <DialogTitle> Current Lineup</DialogTitle>
                 <DialogContent>
-                  <DialogContentText>
+                  <DialogContentText sx={{overflowX: 'auto'}}>
                     Currently batting: {teamRoster[currentBatter].first_name}
                     &nbsp;{teamRoster[currentBatter].last_name}
                   </DialogContentText>
                   {teamRoster &&
                     teamRoster.map((player, index) => {
                       return (
-                        <Box key={index} sx={{ display: "flex", alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Box
+                          key={index}
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
                           <Typography
                             key={index}
                             variant="body1"
@@ -1135,13 +1201,17 @@ function LiveGamePage() {
                               display: "flex",
                               justifyContent: "start",
                               alignItems: "center",
+                              overflowX: 'auto'
                             }}
                           >
                             {index + 1}.&nbsp;
                             {player.first_name}&nbsp;
                             {player.last_name}&nbsp;
                           </Typography>
-                            <Chip sx={{mb: 1}} label={`#${player.number} | ${player.position}`}></Chip>
+                          <Chip
+                            sx={{ mb: 1 }}
+                            label={`#${player.number} | ${player.position}`}
+                          ></Chip>
                         </Box>
                       );
                     })}
@@ -1152,9 +1222,9 @@ function LiveGamePage() {
               </Dialog>
             </>
           )}
-        <Button color="success" variant="outlined" onClick={completeGame}>
+        {/* <Button color="success" variant="outlined" onClick={completeGame}>
           Complete Game
-        </Button>
+        </Button> */}
         <Button color="success" variant="contained" onClick={buildGameObject}>
           Build Game Object
         </Button>
