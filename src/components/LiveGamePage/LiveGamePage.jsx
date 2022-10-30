@@ -64,6 +64,8 @@ function LiveGamePage() {
     const [rbiToggle, setRbiToggle] = useState(false);
     // toggle if ready to start
     const [readyStart, setReadyStart] = useState(false);
+    // toggle if runs scored during inning should show
+    const [showInningScore, setShowInningScore] = useState(false);
 
     // will get the current players for the team id in url
     // clears teamId in localStorage (in case one exists)
@@ -318,8 +320,10 @@ function LiveGamePage() {
             localStorage.setItem('currentInning', JSON.stringify({ inning: Number(currentInning.inning)+1, half: 'away'}));
             setCurrentInning({ inning: Number(currentInning.inning)+1, half: 'away' });
           }
+          console.log('This is currentRuns in local: ', localStorage.getItem('currentInningRuns'));
+          homeAway===currentInning.half&&setShowInningScore(true);
           setCurrentOuts(Number(localStorage.getItem('currentOuts')));
-          localStorage.setItem('currentInningRuns', 0);
+        //   localStorage.setItem('currentInningRuns', 0);
         } else {
           console.log('This is outs in addOut else: ', localStorage.currentOuts);
           localStorage.setItem('currentOuts', Number(localStorage.getItem('currentOuts'))+1);
@@ -561,6 +565,11 @@ function LiveGamePage() {
         } else {
             return 'error'
         }
+      }
+      // close inning summary dialog
+      const closeInningSummary = () => {
+        setShowInningScore(false);
+        localStorage.setItem('currentInningRuns', 0);
       }
 
     return (
@@ -1296,6 +1305,41 @@ function LiveGamePage() {
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={closeLineupForm}>Close</Button>
+                </DialogActions>
+              </Dialog>
+            </>
+          )}
+        {teamRoster.length > 0 &&
+          teamPlayers.teamPlayersPersonalInfoReducer.length > 0 && (
+            <>
+              <Dialog open={showInningScore} onClose={closeInningSummary}>
+                <DialogTitle> Inning Summary</DialogTitle>
+                <DialogContent>
+                  <DialogContentText sx={{ overflowX: "auto" }}>
+                    Runs this inning:
+                  </DialogContentText>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Typography
+                            variant="h4"
+                            sx={{
+                              display: "flex",
+                              justifyContent: "start",
+                              alignItems: "center",
+                              overflowX: "auto",
+                            }}
+                          >
+                            {localStorage.getItem('currentInningRuns')?localStorage.getItem('currentInningRuns'):0}
+                          </Typography>
+                        </Box>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={closeInningSummary}>Next Inning</Button>
                 </DialogActions>
               </Dialog>
             </>
