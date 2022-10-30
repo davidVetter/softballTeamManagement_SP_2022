@@ -18,6 +18,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Avatar from '@mui/material/Avatar';
 import HomeIcon from '@mui/icons-material/Home';
+import AppBar from '@mui/material/AppBar';
 
 
 function LiveGamePage() {
@@ -764,15 +765,15 @@ function LiveGamePage() {
           </Box>
         )}
         {localStorage.getItem("currentBatter") && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '80%'}}>
+          <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
             {/* <Typography variant="h6">
               {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
               {currentInning.inning}&nbsp;|&nbsp;Outs: {currentOuts}
             </Typography>
             <Divider /> */}
             {/* <Typography variant="h6">Outs: {currentOuts}</Typography> */}
-            <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 1}}>
-            <Paper elevation={12} sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', width: '90%', padding: 1}}>
+            <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
+            <Paper elevation={12} sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', width: '95%', padding: 1}}>
             <Box
               sx={{
                   display: "flex",
@@ -818,7 +819,7 @@ function LiveGamePage() {
                 </Box>
               </Paper>
             </Box>
-          </Box>
+          </AppBar>
         )}
         {localStorage.getItem("gameInProgress") && getHomeOpponent && (
           <Box
