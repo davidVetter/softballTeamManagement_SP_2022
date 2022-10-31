@@ -13,13 +13,14 @@ function LoginPage() {
       <center>
         <Button
           type="button"
-          variant='filled'
+          variant='contained'
           className="btn btn_asLink"
+          color='success'
           onClick={() => {
             history.push('/registration');
           }}
         >
-          Register
+          Sign Up?
         </Button>
       </center>
     </div>

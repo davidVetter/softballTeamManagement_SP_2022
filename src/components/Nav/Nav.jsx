@@ -44,9 +44,9 @@ function Nav() {
           </>
         )}
 
-        <Link to="/about">
+        {/* <Link to="/about">
           <InfoIcon  color='primary' sx={{ mr: '2px' }}/>
-        </Link>
+        </Link> */}
         </Box>
         </Box>
     </AppBar>

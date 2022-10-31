@@ -27,7 +27,7 @@ function LoginForm() {
 
   return (
       <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-      <Paper elevation={8} sx={{ width: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', mb: 1 }}>
+      <Paper elevation={8} sx={{ width: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', mb:1, mt: 3 }}>
     <form onSubmit={login}>
     <Grid container alignItems='center' justify='center' direction='column'>
       <Typography variant='h4'>Login</Typography>

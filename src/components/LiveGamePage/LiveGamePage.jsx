@@ -622,7 +622,7 @@ function LiveGamePage() {
           <DialogTitle>Opponent Name:</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Please enter the opponent team name:
+              Please enter the name:
             </DialogContentText>
             <TextField
               autoFocus

@@ -8,6 +8,8 @@ import CreateTeam from '../CreateTeam/CreateTeam';
 import JoinTeamForm from '../JoinTeamForm/JoinTeamForm';
 import Zoom from '@mui/material/Zoom';
 import Chip from '@mui/material/Chip';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
 
 function UserPage() {
   const user = useSelector((store) => store.user);
@@ -77,7 +79,7 @@ function UserPage() {
   return (
       <Zoom in={true}>
     <Box className="container" >
-      <Paper elevation={4} sx={{mb: 2, padding: 1}}>
+      <Paper elevation={4} sx={{ mb: 2, padding: 1 }}>
       <Typography variant="h4">
         {user.first_name}&nbsp;{user.last_name}
       </Typography>
@@ -133,13 +135,14 @@ function UserPage() {
           <JoinTeamForm errors={errors} joinTeamToggle={joinTeamToggle} setToggle={setToggle} toggle={toggle} setJoinTeamToggle={setJoinTeamToggle} />
         )}
         {editMode && <EditUserForm setEditMode={setEditMode} />}
-        <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", maxWidth: 450, width: "98%", padding: 1 }}>
+        <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", maxWidth: 450, width: "97%", padding: 1 }}>
           <Typography variant="h4">My Teams</Typography>
-          <List sx={{maxHeight: 200, overflowY: 'scroll'}}>
+          <List sx={{maxHeight: 250, overflowY: 'scroll'}}>
             {!playerGames.playerTeamReducer.length > 0 && `Uh-oh no teams found! Join one to see it here! Simply click 'Join a Team' button above to get started.`}
             {playerGames.playerTeamReducer.length > 0 &&
               playerGames.playerTeamReducer.map((team, index) => {
                 return (
+                  <Box key={index}>
                   <ListItem key={index} disablePadding alignItems="flex-start">
                     <ListItemButton onClick={()=>{
                       dispatch({
@@ -158,7 +161,7 @@ function UserPage() {
                           secondary={
                             <Typography variant="body2">
                               {" "}
-                              League: {team.league.toUpperCase()} Season:{" "}
+                              League: {team.league.toUpperCase()}&nbsp;|&nbsp;Season:{" "}
                               {team.year}
                             </Typography>
                           }
@@ -166,6 +169,8 @@ function UserPage() {
                       </ListItemIcon>
                     </ListItemButton>
                   </ListItem>
+                  <Divider />
+                  </Box>
                 );
               })}
           </List>
