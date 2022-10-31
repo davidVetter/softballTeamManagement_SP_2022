@@ -72,7 +72,7 @@ function LandingPage() {
               Login/Sign Up
             </Button>
 
-            <Paper elevation={8} sx={{ padding: 1, width: "95%" }}>
+            <Paper elevation={8} sx={{ padding: 1, width: "95%", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
               <Card sx={{ maxWidth: 345 }}>
                 <CardMedia
                   component="img"
