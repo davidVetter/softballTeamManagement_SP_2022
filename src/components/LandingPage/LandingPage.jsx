@@ -11,8 +11,8 @@ import Divider from '@mui/material/Divider';
 import InboxIcon from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import CircleIcon from '@mui/icons-material/Circle';
-// CUSTOM COMPONENTS
 import RegisterForm from '../RegisterForm/RegisterForm';
+import Fade from '@mui/material/Fade';
 
 function LandingPage() {
   const [heading, setHeading] = useState('Benchwarmer');
@@ -23,6 +23,7 @@ function LandingPage() {
   };
 
   return (
+    <Fade in={true}>
     <Box
       sx={{ display: "flex", alignItems: "center", justifyContent: "center", overflowX: 'hidden' }}
     >
@@ -32,6 +33,7 @@ function LandingPage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
+          mb: 10
         }}
       >
         <Box
@@ -42,7 +44,7 @@ function LandingPage() {
             flexDirection: 'column',
           }}
         >
-          <Paper elevation={8} sx={{mb: 1, padding: 2, width: '99vw'}}>
+          <Paper elevation={8} sx={{mb: 2, padding: 2, width: '99vw'}}>
           <Typography variant="h3" sx={{mb: 0}}>
             {heading}
           </Typography>
@@ -56,7 +58,7 @@ function LandingPage() {
               color="success"
               size='small'
               onClick={onLogin}
-              sx={{ padding: 0}}
+              sx={{ padding: 1}}
               fullWidth
             >
               Login/Sign Up
@@ -128,6 +130,7 @@ function LandingPage() {
         </Box>
       </Box>
     </Box>
+    </Fade>
   );
 }
 

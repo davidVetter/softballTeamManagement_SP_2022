@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {useSelector} from 'react-redux';
 import { Button, Grid, Typography, TextField, Box, Paper, FormLabel} from '@mui/material';
+import Grow from '@mui/material/Grow';
 
 function LoginForm() {
   const [username, setUsername] = useState('');
@@ -26,6 +27,7 @@ function LoginForm() {
   }; // end login
 
   return (
+    <Grow in={true}>
       <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
       <Paper elevation={8} sx={{ width: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', mb:1, mt: 3 }}>
     <form onSubmit={login}>
@@ -73,6 +75,7 @@ function LoginForm() {
     </form>
       </Paper>
       </Box>
+      </Grow>
   );
 }
 

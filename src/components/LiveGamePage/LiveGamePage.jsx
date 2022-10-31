@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button, ButtonGroup, Box, Chip, Typography, Paper, TextField, Grid, FormGroup, FormLabel, FormControl, MenuItem, InputLabel, Select, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
+import { Button, ButtonGroup, Box, Chip, Typography, Paper, TextField, FormGroup, FormLabel, FormControl, MenuItem, InputLabel, Select, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -10,9 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import {Star} from '@mui/icons-material';
 import InfoIcon from '@mui/icons-material/Info';
-import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
@@ -21,12 +19,15 @@ import HomeIcon from '@mui/icons-material/Home';
 import AppBar from '@mui/material/AppBar';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import AddIcon from '@mui/icons-material/Add';
+import Grow from '@mui/material/Grow';
+import Slide from '@mui/material/Slide';
 
 
 function LiveGamePage() {
     const teamPlayers = useSelector((store) => store.team);
     const dispatch = useDispatch(); // allows dispatchs to be performed
     const history = useHistory();
+    const containerRef = React.useRef(null);
     let location = useLocation(); // allows reading of the current url
     const [teamRoster, setTeamRoster] = useState([]);
     // toggle used to trigger rerenders
@@ -593,6 +594,7 @@ function LiveGamePage() {
       }
 
     return (
+    <Grow in={true}>
       <Box
         color="primary"
         sx={{
@@ -678,6 +680,7 @@ function LiveGamePage() {
                 width: "80%",
                 minWidth: 350,
                 mt: 2,
+                mb: 10,
                 padding: 1,
                 display: "flex",
                 justifyContent: "center",
@@ -987,6 +990,7 @@ function LiveGamePage() {
                 {homeAway === currentInning.half && (
                   <Box>
                     {runsInputToggle ? (
+                      <Slide direction="down" in={runsInputToggle} container={containerRef.current}>
                       <FormGroup>
                         <FormControl
                           sx={{
@@ -1044,7 +1048,7 @@ function LiveGamePage() {
                           </Button>
                         </ButtonGroup> */}
                         {!rbiToggle && (
-                          <Button onClick={() => setRbiToggle(true)}>
+                          <Button color="secondary" onClick={() => setRbiToggle(true)}>
                             ADD RBI
                           </Button>
                         )}
@@ -1085,9 +1089,11 @@ function LiveGamePage() {
                             {rbiToggle && (
                               <Button
                                 variant="outlined"
+                                color='secondary'
+                                sx={{mb: 1, mt: 1}}
                                 onClick={() => setRbiToggle(false)}
                               >
-                                Close
+                                Close RBI
                               </Button>
                             )}
                           </FormControl>
@@ -1108,6 +1114,7 @@ function LiveGamePage() {
                           </Button>
                         </ButtonGroup>
                       </FormGroup>
+                      </Slide>
                     ) : (
                     //   <Button
                     //     fullWidth
@@ -1143,7 +1150,7 @@ function LiveGamePage() {
                 {!advancedBatting && (
                 <MoreHorizIcon onClick={() => setAdvancedBatting(!advancedBatting)} color='primary'/>
               )}
-                  <InfoIcon color="primary" sx={{ m: 1 }} />
+                  {/* <InfoIcon color="primary" sx={{ m: 1 }} /> */}
                 </Box>
               </Box>
               <ButtonGroup
@@ -1239,7 +1246,7 @@ function LiveGamePage() {
                       K
                     </Button>
                   </ButtonGroup>
-                  <Button onClick={() => setAdvancedBatting(!advancedBatting)}>
+                  <Button color='secondary' sx={{float: 'right'}} onClick={() => setAdvancedBatting(!advancedBatting)}>
                     Close
                   </Button>
                 </>
@@ -1410,7 +1417,7 @@ function LiveGamePage() {
             Clear Game
             </Button>
             </ButtonGroup>}
-        <Dialog open={cancelConfirm} onClose={cancelGame}>
+        <Dialog open={cancelConfirm}>
             <DialogTitle color='error'>Confirm Clear Game</DialogTitle>
             <DialogContent>
                 <DialogContentText sx={{ overflowX: "auto" }}>
@@ -1420,11 +1427,12 @@ function LiveGamePage() {
             <DialogActions>
                 <ButtonGroup fullWidth>
                     <Button variant='outlined' color='warning' onClick={()=>setCancelConfirm(false)}>Cancel</Button>
-                    <Button variant='contained' color='error' onClick={cancelGame}>End Game</Button>
+                    <Button variant='contained' color='error' onClick={cancelGame}>Clear Game</Button>
                 </ButtonGroup>
             </DialogActions>
         </Dialog>
       </Box>
+      </Grow>
     );
 }
 

@@ -442,10 +442,11 @@ function InfoPage() {
                         onClick={() => approvePlayer(player.user_id)}
                         color="success"
                       />
-                      <ThumbDownIcon
+                      {/* Need to add route for reject to work properly */}
+                      {/* <ThumbDownIcon
                         onClick={() => approvePlayer(player.user_id)}
                         color="error"
-                      />
+                      /> */}
                     </Box>
                   </Box>
                 </Paper>
@@ -459,7 +460,7 @@ function InfoPage() {
           </Typography>
           <Divider color="secondary" />
         </Card>
-        <TableContainer component={Paper} elevation={8} sx={{ maxHeight: 400 }}>
+        <TableContainer component={Paper} elevation={8} sx={{ maxHeight: 400, mb: 10 }}>
           <Table stickyHeader={true} sx={{ minWidth: 400, m: 2 }}>
             <TableHead>
               <TableRow>

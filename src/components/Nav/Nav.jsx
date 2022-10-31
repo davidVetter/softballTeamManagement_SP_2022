@@ -10,11 +10,13 @@ import HomeIcon from '@mui/icons-material/Home';
 import InfoIcon from '@mui/icons-material/Info';
 import LoginIcon from '@mui/icons-material/Login';
 import Box from '@mui/material/Box';
+import Grow from '@mui/material/Grow';
 
 function Nav() {
   const user = useSelector((store) => store.user);
 
   return (
+    <Grow in={true}>
     <AppBar position='sticky' color="primary" sx={{display: 'flex', justifyContent: 'space-between'}}>
       <Box sx={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
       <Link to="/home">
@@ -50,6 +52,7 @@ function Nav() {
         </Box>
         </Box>
     </AppBar>
+    </Grow>
   );
 }
 

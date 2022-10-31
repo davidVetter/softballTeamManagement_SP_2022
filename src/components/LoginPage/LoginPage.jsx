@@ -2,6 +2,7 @@ import React from 'react';
 import LoginForm from '../LoginForm/LoginForm';
 import { useHistory } from 'react-router-dom';
 import { Button } from '@mui/material';
+import Slide from '@mui/material/Slide';
 
 function LoginPage() {
   const history = useHistory();
@@ -9,7 +10,7 @@ function LoginPage() {
   return (
     <div>
       <LoginForm />
-
+      <Slide direction="up" in={true} mountOnEnter unmountOnExit>
       <center>
         <Button
           type="button"
@@ -23,6 +24,7 @@ function LoginPage() {
           Sign Up?
         </Button>
       </center>
+      </Slide>
     </div>
   );
 }
