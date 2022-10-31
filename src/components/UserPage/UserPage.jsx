@@ -80,9 +80,10 @@ function UserPage() {
       <Zoom in={true}>
     <Box className="container" >
       <Paper elevation={4} sx={{ mb: 2, padding: 1 }}>
-      <Typography variant="h4">
+      <Typography color='secondary' variant="h4">
         {user.first_name}&nbsp;{user.last_name}
       </Typography>
+      <Divider />
       <Box sx={{width: '100%'}}>
       <Typography variant="body1">
         Email: {user.username}<br/>Phone: {formatPhone(user.phone_number)}
@@ -136,7 +137,7 @@ function UserPage() {
         )}
         {editMode && <EditUserForm setEditMode={setEditMode} />}
         <Paper elevation={8} sx={{ mb: 10, minWidth: "300px", maxWidth: 450, width: "97%", padding: 1 }}>
-          <Typography variant="h4">My Teams</Typography>
+          <Typography color='primary' variant="h4">My Teams</Typography>
           <List sx={{maxHeight: 250, overflowY: 'scroll'}}>
             {!playerGames.playerTeamReducer.length > 0 && `Uh-oh no teams found! Join one to see it here! Simply click 'Join a Team' button above to get started.`}
             {playerGames.playerTeamReducer.length > 0 &&

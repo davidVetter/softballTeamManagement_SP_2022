@@ -22,6 +22,24 @@ const theme = createTheme({
     // success: {
     //   main: "#b2ff9e"
     // },
+    primary: {
+      main: "#abff4f"
+    },
+    secondary: {
+      main: "#2e86ab"
+    },
+    warning: {
+      main: "#f0a202"
+    },
+    error: {
+      main: '#f8333c'
+    },
+    success: {
+      main: "#38a700"
+    },
+    info: {
+      main: "#7d8ca3"
+    },
     mode: 'dark'
   }
 });

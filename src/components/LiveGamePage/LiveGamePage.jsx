@@ -934,6 +934,8 @@ function LiveGamePage() {
           >
             <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
               <Button
+                color='secondary'
+                variant='outlined'
                 sx={{ float: "right", mb: 1 }}
                 onClick={() => setShowLineup(true)}
               >
@@ -1270,7 +1272,7 @@ function LiveGamePage() {
                 </Typography>
                 <Chip
                   sx={{ mb: 1, width: "90%", padding: 1 }}
-                  color='secondary'
+                  color='info'
                   label={
                     <Typography sx={{ overflowX: "auto" }} variant="h6">
                       {currentLineup[onDeck()].first_name}&nbsp;

@@ -12,6 +12,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 
+
 function Nav() {
   const user = useSelector((store) => store.user);
 
@@ -20,14 +21,14 @@ function Nav() {
     <AppBar position='sticky' color="primary" sx={{display: 'flex', justifyContent: 'space-between'}}>
       <Box sx={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
       <Link to="/home">
-        <Typography variant='h4' color='primary'>Benchwarmer</Typography>
+        <Typography variant='h4' className='mainHead' color='primary'>Benchwarmer</Typography>
       </Link>
       <Box sx={{display: 'flex', alignItems: 'center'}}>
         {/* If no user is logged in, show these links */}
         {!user.id && (
           // If there's no user, show login/registration links
           <Link to="/login">
-            <LoginIcon color='primary' />
+            <LoginIcon color='info' />
           </Link>
         )}
 
@@ -35,11 +36,11 @@ function Nav() {
         {user.id && (
           <>
             <Link to="/user">
-              <HomeIcon color='primary' sx={{ mr: '2px' }}/>
+              <HomeIcon color='info' sx={{ mr: '2px' }}/>
             </Link>
 
             <Link to="/team">
-              <GroupsIcon color='primary' sx={{ mr: '2px' }}/>
+              <GroupsIcon color='info' sx={{ mr: '2px' }}/>
             </Link>
 
             <LogOutButton />

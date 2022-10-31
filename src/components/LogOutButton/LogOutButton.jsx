@@ -7,7 +7,7 @@ function LogOutButton(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   return (
-    <LogoutIcon color='primary' sx={{ mr: '2px' }}
+    <LogoutIcon color='info' sx={{ mr: '2px' }}
       // This button shows up in multiple locations and is styled differently
       // because it's styled differently depending on where it is used, the className
       // is passed to it from it's parents through React props
