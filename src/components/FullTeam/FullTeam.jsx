@@ -13,7 +13,15 @@ function FullTeam(props) {
 
     return (
       <Box sx={{flex: 'direction', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
-        <Paper sx={{mt: 2, width: '100%'}}>
+        <Paper sx={{mt: 2, mb: 2, width: '100%', maxHeight: 300, overflowY: 'auto'}}>
+        <Typography 
+            variant='h5' 
+            color='primary'
+            sx={{padding: 1}}
+        >
+            Full Roster
+        </Typography>
+        <Divider color='secondary' />
         <List>
           {props.teamPlayers.teamPlayersPersonalInfoReducer.length > 0 &&
             props.teamPlayers.teamPlayersPersonalInfoReducer.map((player, index) => {
@@ -45,8 +53,9 @@ function FullTeam(props) {
                       >
                         <Typography color='primary' variant="h6">{`${player.first_name} ${player.last_name} #${player.number}`}</Typography>
                         <Typography variant="body1">
-                          {`Phone: ${formatPhone(player.phone_number)}`}
-                          <br /> {`Email: ${player.email}`}
+                          {`Phone: ${formatPhone(player.phone_number)}`}</Typography>
+                         <Typography style={{color: 'orange'}} variant='body1'>
+                          {`Email: ${player.email}`}
                         </Typography>
                         <Typography color='secondary' variant="body2">{`Address: ${player.street_address} ${player.city}, ${player.state} ${player.zip}`}</Typography>
                         <Typography color='secondary' variant="body2">{`Throws: ${player.throws.toUpperCase()} | Bats: ${player.bats.toUpperCase()} | Jersey: ${player.jersey_size.toUpperCase()}  | Hat: ${player.hat_size.toUpperCase()}`}</Typography>

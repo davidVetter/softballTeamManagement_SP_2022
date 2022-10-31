@@ -13,7 +13,8 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import RemoveModeratorIcon from '@mui/icons-material/RemoveModerator';
 import AddModeratorIcon from '@mui/icons-material/AddModerator';
 import FullTeam from '../FullTeam/FullTeam';
-
+import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
+import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
 // This is one of our simplest components
 // It doesn't have local state
 // It doesn't dispatch any redux actions or display any part of redux state
@@ -38,6 +39,7 @@ function InfoPage() {
   const [team, setTeam] = useState(teamId===null?'':Number(teamId[0]));
   const [firstClick, setFirstClick] = useState(true);
   const [toggle, setToggle] = useState(false);
+  const [fullRoster, setFullRoster] = useState(false);
 
   // Get all games for the teams the user is currently on
   // Resets manager status
@@ -199,288 +201,359 @@ function InfoPage() {
   }
 
   return (
-    <Slide in={true} direction='up'>
-    <Box onClick={closeSelect} sx={{padding: 2}}>
-      <Paper sx={{padding: 1}}>
-        {userTeamGames.playerTeamReducer.length > 0 && teamClick ? (
-          <>
-            <InputLabel htmlFor="team">Team</InputLabel>
-            <Select
-              value={team}
-              label="Team"
-              required
-              size="normal"
-              defaultOpen={firstClick ? false : true}
-              onChange={selectTeam}
-            >
-              {userTeamGames.playerTeamReducer.map((team, index) => {
-                return (
-                  <MenuItem key={index} value={team.id}>
-                    {team.name} | Season: {team.year} | {team.league.toUpperCase()}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </>
-        ) : (
-          userTeamGames.playerTeamReducer.length > 0 && (
-            <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'start'}}>
-              <Box sx={{display: 'flex', alignItems: 'start', flexDirection: 'column'}}>
-              <Typography variant="h6" color='secondary'>
-                Team
-              </Typography>
-              <Divider />
-              <Typography variant="h4" color='primary' onClick={teamNameClick}>
-                {teamName()}
-              </Typography>
-              </Box>
-              {teamPlayers.isManager && <Button size='small' variant='contained' color='success'onClick={startGame}><SportsBaseballIcon />&nbsp;PLAY BALL</Button>}
-            </Box>
-          )
-        )}
-        <Typography color={(countWins()>countLoses())?'secondary':'error'}variant="body1" gutterBottom>
-          Record: {countWins()}-{countLoses()}
-        </Typography>
-      </Paper>
-      {/* TEAM ROSTER */}
-      <Card sx={{ width: 'fit-content', padding: 1, mt: 1, mb: 1 }}>
-      <Typography color='secondary' variant="h6">Active Roster</Typography>
-      <Divider  color='secondary'/>
-      </Card>
-      <TableContainer
-        component={Paper}
-        sx={{ maxHeight: 370, mb: 2 }}
-        elevation={8}
-      >
-        <Table
-          stickyHeader={true}
-          size="small"
-          sx={{ minWidth: 400, m: 2 }}
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{position: 'sticky', left: 0, background: 'black', zIndex: 99}} align="left">NAME</TableCell>
-              <TableCell align="center">HITS</TableCell>
-              <TableCell align="center">AT BATS</TableCell>
-              <TableCell align="center">AVG</TableCell>
-              <TableCell align="center">BB</TableCell>
-              <TableCell align="center">K</TableCell>
-              <TableCell align="center">RBI</TableCell>
-              <TableCell align="center">1B</TableCell>
-              <TableCell align="center">2B</TableCell>
-              <TableCell align="center">3B</TableCell>
-              <TableCell align="center">HR</TableCell>
-              <TableCell align="center">BATS</TableCell>
-              <TableCell align="center">THROWS</TableCell>
-              <TableCell align="center">WINS</TableCell>
-              <TableCell align="center">AVG LINEUP #</TableCell>
-              {teamPlayers.isManager && (
-                <>
-                <TableCell align="center">MANAGER?</TableCell>
-                <TableCell align="center">&nbsp;</TableCell>
-                </>
-              )}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {teamPlayers.teamPlayersStatsReducer.length > 0 ? (
-              teamPlayers.teamPlayersStatsReducer.map((player, index) => (
-                <TableRow
-                  key={index}
-                  style ={ index % 2? { background : "#121212" }:{ background : "rgba(255, 255, 255, 0.08)" }}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+    <Slide in={true} direction="up">
+      <Box onClick={closeSelect} sx={{ padding: 2 }}>
+        <Paper sx={{ padding: 1 }}>
+          {userTeamGames.playerTeamReducer.length > 0 && teamClick ? (
+            <>
+              <InputLabel htmlFor="team">Team</InputLabel>
+              <Select
+                value={team}
+                label="Team"
+                required
+                size="normal"
+                defaultOpen={firstClick ? false : true}
+                onChange={selectTeam}
+              >
+                {userTeamGames.playerTeamReducer.map((team, index) => {
+                  return (
+                    <MenuItem key={index} value={team.id}>
+                      {team.name} | Season: {team.year} |{" "}
+                      {team.league.toUpperCase()}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </>
+          ) : (
+            userTeamGames.playerTeamReducer.length > 0 && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "start",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "start",
+                    flexDirection: "column",
+                  }}
                 >
-                  <TableCell 
-                    align="left" 
-                    sx={{position: 'sticky', left: 0, zIndex: 98, background: index%2?"#121212":"rgba(48, 48, 48)"}} 
-                    style={{wordBreak: 'break-word', whiteSpace: 'normal', minWidth: 120 }}>
-                    {player.first_name}&nbsp;{player.last_name}
-                  </TableCell>
-                  <TableCell align="center">{player.total_hits}</TableCell>
-                  <TableCell align="center">{player.total_at_bats}</TableCell>
-                  <TableCell align="center">{player.avg}</TableCell>
-                  <TableCell align="center">{player.walks}</TableCell>
-                  <TableCell align="center">{player.K}</TableCell>
-                  <TableCell align="center">{player.rbi}</TableCell>
-                  <TableCell align="center">{player.singles}</TableCell>
-                  <TableCell align="center">{player.doubles}</TableCell>
-                  <TableCell align="center">{player.triples}</TableCell>
-                  <TableCell align="center">{player.hr}</TableCell>
-                  <TableCell align="center">
-                    {player.bats.toUpperCase()}
-                  </TableCell>
-                  <TableCell align="center">
-                    {player.throws.toUpperCase()}
-                  </TableCell>
-                  <TableCell align="center">{player.wins}</TableCell>
-                  <TableCell align="center">
-                    {Number(player.avg_lineup).toFixed(1)}
-                  </TableCell>
-                  {teamPlayers.isManager && (
-                    <>
-                      <TableCell
-                        align="center"
-                        // className={player.is_manager ? "manager" : "notManager"}
-                      >
-                        <Typography variant='body2' color='primary'>{player.is_manager ? "Yes" : "No"}</Typography>
-                        <Button onClick={() => toggleManager(player.u_id)}>
-                          {player.is_manager ? <RemoveModeratorIcon color='error'/> : <AddModeratorIcon color='success' />}
-                        </Button>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Button onClick={() => removePlayer(player.u_id)}>
-                          <DeleteForeverIcon color='error'/>
-                        </Button>
-                      </TableCell>
-                    </>
-                  )}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell>
-                  <Typography variant="body2">NO ACTIVE PLAYERS</Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {/* Pending players (if any) */}
-      {teamPlayers.isManager &&
-        teamPlayers.teamPlayersPending.length > 0 &&
-        teamPlayers.teamPlayersPending.map((player, index) => {
-          return (
-            <Box key={index}>
-              <Paper sx={{padding: 1}}>
-                <Typography color='primary' variant="heading6">Needs approval:</Typography>
-                <Box sx={{display: 'flex', justifyContent: 'start', alignItems: 'center'}}>
-                <Typography variant="body2">
-                  {player.first_name}&nbsp;{player.last_name}
-                </Typography>
-                  <Box sx={{display: 'flex', justifyContent: 'start', alignItems: 'center'}}>
-                    <ThumbUpIcon sx={{mr: 1, ml: 1, padding: 0}} onClick={() => approvePlayer(player.user_id)} color='success' />
-                    <ThumbDownIcon onClick={() => approvePlayer(player.user_id)} color='error' />
-                  </Box>
+                  <Typography variant="h6" color="secondary">
+                    Team
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    variant="h4"
+                    color="primary"
+                    onClick={teamNameClick}
+                  >
+                    {teamName()}
+                  </Typography>
                 </Box>
-              </Paper>
-            </Box>
-          );
-        })}
-      {/* TEAM GAMES TABLE */}
-      <Card sx={{ width: 'fit-content', padding: 1, mt: 1, mb: 1 }}>
-        <Typography color='secondary' variant="h6">Games</Typography>
-        <Divider  color='secondary'/>
-      </Card>
-      <TableContainer component={Paper} elevation={8} sx={{maxHeight: 400}}>
-        <Table stickyHeader={true} sx={{ minWidth: 400, m: 2 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Home Team</TableCell>
-              <TableCell>Home Score</TableCell>
-              <TableCell>Away Team</TableCell>
-              <TableCell>Away Score</TableCell>
-              <TableCell>W/L</TableCell>
-              <TableCell>Date</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {teamGames.teamGamesReducer.length > 0 ? (
-              teamGames.teamGamesReducer.map((game, index) => (
-                <TableRow
-                  key={index}
-                  style ={ index % 2? { background : "#121212" }:{ background : "rgba(255, 255, 255, 0.08)" }}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell
-                  style={{minWidth: 70}}
+                {teamPlayers.isManager && (
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="success"
+                    onClick={startGame}
                   >
-                    {game.is_home_team
-                      ? `${game.team_name}`
-                      : `${game.opponent}`}
-                  </TableCell>
-                  <TableCell
-                  >
-                    <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    {game.score_home_team}
-                    {(game.score_home_team > game.score_away_team) &&
-                       <SportsScoreIcon color={(game.is_home_team&&game.is_winner?'success':'error')}/>}
-                    </Box>
-                  </TableCell>
-                  <TableCell
-                  style={{minWidth: 70}}
-                  >
-                    {game.is_home_team
-                      ? `${game.opponent}`
-                      : `${game.team_name}`}
-                  </TableCell>
-                  <TableCell
-                  >
-                  <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    {game.score_away_team}
-                    {(game.score_home_team < game.score_away_team) &&
-                       <SportsScoreIcon color={(!game.is_home_team&&game.is_winner?'success':'error')}/>}
-                  </Box>
-                  </TableCell>
-                  <TableCell className={game.is_winner?'yourTeam':'opponentTeam'}>{game.is_winner ? "Won" : "Lost"}</TableCell>
-                  <TableCell>{formatDate(game.date)}</TableCell>
-                </TableRow>
-              ))
-            ) : (
+                    <SportsBaseballIcon />
+                    &nbsp;PLAY BALL
+                  </Button>
+                )}
+              </Box>
+            )
+          )}
+          <Typography
+            color={countWins() > countLoses() ? "secondary" : "error"}
+            variant="body1"
+            gutterBottom
+          >
+            Record: {countWins()}-{countLoses()}
+          </Typography>
+        </Paper>
+        {/* TEAM ROSTER */}
+        <Card sx={{ width: "fit-content", padding: 1, mt: 1, mb: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Typography color="secondary" variant="h6">
+            Active Roster
+          </Typography>
+          {teamPlayers.isManager && <Button onClick={()=>setFullRoster(!fullRoster)}>{!fullRoster?<UnfoldMoreIcon color='info' />:<UnfoldLessIcon color='warning'/>}</Button>}
+          <br />
+        </Card>
+        {fullRoster && teamPlayers.teamPlayersPersonalInfoReducer.length > 0 &&
+          teamPlayers.isManager && <FullTeam teamPlayers={teamPlayers} />}
+        <TableContainer
+          component={Paper}
+          sx={{ maxHeight: 370, mb: 2 }}
+          elevation={8}
+        >
+          <Table stickyHeader={true} size="small" sx={{ minWidth: 400, m: 2 }}>
+            <TableHead>
               <TableRow>
-              <TableCell>
-                <Typography variant="body2">NO GAMES</Typography>
-              </TableCell>
-            </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {/* <List>
-                  {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 &&
-                    teamPlayers.teamPlayersPersonalInfoReducer.map((player, index) => {
-                      {
-                        console.log("this is player each time: ", player);
-                      }
-                      return (
-                        <ListItem
-                          key={index}
-                          disablePadding
-                          alignItems="flex-start"
-                          style={
-                            index % 2
-                              ? { background: "#121212" }
-                              : { background: "rgba(255, 255, 255, 0.08)" }
-                          }
+                <TableCell
+                  sx={{
+                    position: "sticky",
+                    left: 0,
+                    background: "black",
+                    zIndex: 99,
+                  }}
+                  align="left"
+                >
+                  NAME
+                </TableCell>
+                <TableCell align="center">HITS</TableCell>
+                <TableCell align="center">AT BATS</TableCell>
+                <TableCell align="center">AVG</TableCell>
+                <TableCell align="center">BB</TableCell>
+                <TableCell align="center">K</TableCell>
+                <TableCell align="center">RBI</TableCell>
+                <TableCell align="center">1B</TableCell>
+                <TableCell align="center">2B</TableCell>
+                <TableCell align="center">3B</TableCell>
+                <TableCell align="center">HR</TableCell>
+                <TableCell align="center">BATS</TableCell>
+                <TableCell align="center">THROWS</TableCell>
+                <TableCell align="center">WINS</TableCell>
+                <TableCell align="center">AVG LINEUP #</TableCell>
+                {teamPlayers.isManager && (
+                  <>
+                    <TableCell align="center">MANAGER?</TableCell>
+                    <TableCell align="center">&nbsp;</TableCell>
+                  </>
+                )}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {teamPlayers.teamPlayersStatsReducer.length > 0 ? (
+                teamPlayers.teamPlayersStatsReducer.map((player, index) => (
+                  <TableRow
+                    key={index}
+                    style={
+                      index % 2
+                        ? { background: "#121212" }
+                        : { background: "rgba(255, 255, 255, 0.08)" }
+                    }
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell
+                      align="left"
+                      sx={{
+                        position: "sticky",
+                        left: 0,
+                        zIndex: 98,
+                        background: index % 2 ? "#121212" : "rgba(48, 48, 48)",
+                      }}
+                      style={{
+                        wordBreak: "break-word",
+                        whiteSpace: "normal",
+                        minWidth: 120,
+                      }}
+                    >
+                      {player.first_name}&nbsp;{player.last_name}
+                    </TableCell>
+                    <TableCell align="center">{player.total_hits}</TableCell>
+                    <TableCell align="center">{player.total_at_bats}</TableCell>
+                    <TableCell align="center">{player.avg}</TableCell>
+                    <TableCell align="center">{player.walks}</TableCell>
+                    <TableCell align="center">{player.K}</TableCell>
+                    <TableCell align="center">{player.rbi}</TableCell>
+                    <TableCell align="center">{player.singles}</TableCell>
+                    <TableCell align="center">{player.doubles}</TableCell>
+                    <TableCell align="center">{player.triples}</TableCell>
+                    <TableCell align="center">{player.hr}</TableCell>
+                    <TableCell align="center">
+                      {player.bats.toUpperCase()}
+                    </TableCell>
+                    <TableCell align="center">
+                      {player.throws.toUpperCase()}
+                    </TableCell>
+                    <TableCell align="center">{player.wins}</TableCell>
+                    <TableCell align="center">
+                      {Number(player.avg_lineup).toFixed(1)}
+                    </TableCell>
+                    {teamPlayers.isManager && (
+                      <>
+                        <TableCell
+                          align="center"
+                          // className={player.is_manager ? "manager" : "notManager"}
                         >
-                          <ListItemButton>
-                            <ListItemIcon>
-                              <Box
-                                sx={{
-                                  minWidth: 160,
-                                  maxWidth: 160,
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "start",
-                                  flexDirection: "column",
-                                }}
-                              >
-                                    <ListItemText
-                                      sx={{ width: 100, overflowX: "hidden" }}
-                                      primary={player.first_name}
-                                      secondary={player.last_name}
-                                    />
-                              </Box>
-                            </ListItemIcon>
-                          </ListItemButton>
-                        </ListItem>
-                      );
-                    })}
-                </List> */}
-                {teamPlayers.teamPlayersPersonalInfoReducer.length > 0 &&
-                  teamPlayers.isManager &&
-                <FullTeam teamPlayers={teamPlayers}/>}
-    </Box>
+                          <Typography variant="body2" color="primary">
+                            {player.is_manager ? "Yes" : "No"}
+                          </Typography>
+                          <Button onClick={() => toggleManager(player.u_id)}>
+                            {player.is_manager ? (
+                              <RemoveModeratorIcon color="error" />
+                            ) : (
+                              <AddModeratorIcon color="success" />
+                            )}
+                          </Button>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Button onClick={() => removePlayer(player.u_id)}>
+                            <DeleteForeverIcon color="error" />
+                          </Button>
+                        </TableCell>
+                      </>
+                    )}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell>
+                    <Typography variant="body2">NO ACTIVE PLAYERS</Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        {/* Pending players (if any) */}
+        {teamPlayers.isManager &&
+          teamPlayers.teamPlayersPending.length > 0 &&
+          teamPlayers.teamPlayersPending.map((player, index) => {
+            return (
+              <Box key={index}>
+                <Paper sx={{ padding: 1 }}>
+                  <Typography color="primary" variant="heading6">
+                    Needs approval:
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "start",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="body2">
+                      {player.first_name}&nbsp;{player.last_name}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "start",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ThumbUpIcon
+                        sx={{ mr: 1, ml: 1, padding: 0 }}
+                        onClick={() => approvePlayer(player.user_id)}
+                        color="success"
+                      />
+                      <ThumbDownIcon
+                        onClick={() => approvePlayer(player.user_id)}
+                        color="error"
+                      />
+                    </Box>
+                  </Box>
+                </Paper>
+              </Box>
+            );
+          })}
+        {/* TEAM GAMES TABLE */}
+        <Card sx={{ width: "fit-content", padding: 1, mt: 1, mb: 1 }}>
+          <Typography color="secondary" variant="h6">
+            Games
+          </Typography>
+          <Divider color="secondary" />
+        </Card>
+        <TableContainer component={Paper} elevation={8} sx={{ maxHeight: 400 }}>
+          <Table stickyHeader={true} sx={{ minWidth: 400, m: 2 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Home Team</TableCell>
+                <TableCell>Home Score</TableCell>
+                <TableCell>Away Team</TableCell>
+                <TableCell>Away Score</TableCell>
+                <TableCell>W/L</TableCell>
+                <TableCell>Date</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {teamGames.teamGamesReducer.length > 0 ? (
+                teamGames.teamGamesReducer.map((game, index) => (
+                  <TableRow
+                    key={index}
+                    style={
+                      index % 2
+                        ? { background: "#121212" }
+                        : { background: "rgba(255, 255, 255, 0.08)" }
+                    }
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell style={{ minWidth: 70 }}>
+                      {game.is_home_team
+                        ? `${game.team_name}`
+                        : `${game.opponent}`}
+                    </TableCell>
+                    <TableCell>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        {game.score_home_team}
+                        {game.score_home_team > game.score_away_team && (
+                          <SportsScoreIcon
+                            color={
+                              game.is_home_team && game.is_winner
+                                ? "success"
+                                : "error"
+                            }
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell style={{ minWidth: 70 }}>
+                      {game.is_home_team
+                        ? `${game.opponent}`
+                        : `${game.team_name}`}
+                    </TableCell>
+                    <TableCell>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        {game.score_away_team}
+                        {game.score_home_team < game.score_away_team && (
+                          <SportsScoreIcon
+                            color={
+                              !game.is_home_team && game.is_winner
+                                ? "success"
+                                : "error"
+                            }
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell
+                      className={game.is_winner ? "yourTeam" : "opponentTeam"}
+                    >
+                      {game.is_winner ? "Won" : "Lost"}
+                    </TableCell>
+                    <TableCell>{formatDate(game.date)}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell>
+                    <Typography variant="body2">NO GAMES</Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        {/* {fullRoster && teamPlayers.teamPlayersPersonalInfoReducer.length > 0 &&
+          teamPlayers.isManager && <FullTeam teamPlayers={teamPlayers} />} */}
+      </Box>
     </Slide>
   );
 }

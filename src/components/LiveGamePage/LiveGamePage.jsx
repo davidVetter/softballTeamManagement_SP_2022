@@ -20,6 +20,7 @@ import Avatar from '@mui/material/Avatar';
 import HomeIcon from '@mui/icons-material/Home';
 import AppBar from '@mui/material/AppBar';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import AddIcon from '@mui/icons-material/Add';
 
 
 function LiveGamePage() {
@@ -606,6 +607,7 @@ function LiveGamePage() {
         {localStorage.getItem("gameInProgress") &&
           !localStorage.getItem("homeOpponent") &&
           !getHomeOpponent && (
+            <Box sx={{height: '75vh', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <Button
               onClick={openOpponentForm}
               variant="contained"
@@ -613,6 +615,7 @@ function LiveGamePage() {
             >
               Ready to start?
             </Button>
+            </Box>
           )}
         <Dialog open={open} >
             <form onSubmit={submitOpponentForm}>
@@ -928,7 +931,7 @@ function LiveGamePage() {
           >
             <Paper elevation={8} sx={{ mb: 2, width: "80%", padding: 2 }}>
               <Button
-                sx={{ float: "right" }}
+                sx={{ float: "right", mb: 1 }}
                 onClick={() => setShowLineup(true)}
               >
                 Lineup
@@ -1106,14 +1109,14 @@ function LiveGamePage() {
                         </ButtonGroup>
                       </FormGroup>
                     ) : (
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        color="success"
-                        onClick={() => setRunsInputToggle(true)}
-                      >
-                        We Scored!
-                      </Button>
+                    //   <Button
+                    //     fullWidth
+                    //     variant="outlined"
+                    //     color="success"
+                    //     onClick={() => setRunsInputToggle(true)}
+                    //   >
+                        <Chip sx={{mt:1, float: 'right'}} color='success' onClick={() => setRunsInputToggle(true)} icon={<AddIcon />} label='Add Runs'/>
+                    //   </Button>
                     )}
                   </Box>
                 )}
