@@ -719,7 +719,7 @@ function LiveGamePage() {
                               >
                                 <Chip
                                   avatar={
-                                    <Avatar sx={{ bgcolor: "deepskyblue" }}>
+                                    <Avatar sx={{ bgcolor: "#f8333c" }}>
                                       {index + 1}
                                     </Avatar>
                                   }
