@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Button, Box, Typography, Paper, TextField, Grid, FormLabel, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
+import { Button, ButtonGroup, Box, Typography, Paper, TextField, Grid, FormLabel, List, ListItem, ListItemButton, ListItemText, ListItemIcon, Divider, InboxIcon} from '@mui/material';
 import EditUserForm from '../EditUserForm/EditUserForm'
 import LiveGamePage from '../LiveGamePage/LiveGamePage';
 import CreateTeam from '../CreateTeam/CreateTeam';
 import JoinTeamForm from '../JoinTeamForm/JoinTeamForm';
+import Zoom from '@mui/material/Zoom';
+import Chip from '@mui/material/Chip';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
 
 function UserPage() {
   const user = useSelector((store) => store.user);
@@ -18,6 +22,7 @@ function UserPage() {
   const [editMode, setEditMode] = useState(false);
   const [createTeamToggle, setCreateTeamToggle] = useState(false);
   const [joinTeamToggle, setJoinTeamToggle] = useState(false);
+  const [toggle, setToggle] = useState(false);
 
   useEffect(() => {
     dispatch({
@@ -30,6 +35,15 @@ function UserPage() {
       type: 'GET_TEAMS'
     });
   }, []);
+
+  // get current players teams after joining new team
+  useEffect(() => {
+    dispatch({
+      type: 'GET_PLAYER_TEAMS'
+    });
+    setToggle(!toggle);
+  }, [joinTeamToggle])
+
   // Convert 10 digit phone number string to (XXX) XXX-XXXX format
   const formatPhone = (phoneNumberString) => {
     const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
@@ -39,58 +53,96 @@ function UserPage() {
     }
     return null;
   }
+  // This function hides edit and join team forms when create team
+  // is being displayed
+  const showCreateTeam = () => {
+    setCreateTeamToggle(true)
+    setEditMode(false);
+    setJoinTeamToggle(false);
+  }
+
+  // This function hides create team and join team when edit form is displayed
+  const showEdit = () => {
+    setEditMode(true);
+    setCreateTeamToggle(false);
+    setJoinTeamToggle(false);
+  }
+
+  // this function hides edit and create team forms when join team
+  // is active
+  const showJoinTeam = () => {
+    setJoinTeamToggle(true);
+    setCreateTeamToggle(false);
+    setEditMode(false);
+  }
 
   return (
-    <Box className="container">
+      <Zoom in={true}>
+    <Box className="container" >
+      <Paper elevation={4} sx={{ mb: 2, padding: 1 }}>
       <Typography variant="h4">
         {user.first_name}&nbsp;{user.last_name}
       </Typography>
-      <Box sx={{width: 'fit-content'}}>
+      <Box sx={{width: '100%'}}>
       <Typography variant="body1">
         Email: {user.username}<br/>Phone: {formatPhone(user.phone_number)}
       </Typography>
       <Divider />
       </Box>
       <Typography variant='body2'>Bats: {user.bats.toUpperCase()} | Throws: {user.throws.toUpperCase()}</Typography>
-      <Button
-        variant="outlined"
+      </Paper>
+      <Paper color='secondary' sx={{width: '100%', mb: 2}}>
+      <ButtonGroup fullWidth>
+      {!editMode && <Button
+        variant="contained"
         type="button"
-        onClick={() => setEditMode(!editMode)}
+        color='secondary'
+        onClick={showEdit}
       >
         Edit My Info
-      </Button>
-      {/* Create a Team Form */}
-      {createTeamToggle ? (
-        <CreateTeam errors={errors} setCreateTeamToggle={setCreateTeamToggle} />
-      ) : (
-        <Button variant="outlined" onClick={() => setCreateTeamToggle(true)}>
+      </Button>}
+      {!createTeamToggle && <Button 
+        variant="contained"
+        color='success'
+        onClick={showCreateTeam}
+      >
           Create A Team
-        </Button>
-      )}
-      {/* Request to join a team */}
-      {joinTeamToggle ? (
-        <JoinTeamForm errors={errors} setJoinTeamToggle={setJoinTeamToggle} />
-      ) : (
-        <Button variant="outlined" onClick={() => setJoinTeamToggle(true)}>
+        </Button>}
+      {!joinTeamToggle && <Button 
+        variant="contained" 
+        color='success'
+        onClick={showJoinTeam}
+      >
           Join A Team
-        </Button>
-      )}
+        </Button>}
+      </ButtonGroup>
+      </Paper>
+      {/* Create a Team Form */}
       <Box
         sx={{
-          width: "100%",
+          width: 'inherit',
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "column",
         }}
-      >
+        >
+        {createTeamToggle && (
+          <CreateTeam errors={errors} setCreateTeamToggle={setCreateTeamToggle} />
+        )}
+        {/* Request to join a team */}
+        {joinTeamToggle && (
+          <JoinTeamForm errors={errors} joinTeamToggle={joinTeamToggle} setToggle={setToggle} toggle={toggle} setJoinTeamToggle={setJoinTeamToggle} />
+        )}
         {editMode && <EditUserForm setEditMode={setEditMode} />}
-        <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", width: "80%" }}>
+        <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", maxWidth: 450, width: "97%", padding: 1 }}>
           <Typography variant="h4">My Teams</Typography>
-          <List>
+          <List sx={{maxHeight: 250, overflowY: 'scroll'}}>
+            {!playerGames.playerTeamReducer.length > 0 && `Uh-oh no teams found! Join one to see it here! Simply click 'Join a Team' button above to get started.`}
             {playerGames.playerTeamReducer.length > 0 &&
               playerGames.playerTeamReducer.map((team, index) => {
                 return (
+                  <Box key={index}>
                   <ListItem key={index} disablePadding alignItems="flex-start">
                     <ListItemButton onClick={()=>{
                       dispatch({
@@ -109,7 +161,7 @@ function UserPage() {
                           secondary={
                             <Typography variant="body2">
                               {" "}
-                              League: {team.league.toUpperCase()} Season:{" "}
+                              League: {team.league.toUpperCase()}&nbsp;|&nbsp;Season:{" "}
                               {team.year}
                             </Typography>
                           }
@@ -117,12 +169,15 @@ function UserPage() {
                       </ListItemIcon>
                     </ListItemButton>
                   </ListItem>
+                  <Divider />
+                  </Box>
                 );
               })}
           </List>
         </Paper>
       </Box>
     </Box>
+      </Zoom>
   );
 }
 

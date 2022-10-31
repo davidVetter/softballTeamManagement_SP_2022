@@ -11,6 +11,8 @@ const allTeams = (state = [], action) => {
 const teamPlayersStatsReducer = (state = [], action) => {
     if (action.type === 'SET_TEAM_PLAYERS_STATS') {
         return action.payload;
+    } else if (action.type === 'CLEAR_TEAM_PLAYERS_STATS'){
+        return [];
     } else {
         return state;
     }
@@ -19,6 +21,8 @@ const teamPlayersStatsReducer = (state = [], action) => {
 const teamPlayersPersonalInfoReducer = (state = [], action) => {
     if (action.type === 'SET_TEAM_PLAYERS_PERSONAL_INFO') {
         return action.payload;
+    } else if (action.type === 'CLEAR_TEAM_PLAYER_PERSONAL_INFO'){ 
+        return [];
     } else {
         return state;
     }

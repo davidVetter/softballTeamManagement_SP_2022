@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Typography, Grid, FormLabel, TextField, Button, Paper, Box, Select, FormControl, MenuItem, InputLabel } from '@mui/material';
 import stateLabelValues from '../../data/registerData/statesList';
+import Slide from '@mui/material/Slide';
+
 
 function RegisterForm() {
   // Local state to hold the form information while being entered
@@ -41,6 +43,15 @@ function RegisterForm() {
     }
     // Send data to saga for POST to server
     dispatch({
+      type: 'CLEAR_TEAM_GAMES'
+    });
+    dispatch({
+      type: 'CLEAR_TEAM_PLAYER_PERSONAL_INFO'
+    });
+    dispatch({
+      type: 'CLEAR_TEAM_PLAYERS_STATS'
+    })
+    dispatch({
       type: 'REGISTER',
       payload: {
         username: username,
@@ -61,8 +72,9 @@ function RegisterForm() {
   }; // end registerUser
 
   return (
+    <Slide direction="up" in={true} mountOnEnter unmountOnExit>
     <Box sx={{width:'100%', display: 'flex', alignItems:'center', justifyContent:'center'}}>
-    <Paper elevation={8} sx={{mb: 1, minWidth: '300px', width: '80%'}}>
+    <Paper elevation={8} sx={{mb: 10, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerUser}>
       <Grid container alignItems='center' justify='center' direction='column'>
       <Typography variant='h4' gutterBottom>Register User</Typography>
@@ -287,6 +299,7 @@ function RegisterForm() {
     </form>
     </Paper>
     </Box>
+    </Slide>
   );
 }
 

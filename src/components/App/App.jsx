@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   HashRouter as Router,
   Redirect,
@@ -19,13 +19,12 @@ import InfoPage from '../InfoPage/InfoPage';
 import LandingPage from '../LandingPage/LandingPage';
 import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
-
 import './App.css';
 import LiveGamePage from '../LiveGamePage/LiveGamePage';
+import { Box } from '@mui/material';
 
-function App() {
+function App(props) {
   const dispatch = useDispatch();
-
   const user = useSelector(store => store.user);
 
   useEffect(() => {
@@ -34,7 +33,7 @@ function App() {
 
   return (
     <Router>
-      <div>
+      <Box>
         <Nav />
         <Switch>
           {/* Visiting localhost:3000 will redirect to localhost:3000/home */}
@@ -125,7 +124,7 @@ function App() {
           </Route>
         </Switch>
         <Footer />
-      </div>
+      </Box>
     </Router>
   );
 }
