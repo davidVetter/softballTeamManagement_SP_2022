@@ -1409,7 +1409,7 @@ function LiveGamePage() {
         </Button> */}
         {localStorage.getItem("gameInProgress") &&
          localStorage.getItem("homeOpponent") &&
-            <ButtonGroup orientation='vertical' fullWidth>
+            <ButtonGroup orientation='vertical' fullWidth sx={{mb: 15}}>
             <Button color="success" variant="contained" onClick={()=>setShowEndGame(true)}>
             End Game Early
             </Button>
