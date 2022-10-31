@@ -101,8 +101,8 @@ function CreateTeam(props) {
             </FormLabel>
           </Grid>
           <Grid item sx={{mb: 2}}>
-            <Button variant='contained' type="submit" name="submit" value="Register">Create</Button>
-            <Button variant='outlined' type="button" name="cancel" onClick={()=>props.setCreateTeamToggle(false)}>Cancel</Button>
+            <Button color='success' variant='contained' type="submit" name="submit" value="Register">Create</Button>
+            <Button color='error' variant='outlined' type="button" name="cancel" onClick={()=>props.setCreateTeamToggle(false)}>Cancel</Button>
           </Grid>
           </Grid>
         </form>

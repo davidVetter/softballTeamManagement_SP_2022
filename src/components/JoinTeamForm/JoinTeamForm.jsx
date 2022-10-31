@@ -95,10 +95,11 @@ function JoinTeamForm(props) {
                 type="submit"
                 name="submit"
                 value="Register"
+                color='success'
               >
                 Join
               </Button>
-              <Button variant='outlined' type="button" name="cancel" onClick={()=>props.setJoinTeamToggle(false)}>Cancel</Button>
+              <Button color='error' variant='outlined' type="button" name="cancel" onClick={()=>props.setJoinTeamToggle(false)}>Cancel</Button>
             </Grid>
           </Grid>
         </form>

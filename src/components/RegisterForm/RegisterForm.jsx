@@ -74,7 +74,7 @@ function RegisterForm() {
   return (
     <Slide direction="up" in={true} mountOnEnter unmountOnExit>
     <Box sx={{width:'100%', display: 'flex', alignItems:'center', justifyContent:'center'}}>
-    <Paper elevation={8} sx={{mb: 10, minWidth: '300px', width: '80%'}}>
+    <Paper elevation={8} sx={{mb: 10, mt: 1, minWidth: '300px', width: '80%'}}>
     <form onSubmit={registerUser}>
       <Grid container alignItems='center' justify='center' direction='column'>
       <Typography variant='h4' gutterBottom>Register User</Typography>

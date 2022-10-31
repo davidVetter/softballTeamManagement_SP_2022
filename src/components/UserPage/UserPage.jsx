@@ -135,7 +135,7 @@ function UserPage() {
           <JoinTeamForm errors={errors} joinTeamToggle={joinTeamToggle} setToggle={setToggle} toggle={toggle} setJoinTeamToggle={setJoinTeamToggle} />
         )}
         {editMode && <EditUserForm setEditMode={setEditMode} />}
-        <Paper elevation={8} sx={{ mb: 1, minWidth: "300px", maxWidth: 450, width: "97%", padding: 1 }}>
+        <Paper elevation={8} sx={{ mb: 10, minWidth: "300px", maxWidth: 450, width: "97%", padding: 1 }}>
           <Typography variant="h4">My Teams</Typography>
           <List sx={{maxHeight: 250, overflowY: 'scroll'}}>
             {!playerGames.playerTeamReducer.length > 0 && `Uh-oh no teams found! Join one to see it here! Simply click 'Join a Team' button above to get started.`}

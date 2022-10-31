@@ -301,8 +301,8 @@ function EditUserForm(props) {
             </FormControl>
         </Grid>
         <Grid item sx={{mb: 2}}>
-          <Button variant='contained' type="submit" name="submit" value="Register">Update</Button>
-          <Button variant='outlined' type="button" onClick={() => {
+          <Button color='success' variant='contained' type="submit" name="submit" value="Register">Update</Button>
+          <Button color='error' variant='outlined' type="button" onClick={() => {
         clearLocalState();
         props.setEditMode(false)}}>Cancel</Button>
         </Grid>

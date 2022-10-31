@@ -58,7 +58,7 @@ function LandingPage() {
               color="success"
               size='small'
               onClick={onLogin}
-              sx={{ padding: 1}}
+              sx={{ padding: 1, mb: 2}}
               fullWidth
             >
               Login/Sign Up
