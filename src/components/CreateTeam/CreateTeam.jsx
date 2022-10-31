@@ -21,6 +21,7 @@ function CreateTeam(props) {
             number: yourPlayerNumber
           }
         });
+        props.setCreateTeamToggle(false)
         clearCreateTeam();
       }; // end registerTeam
 

@@ -61,7 +61,7 @@ function FullTeam(props) {
                           <Typography
                             color="primary"
                             variant="h6"
-                          >{`${player.first_name}${player.last_name} #${player.number}`}</Typography>
+                          >{`${player.first_name} ${player.last_name} #${player.number}`}</Typography>
                           <Typography variant="body1">
                             {`Phone: ${formatPhone(player.phone_number)}`}
                           </Typography>
