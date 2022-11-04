@@ -831,12 +831,6 @@ function LiveGamePage() {
             color="primary"
             sx={{ top: "auto", bottom: 0 }}
           >
-            {/* <Typography variant="h6">
-              {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;
-              {currentInning.inning}&nbsp;|&nbsp;Outs: {currentOuts}
-            </Typography>
-            <Divider /> */}
-            {/* <Typography variant="h6">Outs: {currentOuts}</Typography> */}
             <Box
               sx={{
                 display: "flex",
@@ -873,9 +867,6 @@ function LiveGamePage() {
                     mb: 1
                   }}
                 >
-                  {/* {localStorage.getItem("homeOpponent") && homeAway === "away" && (
-                  <HomeIcon color='primary' />
-                  )} */}
                   <Chip
                     label={
                       localStorage.getItem("homeOpponent") && (
@@ -897,9 +888,6 @@ function LiveGamePage() {
                     justifyContent: "flex-end",
                   }}
                 >
-                  {/* {localStorage.getItem("homeOpponent") && homeAway === "home" && (
-                    <HomeIcon color='primary' />
-                  )} */}
                   <Chip
                     icon={
                       localStorage.getItem("homeOpponent") &&
@@ -942,30 +930,11 @@ function LiveGamePage() {
                 Lineup
               </Button>
               <Box>
-                {/* {!(homeAway === currentInning.half) && (
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={handleAddOppentTeamScore}
-                  >
-                    They scored +1
-                  </Button>
-                )} */}
-
-                {/* <Typography variant="h6">
-                  {currentInning.half === "away" ? "Top" : "Bottom"}&nbsp;{currentInning.inning}
-                </Typography>
-                <Typography variant="h6">
-                  Outs: {currentOuts}
-                </Typography> */}
                 <Typography variant="h5">
                   {homeAway === currentInning.half
                     ? `Current Batter:`
                     : `DUE UP NEXT INNING:`}
                   <br />
-                  {/* {currentLineup[currentBatter].first_name}&nbsp;
-                  {currentLineup[currentBatter].last_name}&nbsp;#
-                  {currentLineup[currentBatter].number} */}
                 </Typography>
                 <Chip
                   sx={{ mb: 1, padding: 1, width: "90%" }}
@@ -1034,21 +1003,6 @@ function LiveGamePage() {
                             />
                           </RadioGroup>
                         </FormControl>
-                        {/* <ButtonGroup fullWidth>
-                          <Button
-                            color="success"
-                            variant="contained"
-                            onClick={handleAddUserTeamScore}
-                          >
-                            Add Runs
-                          </Button>
-                          <Button
-                            color="error"
-                            onClick={() => setRunsInputToggle(false)}
-                          >
-                            Cancel
-                          </Button>
-                        </ButtonGroup> */}
                         {!rbiToggle && (
                           <Button color="secondary" onClick={() => setRbiToggle(true)}>
                             ADD RBI
@@ -1118,14 +1072,7 @@ function LiveGamePage() {
                       </FormGroup>
                       </Slide>
                     ) : (
-                    //   <Button
-                    //     fullWidth
-                    //     variant="outlined"
-                    //     color="success"
-                    //     onClick={() => setRunsInputToggle(true)}
-                    //   >
                         <Chip sx={{mt:1, float: 'right'}} color='success' onClick={() => setRunsInputToggle(true)} icon={<AddIcon />} label='Add Runs'/>
-                    //   </Button>
                     )}
                   </Box>
                 )}
@@ -1212,10 +1159,6 @@ function LiveGamePage() {
                   <span className="smallTextButton">(NO BATTER CHANGE)</span>
                 </Button>
               </ButtonGroup>
-              {/* {!advancedBatting && (
-                <Button startIcon={<MoreHorizIcon color='primary'/>} onClick={() => setAdvancedBatting(!advancedBatting)}>
-                </Button>
-              )} */}
               {advancedBatting && (
                 <>
                   <ButtonGroup
@@ -1406,9 +1349,6 @@ function LiveGamePage() {
                   <Button variant='outlined' color={determineWinner()?'success':'error'}onClick={closeEndGame}>End Game</Button>
                 </DialogActions>
               </Dialog>}
-        {/* <Button color="success" variant="outlined" onClick={completeGame}>
-          Complete Game
-        </Button> */}
         {localStorage.getItem("gameInProgress") &&
          localStorage.getItem("homeOpponent") &&
             <ButtonGroup orientation='vertical' fullWidth sx={{mb: 15}}>
